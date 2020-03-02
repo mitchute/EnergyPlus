@@ -83,6 +83,8 @@
 #include <EnergyPlus/StandardRatings.hh>
 #include <EnergyPlus/UtilityRoutines.hh>
 
+#include <CoolProp-6.3.1/include/CoolProp.h>
+
 namespace EnergyPlus {
 
 namespace ChillerReformulatedEIR {

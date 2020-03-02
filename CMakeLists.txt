@@ -203,12 +203,16 @@ ADD_SUBDIRECTORY(third_party/zlib)
 ADD_SUBDIRECTORY(third_party/DElight)
 ADD_SUBDIRECTORY(third_party/re2)
 ADD_SUBDIRECTORY(third_party/fmt-6.1.2 )
+ADD_SUBDIRECTORY(third_party/CoolProp-6.3.1)
 
 ADD_SUBDIRECTORY(scripts/dev/generate_embeddable_epJSON_schema)
 IF( NOT APPLE )
   ADD_SUBDIRECTORY(third_party/FMUParser)
 ENDIF()
 ADD_SUBDIRECTORY(third_party/Windows-CalcEngine)
+
+# CoolProp
+set(COOLPROP_STATIC_LIBRARY ON)
 
 # Btwxt
 INCLUDE_DIRECTORIES( ${gtest_SOURCE_DIR}/include/ SYSTEM )
