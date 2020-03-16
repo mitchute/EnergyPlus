@@ -35540,41 +35540,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 0.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 0 will not be considered for any period that requires ventilation, heating, cooling, humidification, or dehumidification. If this field is blank, when Mode 0 is chosen (during standby periods) the supply air temperature will equal the return air temperature.
    A20, \field Mode 0 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 0.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 0 will not be considered for any period that requires ventilation, heating, cooling, humidification, or dehumidification. If this field is blank, when Mode 0 is chosen (during standby periods) the supply air humidty ratio will equal the return air humidity ratio.
    A21, \field Mode 0 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 0.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 0 does not consume electricity.
    A22, \field Mode 0 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 0.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 0 does not consume electricity for supply fan.
    A23, \field Mode 0 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 0.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported.
    A24, \field Mode 0 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 0.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 0 does not consume a second fuel.
    A25, \field Mode 0 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 0.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 0 does not consume a third fuel.
    A26, \field Mode 0 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 0.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 0 does not consume water.
     N6, \field Mode 0 Outdoor Air Fraction
         \type real
@@ -35600,41 +35608,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 1.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 1 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A29, \field Mode 1 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 1.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 1 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A30, \field Mode 1 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 1.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 1 does not use electricity
    A31, \field Mode 1 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 1.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 1 does not use electricity for supply fan.
    A32, \field Mode 1 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 1.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 1.
    A33, \field Mode 1 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 1.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 1 does not consume a second fuel.
    A34, \field Mode 1 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 1.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 1 does not consume a third fuel.
    A35, \field Mode 1 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 1.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 1 does not consume water.
     N8, \field Mode 1 Minimum Outdoor Air Temperature
         \type real
@@ -35777,41 +35793,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 2.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 2 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A38, \field Mode 2 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 2.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 2 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A39, \field Mode 2 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 2.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 2 does not consume electricity.
    A40, \field Mode 2 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 2.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 2 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A41, \field Mode 2 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 2.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 2.
    A42, \field Mode 2 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 2.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 2 does not consume a second fuel.
    A43, \field Mode 2 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 2.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 2 does not consume a third fuel.
    A44, \field Mode 2 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 2.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 2 does not consume water.
    N24, \field Mode 2 Minimum Outdoor Air Temperature
         \type real
@@ -35954,41 +35978,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 3.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 3 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A47, \field Mode 3 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 3.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 3 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A48, \field Mode 3 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 3.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 3 does not consume electricity.
    A49, \field Mode 3 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 3.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 3 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A50, \field Mode 3 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 3.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 3.
    A51, \field Mode 3 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 3.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 3 does not consume a second fuel.
    A52, \field Mode 3 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 3.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 3 does not consume a third fuel.
    A53, \field Mode 3 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 3.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 3 does not consume water.
    N40, \field Mode 3 Minimum Outdoor Air Temperature
         \type real
@@ -36131,41 +36163,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 4.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 4 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A56, \field Mode 4 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 4.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 4 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A57, \field Mode 4 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 4.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 4 does not consume electricity.
    A58, \field Mode 4 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 4.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 4 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A59, \field Mode 4 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 4.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 4.
    A60, \field Mode 4 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 4.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 4 does not consume a second fuel.
    A61, \field Mode 4 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 4.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 4 does not consume a third fuel.
    A62, \field Mode 4 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 4.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 4 does not consume water.
    N56, \field Mode 4 Minimum Outdoor Air Temperature
         \type real
@@ -36308,41 +36348,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 5.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 5 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A65, \field Mode 5 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 5.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 5 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A66, \field Mode 5 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 5.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 5 does not consume electricity.
    A67, \field Mode 5 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 5.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 5 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A68, \field Mode 5 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 5.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 5.
    A69, \field Mode 5 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 5.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 5 does not consume a second fuel.
    A70, \field Mode 5 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 5.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 5 does not consume a third fuel.
    A71, \field Mode 5 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 5.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 5 does not consume water.
    N72, \field Mode 5 Minimum Outdoor Air Temperature
         \type real
@@ -36485,41 +36533,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 6.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 6 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A74, \field Mode 6 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 6.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 6 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A75, \field Mode 6 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 6.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 6 does not consume electricity.
    A76, \field Mode 6 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 6.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 6 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A77, \field Mode 6 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 6.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 6.
    A78, \field Mode 6 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 6.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 6 does not consume a second fuel.
    A79, \field Mode 6 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 6.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 6 does not consume a third fuel.
    A80, \field Mode 6 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 6.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 6 does not consume water.
    N88, \field Mode 6 Minimum Outdoor Air Temperature
         \type real
@@ -36662,41 +36718,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 7.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 7 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A83, \field Mode 7 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 7.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 7 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A84, \field Mode 7 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 7.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 7 does not consume electricity.
    A85, \field Mode 7 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 7.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 7 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A86, \field Mode 7 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 7.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 7.
    A87, \field Mode 7 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 7.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 7 does not consume a second fuel.
    A88, \field Mode 7 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 7.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 7 does not consume a third fuel.
    A89, \field Mode 7 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 7.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 7 does not consume water.
   N104, \field Mode 7 Minimum Outdoor Air Temperature
         \type real
@@ -36839,41 +36903,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 8.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 8 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A92, \field Mode 8 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 8.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 8 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A93, \field Mode 8 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 8.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 8 does not consume electricity.
    A94, \field Mode 8 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 8.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 8 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
    A95, \field Mode 8 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 8.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 8.
    A96, \field Mode 8 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 8.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 8 does not consume a second fuel.
    A97, \field Mode 8 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 8.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 8 does not consume a third fuel.
    A98, \field Mode 8 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 8.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 8 does not consume water.
   N120, \field Mode 8 Minimum Outdoor Air Temperature
         \type real
@@ -37016,41 +37088,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 9.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 9 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A101, \field Mode 9 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 9.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 9 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A102, \field Mode 9 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 9.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 9 does not consume electricity.
   A103, \field Mode 9 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 9.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 9 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A104, \field Mode 9 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 9.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 9.
   A105, \field Mode 9 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 9.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 9 does not consume a second fuel.
   A106, \field Mode 9 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 9.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 9 does not consume a third fuel.
   A107, \field Mode 9 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 9.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 9 does not consume water.
   N136, \field Mode 9 Minimum Outdoor Air Temperature
         \type real
@@ -37192,41 +37272,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type alpha
         \retaincase
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 10.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 10 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A109, \field Mode 10 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 10.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 10 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A110, \field Mode 10 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 10.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 10 does not consume electricity.
   A111, \field Mode 10 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 10.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 10 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A112, \field Mode 10 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 10.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 10.
   A113, \field Mode 10 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 10.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 10 does not consume a second fuel.
   A114, \field Mode 10 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 10.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 10 does not consume a third fuel.
   A115, \field Mode 10 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 10.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 10 does not consume water.
   N152, \field Mode 10 Minimum Outdoor Air Temperature
         \type real
@@ -37369,41 +37457,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 11.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 11 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A118, \field Mode 11 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 11.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 11 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A119, \field Mode 11 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 11.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 11 does not consume electricity.
   A120, \field Mode 11 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 11.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 11 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A121, \field Mode 11 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 11.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 11.
   A122, \field Mode 11 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 11.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 11 does not consume a second fuel.
   A123, \field Mode 11 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 11.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 11 does not consume a third fuel.
   A124, \field Mode 11 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 11.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 11 does not consume water.
   N168, \field Mode 11 Minimum Outdoor Air Temperature
         \type real
@@ -37546,41 +37642,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 12.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 12 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A127, \field Mode 12 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 12.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 12 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A128, \field Mode 12 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 12.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 12 does not consume electricity.
   A129, \field Mode 12 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 12.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 12 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A130, \field Mode 12 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 12.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 12.
   A131, \field Mode 12 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 12.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 12 does not consume a second fuel.
   A132, \field Mode 12 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 12.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 12 does not consume a third fuel.
   A133, \field Mode 12 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 12.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 12 does not consume water.
   N184, \field Mode 12 Minimum Outdoor Air Temperature
         \type real
@@ -37723,41 +37827,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 13.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 13 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A136, \field Mode 13 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 13.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 13 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A137, \field Mode 13 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 13.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 13 does not consume electricity.
   A138, \field Mode 13 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 13.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 13 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A139, \field Mode 13 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 13.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 13.
   A140, \field Mode 13 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 13.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 13 does not consume a second fuel.
   A141, \field Mode 13 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 13.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 13 does not consume a third fuel.
   A142, \field Mode 13 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 13.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 13 does not consume water.
   N200, \field Mode 13 Minimum Outdoor Air Temperature
         \type real
@@ -37900,41 +38012,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 14.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 14 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A145, \field Mode 14 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 14.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 14 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A146, \field Mode 14 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 14.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 14 does not consume electricity.
   A147, \field Mode 14 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 14.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 14 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A148, \field Mode 14 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 14.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 14.
   A149, \field Mode 14 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 14.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 14 does not consume a second fuel.
   A150, \field Mode 14 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 14.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 14 does not consume a third fuel.
   A151, \field Mode 14 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 14.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 14 does not consume water.
   N216, \field Mode 14 Minimum Outdoor Air Temperature
         \type real
@@ -38077,41 +38197,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 15.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 15 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A154, \field Mode 15 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 15.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 15 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A155, \field Mode 15 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 15.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 15 does not consume electricity.
   A156, \field Mode 15 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 15.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 15 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A157, \field Mode 15 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 15.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 15.
   A158, \field Mode 15 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 15.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 15 does not consume a second fuel.
   A159, \field Mode 15 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 15.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 15 does not consume a third fuel.
   A160, \field Mode 15 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 15.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 15 does not consume water.
   N232, \field Mode 15 Minimum Outdoor Air Temperature
         \type real
@@ -38254,41 +38382,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 16.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 16 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A163, \field Mode 16 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 16.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 16 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A164, \field Mode 16 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 16.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 16 does not consume electricity.
   A165, \field Mode 16 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 16.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 16 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A166, \field Mode 16 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 16.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 16.
   A167, \field Mode 16 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 16.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 16 does not consume a second fuel.
   A168, \field Mode 16 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 16.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 16 does not consume a third fuel.
   A169, \field Mode 16 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 16.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 16 does not consume water.
   N248, \field Mode 16 Minimum Outdoor Air Temperature
         \type real
@@ -38431,41 +38567,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 17.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 17 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A172, \field Mode 17 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 17.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 17 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A173, \field Mode 17 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 17.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 17 does not consume electricity.
   A174, \field Mode 17 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 17.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 17 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A175, \field Mode 17 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 17.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 17.
   A176, \field Mode 17 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 17.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 17 does not consume a second fuel.
   A177, \field Mode 17 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 17.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 17 does not consume a third fuel.
   A178, \field Mode 17 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 17.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 17 does not consume water.
   N264, \field Mode 17 Minimum Outdoor Air Temperature
         \type real
@@ -38608,41 +38752,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 18.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 18 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A181, \field Mode 18 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 18.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 18 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A182, \field Mode 18 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 18.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 18 does not consume electricity.
   A183, \field Mode 18 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 18.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 18 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A184, \field Mode 18 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 18.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 18.
   A185, \field Mode 18 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 18.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 18 does not consume a second fuel.
   A186, \field Mode 18 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 18.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 18 does not consume a third fuel.
   A187, \field Mode 18 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 18.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 18 does not consume water.
   N280, \field Mode 18 Minimum Outdoor Air Temperature
         \type real
@@ -38785,41 +38937,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 19.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 19 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A190, \field Mode 19 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 19.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 19 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A191, \field Mode 19 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 19.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 19 does not consume electricity.
   A192, \field Mode 19 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 19.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 19 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A193, \field Mode 19 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 19.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 19.
   A194, \field Mode 19 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 19.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 19 does not consume a second fuel.
   A195, \field Mode 19 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 19.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 19 does not consume a third fuel.
   A196, \field Mode 19 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 19.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 19 does not consume water.
   N296, \field Mode 19 Minimum Outdoor Air Temperature
         \type real
@@ -38962,41 +39122,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 20.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 20 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A199, \field Mode 20 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 20.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 20 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A200, \field Mode 20 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 20.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 20 does not consume electricity.
   A201, \field Mode 20 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 20.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 20 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A202, \field Mode 20 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 20.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 20.
   A203, \field Mode 20 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 20.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 20 does not consume a second fuel.
   A204, \field Mode 20 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 20.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 20 does not consume a third fuel.
   A205, \field Mode 20 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 20.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 20 does not consume water.
   N312, \field Mode 20 Minimum Outdoor Air Temperature
         \type real
@@ -39139,41 +39307,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 21.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 21 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A208, \field Mode 21 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 21.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 21 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A209, \field Mode 21 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 21.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 21 does not consume electricity.
   A210, \field Mode 21 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 21.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 21 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A211, \field Mode 21 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 21.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 21.
   A212, \field Mode 21 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 21.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 21 does not consume a second fuel.
   A213, \field Mode 21 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 21.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 21 does not consume a third fuel.
   A214, \field Mode 21 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 21.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 21 does not consume water.
   N328, \field Mode 21 Minimum Outdoor Air Temperature
         \type real
@@ -39316,41 +39492,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 22.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 22 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A217, \field Mode 22 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 22.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 22 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A218, \field Mode 22 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 22.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 22 does not consume electricity.
   A219, \field Mode 22 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 22.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 22 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A220, \field Mode 22 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 22.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 22.
   A221, \field Mode 22 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 22.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 22 does not consume a second fuel.
   A222, \field Mode 22 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 22.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 22 does not consume a third fuel.
   A223, \field Mode 22 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 22.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 22 does not consume water.
   N344, \field Mode 22 Minimum Outdoor Air Temperature
         \type real
@@ -39493,41 +39677,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 23.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 23 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A226, \field Mode 23 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 23.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 23 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A227, \field Mode 23 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 23.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 23 does not consume electricity.
   A228, \field Mode 23 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 23.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 23 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A229, \field Mode 23 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 23.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 23.
   A230, \field Mode 23 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 23.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 23 does not consume a second fuel.
   A231, \field Mode 23 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 23.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 23 does not consume a third fuel.
   A232, \field Mode 23 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 23.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 23 does not consume water.
   N360, \field Mode 23 Minimum Outdoor Air Temperature
         \type real
@@ -39670,41 +39862,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 24.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 24 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A235, \field Mode 24 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 24.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 24 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A236, \field Mode 24 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 24.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 24 does not consume electricity.
   A237, \field Mode 24 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 24.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 24 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A238, \field Mode 24 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 24.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 24.
   A239, \field Mode 24 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 24.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 24 does not consume a second fuel.
   A240, \field Mode 24 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 24.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 24 does not consume a third fuel.
   A241, \field Mode 24 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 24.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 24 does not consume water.
   N376, \field Mode 24 Minimum Outdoor Air Temperature
         \type real
@@ -39847,41 +40047,49 @@ ZoneHVAC:HybridUnitaryHVAC,
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Temperature Lookup Table for Mode 25.
+        \note Units for lookup table values should be in C.
         \note If this field is blank, Mode 25 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A244, \field Mode 25 Supply Air Humidity Ratio Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Air Humidity Ratio Lookup Table for Mode 25.
+        \note Units for lookup table values should be in kgWater/kgDryAir.
         \note If this field is blank, Mode 25 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A245, \field Mode 25 System Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Electric Power Lookup Table for Mode 25.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 25 does not consume electricity.
   A246, \field Mode 25 Supply Fan Electric Power Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the Supply Fan Electric Power Lookup Table for Mode 25.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 25 will not be considered for any time step that requires ventilation, heating, cooling, humidification, or dehumidification.
   A247, \field Mode 25 External Static Pressure Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the External Static Pressure Lookup Table for Mode 25.
+        \note Units for lookup table values should be in Pa.
         \note If this field is blank, external static pressure will not be reported for Mode 25.
   A248, \field Mode 25 System Second Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Second Fuel Consumption Lookup Table for Mode 25.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 25 does not consume a second fuel.
   A249, \field Mode 25 System Third Fuel Consumption Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Third Fuel Consumption Lookup Table for Mode 25.
+        \note Units for lookup table values should be in W.
         \note If this field is blank, Mode 25 does not consume a third fuel.
   A250, \field Mode 25 System Water Use Lookup Table Name
         \type object-list
         \object-list MultivariateFunctions
         \note Enter the name of the System Water Use Lookup Table for Mode 25.
+        \note Units for lookup table values should be in kg/s.
         \note If this field is blank, Mode 25 does not consume water.
   N392, \field Mode 25 Minimum Outdoor Air Temperature
         \type real
