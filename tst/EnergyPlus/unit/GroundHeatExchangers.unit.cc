@@ -1026,7 +1026,7 @@ TEST_F(GHEFixture, GroundHeatExchangerTest_System_Properties_IDF_Check)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetGroundHeatExchangerInput();
+    getInput();
 
     EXPECT_EQ(1u, vertProps.size());
 
@@ -1220,7 +1220,7 @@ TEST_F(GHEFixture, GroundHeatExchangerTest_System_Resp_Factors_IDF_Check)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetGroundHeatExchangerInput();
+    getInput();
 
     EXPECT_EQ(1u, responseFactors.size());
 
@@ -1263,7 +1263,7 @@ TEST_F(GHEFixture, GroundHeatExchangerTest_System_Vertical_Array_IDF_Check)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetGroundHeatExchangerInput();
+    getInput();
 
     EXPECT_EQ(1u, vertArrays.size());
 
@@ -1472,7 +1472,7 @@ TEST_F(GHEFixture, GroundHeatExchangerTest_System_Given_Response_Factors_IDF_Che
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetGroundHeatExchangerInput();
+    getInput();
 
     EXPECT_EQ(1u, vertProps.size());
     EXPECT_EQ(1u, responseFactors.size());
@@ -1542,7 +1542,7 @@ TEST_F(GHEFixture, GroundHeatExchangerTest_System_Given_Array_IDF_Check)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetGroundHeatExchangerInput();
+    getInput();
 
     EXPECT_EQ(1u, vertProps.size());
     EXPECT_EQ(1u, vertArrays.size());
@@ -1633,7 +1633,7 @@ TEST_F(GHEFixture, GroundHeatExchangerTest_System_Given_Single_BHs_IDF_Check)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetGroundHeatExchangerInput();
+    getInput();
 
     EXPECT_EQ(2u, vertProps.size());
     EXPECT_EQ(4u, singleBoreholes.size());
@@ -2055,7 +2055,7 @@ TEST_F(GHEFixture, GroundHeatExchangerTest_System_calc_pipe_conduction_resistanc
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetGroundHeatExchangerInput();
+    getInput();
 
     auto &thisGLHE(verticalGLHE[0]);
 
@@ -2116,7 +2116,7 @@ TEST_F(GHEFixture, GroundHeatExchangerTest_System_friction_factor)
     // Setup
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetGroundHeatExchangerInput();
+    getInput();
 
     auto &thisGLHE(verticalGLHE[0]);
 

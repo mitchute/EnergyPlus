@@ -70,6 +70,13 @@ namespace EnergyPlus {
 
 namespace GroundHeatExchangers {
 
+    enum class GHEType
+    {
+        NONE,
+        SLINKY,
+        VERTICAL
+    };
+
     struct ThermoProps
     {
         // members
@@ -77,11 +84,19 @@ namespace GroundHeatExchangers {
         Real64 rhoCp;       // Heat capacity [J/m3-K]
         Real64 diffusivity; // Thermal diffusivity [m2/s]
 
-        // default constructor
-        ThermoProps() : k(0.0), rhoCp(0.0), diffusivity(0.0) {
+        // Default constructor
+        ThermoProps() : k(0.0), rhoCp(0.0), diffusivity(0.0)
+        {
         }
 
-        // default destructor
+        // Copy constructor
+        ThermoProps(const ThermoProps &r) {
+            k = r.k;
+            rhoCp = r.rhoCp;
+            diffusivity = r.diffusivity;
+        }
+
+        // Default destructor
         ~ThermoProps() = default;
 
         void setup();
@@ -90,20 +105,27 @@ namespace GroundHeatExchangers {
 
     struct FluidWorker
     {
-        // members
+        // Members
         int loopNum;
         std::string fluidName;
         int fluidIdx;
 
-        // default constructor
+        // Default constructor
         FluidWorker() : loopNum(0), fluidIdx(0)
         {
         }
 
-        // default destructor
+        // Copy constructor
+        FluidWorker(const FluidWorker &r) {
+            loopNum = r.loopNum;
+            fluidName = r.fluidName;
+            fluidIdx = r.fluidIdx;
+        }
+
+        // Default destructor
         ~FluidWorker() = default;
 
-        // member methods
+        // Member methods
         void setup(int loopNum);
         Real64 getSpHt(Real64 const &temperature, const std::string &routineName);
         Real64 getCond(Real64 const &temperature, const std::string &routineName);
@@ -140,7 +162,7 @@ namespace GroundHeatExchangers {
         Real64 outletTemp;                                                             // Pipe outlet temperature [C]
         bool applyTransitDelay;
 
-        // default constructor
+        // Default constructor
         Pipe() : outDia(0.0), innerDia(0.0), length(0.0), outRadius(0.0), innerRadius(0.0), wallThickness(0.0),
                  areaCrOuter(0.0), areaCrInner(0.0), areaCrPipe(0.0), areaSurfOuter(0.0), areaSurfInner(0.0), volTotal(0.0),
                  volFluid(0.0), volPipeWall(0.0), friction(0.0), resistPipe(0.0), resistConv(0.0), cellTemps(numCells, 0.0),
@@ -148,7 +170,16 @@ namespace GroundHeatExchangers {
         {
         }
 
-        // default destructor
+        // Copy constructor
+        Pipe(const Pipe &r) {
+            fluid = r.fluid; outDia = r.outDia; innerDia = r.innerDia; length = r.length; outRadius = r.outRadius; innerRadius = r.innerRadius;
+            wallThickness = r.wallThickness; areaCrOuter = r.areaCrOuter; areaCrInner = r.areaCrInner; areaCrPipe = r.areaCrPipe;
+            areaSurfOuter = r.areaSurfOuter; areaSurfInner = r.areaSurfInner; volTotal = r.volTotal; volFluid = r.volFluid;
+            volPipeWall = r.volPipeWall; friction = r.friction; resistPipe = r.resistPipe; resistConv = r.resistConv; cellTemps = r.cellTemps;
+            inletTemps = r.inletTemps; inletTempTimes = r.inletTempTimes; outletTemp = r.outletTemp; applyTransitDelay = r.applyTransitDelay;
+        }
+
+        // Default destructor
         ~Pipe() = default;
 
         // members methods
@@ -347,7 +378,7 @@ namespace GroundHeatExchangers {
         ~PipeProps() = default;
     };
 
-    struct BHPropsStruct
+    struct BoreholeProps
     {
         // Members
         std::string name;                 // Name
@@ -359,12 +390,24 @@ namespace GroundHeatExchangers {
         Real64 shankSpace;               // U-tube, shank-to-shank spacing {m}
 
         // Default constructor
-        BHPropsStruct() : topDepth(0.0), length(0.0), diameter(0.0), shankSpace(0.0)
+        BoreholeProps() : topDepth(0.0), length(0.0), diameter(0.0), shankSpace(0.0)
         {
         }
 
+        // Copy constructor
+        BoreholeProps(const BoreholeProps &r)
+        {
+            name = r.name;
+            topDepth = r.topDepth;
+            length = r.length;
+            diameter = r.diameter;
+            grout = r.grout;
+            pipe = r.pipe;
+            shankSpace = r.shankSpace;
+        }
+
         // Default destructor
-        ~BHPropsStruct() = default;
+        ~BoreholeProps() = default;
     };
 
     struct MyCartesian
@@ -383,7 +426,7 @@ namespace GroundHeatExchangers {
         ~MyCartesian() = default;
     };
 
-    struct BHStruct
+    struct Borehole
     {
         // Members
         std::string name;                           // Name
@@ -392,19 +435,34 @@ namespace GroundHeatExchangers {
         Real64 dl_i;                                // length between points
         Real64 dl_ii;                               // length between points
         Real64 dl_j;                                // length between points
-        std::shared_ptr<BHPropsStruct> propsPtr;    // Properties pointer
-        BHPropsStruct props;                        // Properties
+        std::shared_ptr<BoreholeProps> propsPtr;    // Properties pointer
+        BoreholeProps props;                        // Properties
         std::vector<MyCartesian> pointLocations_i;  // Point locations for when computing temperature response of other boreholes on this bh
         std::vector<MyCartesian> pointLocations_ii; // Point locations for when computing temperature response of this bh on itself
         std::vector<MyCartesian> pointLocations_j;  // Point locations for when other bh are computing the temperature response of this bh on themselves
 
         // Default constructor
-        BHStruct() : xLoc(0.0), yLoc(0.0), dl_i(0.0), dl_ii(0.0), dl_j(0.0)
+        Borehole() : xLoc(0.0), yLoc(0.0), dl_i(0.0), dl_ii(0.0), dl_j(0.0)
         {
         }
 
+        // Copy constructor
+        Borehole(const Borehole &r)
+        {
+            name = r.name;
+            xLoc = r.xLoc;
+            yLoc = r.yLoc;
+            dl_i = r.dl_i;
+            dl_ii = r.dl_ii;
+            dl_j =  r.dl_j;
+            props = r.props;
+            pointLocations_i = r.pointLocations_i;
+            pointLocations_ii = r.pointLocations_ii;
+            pointLocations_j = r.pointLocations_j;
+        }
+
         // Default destructor
-        ~BHStruct() = default;
+        ~Borehole() = default;
     };
 
     struct GLHEVertArray
@@ -414,7 +472,7 @@ namespace GroundHeatExchangers {
         int numBHinXDirection;                      // Number of boreholes in X direction
         int numBHinYDirection;                      // Number of boreholes in Y direction
         Real64 bhSpacing;                           // Borehole center-to-center spacing {m}
-        std::shared_ptr<BHPropsStruct> props; // Properties
+        std::shared_ptr<BoreholeProps> props; // Properties
 
         // Default constructor
         GLHEVertArray() : numBHinXDirection(0), numBHinYDirection(0), bhSpacing(0.0)
@@ -436,12 +494,27 @@ namespace GroundHeatExchangers {
         Array1D<Real64> time;                                          // response time in seconds
         Array1D<Real64> LNTTS;                                         // natural log of Non Dimensional Time Ln(t/ts)
         Array1D<Real64> GFNC;                                          // G-function ( Non Dimensional temperature response factors)
-        std::shared_ptr<BHPropsStruct> props;                    // Properties
-        std::vector<std::shared_ptr<BHStruct>> myBorholes; // Boreholes used by this response factors object
+        std::shared_ptr<BoreholeProps> props;                    // Properties
+        std::vector<std::shared_ptr<Borehole>> myBorholes; // Boreholes used by this response factors object
 
         // Default constructor
         GLHEResponseFactors() : numBoreholes(0), numGFuncPairs(0), gRefRatio(0.0), maxSimYears(0.0)
         {
+        }
+
+        // Copy Constructor
+        GLHEResponseFactors(const GLHEResponseFactors &r)
+        {
+            name = r.name;
+            numBoreholes = r.numBoreholes;
+            numGFuncPairs = r.numGFuncPairs;
+            gRefRatio = r.gRefRatio;
+            maxSimYears = r.maxSimYears;
+            time = r.time;
+            LNTTS = r.LNTTS;
+            GFNC = r.GFNC;
+            props = r.props;
+            myBorholes = r.myBorholes;
         }
 
         // Default destructor
@@ -451,6 +524,8 @@ namespace GroundHeatExchangers {
     struct GLHEBase : PlantComponent, PlantLocation
     {
         // Members
+        GHEType gheType;
+        bool oneTimeInit;
         std::string name; // user identifier
         int inletNodeNum;  // Node number on the inlet side of the plant
         int outletNodeNum; // Node number on the outlet side of the plant
@@ -493,7 +568,7 @@ namespace GroundHeatExchangers {
 
         // Default constructor
         GLHEBase()
-            : inletNodeNum(0), outletNodeNum(0), designFlow(0.0),
+            : gheType(GHEType::NONE), oneTimeInit(false), inletNodeNum(0), outletNodeNum(0), designFlow(0.0),
               designMassFlow(0.0), tempGround(0.0), prevHour(1), AGG(0), SubAGG(0), bhTemp(0.0), massFlowRate(0.0), outletTemp(0.0), inletTemp(0.0),
               aveFluidTemp(0.0), QGLHE(0.0), myFlag(true), myEnvrnFlag(true), gFunctionsExist(false), lastQnSubHr(0.0), HXResistance(0.0),
               totalTubeLength(0.0), timeSS(0.0), timeSSFactor(0.0), firstTime(true), ToutNew(19.375), PrevN(1),
@@ -525,6 +600,8 @@ namespace GroundHeatExchangers {
         void simulate(PlantLocation const &calledFromLocation, bool FirstHVACIteration, Real64 &CurLoad, bool RunFlag) override;
 
         static PlantComponent *factory(int objectType, std::string const &objectName);
+
+        void setupOutputVars();
 
         virtual Real64 getGFunc(Real64) = 0;
 
@@ -566,10 +643,10 @@ namespace GroundHeatExchangers {
 
         Real64 calcResponse(std::vector<Real64> const &dists, Real64 const &currTime);
 
-        Real64 integral(MyCartesian const &point_i, std::shared_ptr<BHStruct> const &bh_j, Real64 const &currTime);
+        Real64 integral(MyCartesian const &point_i, std::shared_ptr<Borehole> const &bh_j, Real64 const &currTime);
 
         Real64
-        doubleIntegral(std::shared_ptr<BHStruct> const &bh_i, std::shared_ptr<BHStruct> const &bh_j, Real64 const &currTime);
+        doubleIntegral(std::shared_ptr<Borehole> const &bh_i, std::shared_ptr<Borehole> const &bh_j, Real64 const &currTime);
 
         void calcShortTimestepGFunctions();
 
@@ -611,17 +688,22 @@ namespace GroundHeatExchangers {
     struct EnhancedGHE : PlantComponent
     {
         // members
+        GHEType gheType;
+        bool oneTimeInit;
         std::string name;
         int inletNodeNum;
         int outletNodeNum;
         Real64 designFlow;
         std::shared_ptr<BaseGroundTempsModel> groundTempModel;
         ThermoProps soil;
-        std::vector<std::pair<Real64, Real64>> gFn;
-        std::vector<std::pair<Real64, Real64>> gbFn;
+        bool eftRespFactorsExist;
+        bool tbwRespFactorsExist;
+        GLHEResponseFactors eftRespFactors;
+        GLHEResponseFactors tbwRespFactors;
 
         // default constructor
-        EnhancedGHE() : inletNodeNum(0), outletNodeNum(0), designFlow(0.0)
+        EnhancedGHE() : gheType(GHEType::NONE), oneTimeInit(false), inletNodeNum(0), outletNodeNum(0), designFlow(0.0), eftRespFactorsExist(false),
+                        tbwRespFactorsExist(false)
         {
         }
 
@@ -706,19 +788,19 @@ namespace GroundHeatExchangers {
 
     Real64 linInterp(Real64 const &x, Real64 const &x_l, Real64 const &x_h, Real64 const &y_l, Real64 const &y_h);
 
-    void GetGroundHeatExchangerInput();
+    void getInput();
 
     std::shared_ptr<GLHEResponseFactors> BuildAndGetResponseFactorObjectFromArray(std::shared_ptr<GLHEVertArray> const &arrayObjectPtr);
 
-    std::shared_ptr<GLHEResponseFactors> BuildAndGetResponseFactorsObjectFromSingleBHs(std::vector<std::shared_ptr<BHStruct>> const &singleBHsForRFVect);
+    std::shared_ptr<GLHEResponseFactors> BuildAndGetResponseFactorsObjectFromSingleBHs(std::vector<std::shared_ptr<Borehole>> const &singleBHsForRFVect);
 
     void SetupBHPointsForResponseFactorsObject(std::shared_ptr<GLHEResponseFactors> &thisRF);
 
     std::shared_ptr<GLHEResponseFactors> GetResponseFactor(std::string const &objectName);
 
-    std::shared_ptr<BHStruct> GetSingleBH(std::string const &objectName);
+    std::shared_ptr<Borehole> GetSingleBH(std::string const &objectName);
 
-    std::shared_ptr<BHPropsStruct> GetVertProps(std::string const &objectName);
+    std::shared_ptr<BoreholeProps> GetVertProps(std::string const &objectName);
 
     std::shared_ptr<GLHEVertArray> GetVertArray(std::string const &objectName);
 
