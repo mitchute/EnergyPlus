@@ -943,7 +943,7 @@ namespace GroundHeatExchangers {
         // Make new response factor object and store it for later use
         std::shared_ptr<GLHEResponseFactors> thisRF(new GLHEResponseFactors);
         thisRF->name = arrayObjectPtr->name;
-        thisRF->props = arrayObjectPtr->props;
+        thisRF->propsPtr = arrayObjectPtr->props;
 
         // Build out new instances of the vertical BH objects which correspond to this object
         int xLoc = 0;
@@ -958,7 +958,7 @@ namespace GroundHeatExchangers {
                 thisBH->propsPtr = GetVertProps(arrayObjectPtr->props->name);
                 thisBH->xLoc = xLoc;
                 thisBH->yLoc = yLoc;
-                thisRF->myBorholes.push_back(thisBH);
+                thisRF->boreholesPtrVect.push_back(thisBH);
                 singleBoreholes.push_back(thisBH);
                 yLoc += arrayObjectPtr->bhSpacing;
                 thisRF->numBoreholes += 1;
@@ -1000,7 +1000,7 @@ namespace GroundHeatExchangers {
 
             thisProps->pipe.innerDia += (thisBH->propsPtr->pipe.outDia - 2 * thisBH->propsPtr->pipe.thickness);
 
-            thisRF->myBorholes.push_back(thisBH);
+            thisRF->boreholesPtrVect.push_back(thisBH);
         }
 
         // normalize by number of bh
@@ -1022,8 +1022,8 @@ namespace GroundHeatExchangers {
 
         thisProps->pipe.innerDia /= numBH;
 
-        thisRF->props = thisProps;
-        thisRF->numBoreholes = thisRF->myBorholes.size();
+        thisRF->propsPtr = thisProps;
+        thisRF->numBoreholes = thisRF->boreholesPtrVect.size();
         vertProps.push_back(thisProps);
 
         SetupBHPointsForResponseFactorsObject(thisRF);
@@ -1037,7 +1037,7 @@ namespace GroundHeatExchangers {
 
     void SetupBHPointsForResponseFactorsObject(std::shared_ptr<GLHEResponseFactors> &thisRF)
     {
-        for (auto &thisBH : thisRF->myBorholes) {
+        for (auto &thisBH : thisRF->boreholesPtrVect) {
 
             // Using Simpson's rule the number of points (n+1) must be odd, therefore an even number of panels is required
             // Starting from i = 0 to i <= NumPanels produces an odd number of points
@@ -1302,9 +1302,9 @@ namespace GroundHeatExchangers {
 
         // Calculate the g-functions
         for (size_t lntts_index = 1; lntts_index <= myRespFactors->LNTTS.size(); ++lntts_index) {
-            for (auto &bh_i : myRespFactors->myBorholes) {
+            for (auto &bh_i : myRespFactors->boreholesPtrVect) {
                 Real64 sum_T_ji = 0;
-                for (auto &bh_j : myRespFactors->myBorholes) {
+                for (auto &bh_j : myRespFactors->boreholesPtrVect) {
                     sum_T_ji += doubleIntegral(bh_i, bh_j, myRespFactors->time(lntts_index));
                 }
                 myRespFactors->GFNC(lntts_index) += sum_T_ji;
@@ -1632,20 +1632,20 @@ namespace GroundHeatExchangers {
         d["Flow Rate"] = designFlow;
         d["Soil k"] = soil.k;
         d["Soil rhoCp"] = soil.rhoCp;
-        d["BH Top Depth"] = myRespFactors->props->topDepth;
-        d["BH Length"] = myRespFactors->props->length;
-        d["BH Diameter"] = myRespFactors->props->diameter;
-        d["Grout k"] = myRespFactors->props->grout.k;
-        d["Grout rhoCp"] = myRespFactors->props->grout.rhoCp;
-        d["Pipe k"] = myRespFactors->props->pipe.k;
-        d["Pipe rhoCP"] = myRespFactors->props->pipe.rhoCp;
-        d["Pipe Diameter"] = myRespFactors->props->pipe.outDia;
-        d["Pipe Thickness"] = myRespFactors->props->pipe.thickness;
-        d["U-tube Dist"] = myRespFactors->props->shankSpace;
+        d["BH Top Depth"] = myRespFactors->propsPtr->topDepth;
+        d["BH Length"] = myRespFactors->propsPtr->length;
+        d["BH Diameter"] = myRespFactors->propsPtr->diameter;
+        d["Grout k"] = myRespFactors->propsPtr->grout.k;
+        d["Grout rhoCp"] = myRespFactors->propsPtr->grout.rhoCp;
+        d["Pipe k"] = myRespFactors->propsPtr->pipe.k;
+        d["Pipe rhoCP"] = myRespFactors->propsPtr->pipe.rhoCp;
+        d["Pipe Diameter"] = myRespFactors->propsPtr->pipe.outDia;
+        d["Pipe Thickness"] = myRespFactors->propsPtr->pipe.thickness;
+        d["U-tube Dist"] = myRespFactors->propsPtr->shankSpace;
         d["Max Simulation Years"] = myRespFactors->maxSimYears;
 
         int i = 0;
-        for (auto &thisBH : myRespFactors->myBorholes) {
+        for (auto &thisBH : myRespFactors->boreholesPtrVect) {
             ++i;
             auto &d_bh = d["BH Data"]["BH " + std::to_string(i)];
             d_bh["X-Location"] = thisBH->xLoc;
@@ -2790,8 +2790,8 @@ namespace GroundHeatExchangers {
                 thisRF->name = DataIPShortCuts::cAlphaArgs(1);
                 thisRFLocal.name = DataIPShortCuts::cAlphaArgs(1);
 
-                thisRF->props = GetVertProps(DataIPShortCuts::cAlphaArgs(2));
-                thisRFLocal.props = GetVertProps(DataIPShortCuts::cAlphaArgs(2));
+                thisRF->propsPtr = GetVertProps(DataIPShortCuts::cAlphaArgs(2));
+                thisRFLocal.propsPtr = GetVertProps(DataIPShortCuts::cAlphaArgs(2));
 
                 thisRF->numBoreholes = DataIPShortCuts::rNumericArgs(1);
                 thisRFLocal.numBoreholes = DataIPShortCuts::rNumericArgs(1);
@@ -3212,22 +3212,22 @@ namespace GroundHeatExchangers {
                     }
                 }
 
-                thisGLHE.bhDiameter = thisGLHE.myRespFactors->props->diameter;
+                thisGLHE.bhDiameter = thisGLHE.myRespFactors->propsPtr->diameter;
                 thisGLHE.bhRadius = thisGLHE.bhDiameter / 2.0;
-                thisGLHE.bhLength = thisGLHE.myRespFactors->props->length;
-                thisGLHE.bhUTubeDist = thisGLHE.myRespFactors->props->shankSpace;
+                thisGLHE.bhLength = thisGLHE.myRespFactors->propsPtr->length;
+                thisGLHE.bhUTubeDist = thisGLHE.myRespFactors->propsPtr->shankSpace;
 
                 // pull pipe and grout data up from response factor struct for simplicity
-                thisGLHE.pipe.outDia = thisGLHE.myRespFactors->props->pipe.outDia;
-                thisGLHE.pipe.innerDia = thisGLHE.myRespFactors->props->pipe.innerDia;
+                thisGLHE.pipe.outDia = thisGLHE.myRespFactors->propsPtr->pipe.outDia;
+                thisGLHE.pipe.innerDia = thisGLHE.myRespFactors->propsPtr->pipe.innerDia;
                 thisGLHE.pipe.outRadius = thisGLHE.pipe.outDia / 2;
                 thisGLHE.pipe.innerRadius = thisGLHE.pipe.innerDia / 2;
-                thisGLHE.pipe.thickness = thisGLHE.myRespFactors->props->pipe.thickness;
-                thisGLHE.pipe.k = thisGLHE.myRespFactors->props->pipe.k;
-                thisGLHE.pipe.rhoCp = thisGLHE.myRespFactors->props->pipe.rhoCp;
+                thisGLHE.pipe.thickness = thisGLHE.myRespFactors->propsPtr->pipe.thickness;
+                thisGLHE.pipe.k = thisGLHE.myRespFactors->propsPtr->pipe.k;
+                thisGLHE.pipe.rhoCp = thisGLHE.myRespFactors->propsPtr->pipe.rhoCp;
 
-                thisGLHE.grout.k = thisGLHE.myRespFactors->props->grout.k;
-                thisGLHE.grout.rhoCp = thisGLHE.myRespFactors->props->grout.rhoCp;
+                thisGLHE.grout.k = thisGLHE.myRespFactors->propsPtr->grout.k;
+                thisGLHE.grout.rhoCp = thisGLHE.myRespFactors->propsPtr->grout.rhoCp;
 
                 thisGLHE.myRespFactors->gRefRatio = thisGLHE.bhRadius / thisGLHE.bhLength;
 
@@ -3235,7 +3235,7 @@ namespace GroundHeatExchangers {
                 thisGLHE.myRespFactors->maxSimYears = DataEnvironment::MaxNumberSimYears;
 
                 // total tube length
-                thisGLHE.totalTubeLength = thisGLHE.myRespFactors->numBoreholes * thisGLHE.myRespFactors->props->length;
+                thisGLHE.totalTubeLength = thisGLHE.myRespFactors->numBoreholes * thisGLHE.myRespFactors->propsPtr->length;
 
                 // ground thermal diffusivity
                 thisGLHE.soil.diffusivity = thisGLHE.soil.k / thisGLHE.soil.rhoCp;
@@ -3927,8 +3927,8 @@ namespace GroundHeatExchangers {
 
         // Calculate the average ground temperature over the depth of the borehole
 
-        Real64 minDepth = myRespFactors->props->topDepth;
-        Real64 maxDepth = myRespFactors->props->length + minDepth;
+        Real64 minDepth = myRespFactors->propsPtr->topDepth;
+        Real64 maxDepth = myRespFactors->propsPtr->length + minDepth;
         Real64 oneQuarterDepth = minDepth + (maxDepth - minDepth) * 0.25;
         Real64 halfDepth = minDepth + (maxDepth - minDepth) * 0.5;
         Real64 threeQuarterDepth = minDepth + (maxDepth - minDepth) * 0.75;

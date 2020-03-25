@@ -494,8 +494,9 @@ namespace GroundHeatExchangers {
         Array1D<Real64> time;                                          // response time in seconds
         Array1D<Real64> LNTTS;                                         // natural log of Non Dimensional Time Ln(t/ts)
         Array1D<Real64> GFNC;                                          // G-function ( Non Dimensional temperature response factors)
-        std::shared_ptr<BoreholeProps> props;                    // Properties
-        std::vector<std::shared_ptr<Borehole>> myBorholes; // Boreholes used by this response factors object
+        std::shared_ptr<BoreholeProps> propsPtr;                       // Properties
+        BoreholeProps props;                                           // Properties
+        std::vector<std::shared_ptr<Borehole>> boreholesPtrVect; // Boreholes used by this response factors object
 
         // Default constructor
         GLHEResponseFactors() : numBoreholes(0), numGFuncPairs(0), gRefRatio(0.0), maxSimYears(0.0)
@@ -513,8 +514,8 @@ namespace GroundHeatExchangers {
             time = r.time;
             LNTTS = r.LNTTS;
             GFNC = r.GFNC;
-            props = r.props;
-            myBorholes = r.myBorholes;
+            propsPtr = r.propsPtr;
+            boreholesPtrVect = r.boreholesPtrVect;
         }
 
         // Default destructor
@@ -700,6 +701,7 @@ namespace GroundHeatExchangers {
         bool tbwRespFactorsExist;
         GLHEResponseFactors eftRespFactors;
         GLHEResponseFactors tbwRespFactors;
+        std::vector<Borehole> boreholes;
 
         // default constructor
         EnhancedGHE() : gheType(GHEType::NONE), oneTimeInit(false), inletNodeNum(0), outletNodeNum(0), designFlow(0.0), eftRespFactorsExist(false),
