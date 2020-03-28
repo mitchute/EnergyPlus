@@ -54,6 +54,9 @@
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array1D.hh>
 
+// Btwxt Headers
+#include <btwxt.h>
+
 // JSON Headers
 #include <../third_party/nlohmann/json.hpp>
 
@@ -429,7 +432,7 @@ namespace GroundHeatExchangers {
     struct Borehole
     {
         // Members
-        std::string name;                           // Name
+        std::string bh_name;                           // Name
         Real64 xLoc;                                // X-direction location {m}
         Real64 yLoc;                                // Y-direction location {m}
         Real64 dl_i;                                // length between points
@@ -449,7 +452,7 @@ namespace GroundHeatExchangers {
         // Copy constructor
         Borehole(const Borehole &r)
         {
-            name = r.name;
+            bh_name = r.bh_name;
             xLoc = r.xLoc;
             yLoc = r.yLoc;
             dl_i = r.dl_i;
@@ -686,6 +689,28 @@ namespace GroundHeatExchangers {
         void combineShortAndLongTimestepGFunctions();
     };
 
+    struct EnhancedResponseFactors
+    {
+        std::string name;
+        BoreholeProps props;
+        Btwxt::RegularGridInterpolator g;
+
+        // default constructor
+        EnhancedResponseFactors() = default;
+
+        // copy constructor
+        EnhancedResponseFactors(const EnhancedResponseFactors &r)
+        {
+            name = r.name;
+            props = r.props;
+            g = r.g;
+        }
+
+        // default destructor
+        ~EnhancedResponseFactors() = default;
+
+    };
+
     struct EnhancedGHE : PlantComponent
     {
         // members
@@ -697,15 +722,15 @@ namespace GroundHeatExchangers {
         Real64 designFlow;
         std::shared_ptr<BaseGroundTempsModel> groundTempModel;
         ThermoProps soil;
-        bool eftRespFactorsExist;
-        bool tbwRespFactorsExist;
-        GLHEResponseFactors eftRespFactors;
-        GLHEResponseFactors tbwRespFactors;
+        bool gFuncEFTExist;
+        bool gFuncBWTExist;
+        EnhancedResponseFactors gFuncEFT;
+        EnhancedResponseFactors gFuncBWT;
         std::vector<Borehole> boreholes;
 
         // default constructor
-        EnhancedGHE() : gheType(GHEType::NONE), oneTimeInit(false), inletNodeNum(0), outletNodeNum(0), designFlow(0.0), eftRespFactorsExist(false),
-                        tbwRespFactorsExist(false)
+        EnhancedGHE() : gheType(GHEType::NONE), oneTimeInit(false), inletNodeNum(0), outletNodeNum(0), designFlow(0.0), gFuncEFTExist(false),
+              gFuncBWTExist(false)
         {
         }
 

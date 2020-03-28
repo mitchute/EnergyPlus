@@ -56,6 +56,10 @@
 #include <ObjexxFCL/Fmath.hh>
 #include <ObjexxFCL/gio.hh>
 
+// Btwxt Headers
+#include <btwxt.h>
+#include <griddeddata.h>
+
 // JSON Headers
 #include <nlohmann/json.hpp>
 
@@ -904,7 +908,7 @@ namespace GroundHeatExchangers {
         // Check if this instance of this model has already been retrieved
         for (auto &thisBH : singleBoreholes) {
             // Check if the type and name match
-            if (objectName == thisBH->name) {
+            if (objectName == thisBH->bh_name) {
                 return thisBH;
             }
         }
@@ -953,8 +957,7 @@ namespace GroundHeatExchangers {
             for (int yBH = 1; yBH <= arrayObjectPtr->numBHinYDirection; ++yBH) {
                 bhCounter += 1;
                 std::shared_ptr<Borehole> thisBH(new Borehole);
-                thisBH->name =
-                    thisRF->name + " BH " + std::to_string(bhCounter) + " loc: (" + std::to_string(xLoc) + ", " + std::to_string(yLoc) + ")";
+                thisBH->bh_name = thisRF->name + " BH " + std::to_string(bhCounter) + " loc: (" + std::to_string(xLoc) + ", " + std::to_string(yLoc) + ")";
                 thisBH->propsPtr = GetVertProps(arrayObjectPtr->props->name);
                 thisBH->xLoc = xLoc;
                 thisBH->yLoc = yLoc;
@@ -2643,7 +2646,7 @@ namespace GroundHeatExchangers {
 
         // temporary vectors
         std::vector<BoreholeProps> propsLocal;
-        std::vector<GLHEResponseFactors> respFactorLocal;
+        std::vector<EnhancedResponseFactors> respFactorLocal;
         std::vector<GLHEVertArray> vertArraysLocal;
         std::vector<Borehole> vertBHsLocal;
 
@@ -2785,22 +2788,19 @@ namespace GroundHeatExchangers {
 
                 // Build out new instance and add it to the vector
                 std::shared_ptr<GLHEResponseFactors> thisRF(new GLHEResponseFactors);
-                GLHEResponseFactors thisRFLocal;
+                EnhancedResponseFactors thisRFLocal;
 
                 thisRF->name = DataIPShortCuts::cAlphaArgs(1);
                 thisRFLocal.name = DataIPShortCuts::cAlphaArgs(1);
 
                 thisRF->propsPtr = GetVertProps(DataIPShortCuts::cAlphaArgs(2));
-                thisRFLocal.propsPtr = GetVertProps(DataIPShortCuts::cAlphaArgs(2));
+                thisRFLocal.props = *thisRF->propsPtr;
 
                 thisRF->numBoreholes = DataIPShortCuts::rNumericArgs(1);
-                thisRFLocal.numBoreholes = DataIPShortCuts::rNumericArgs(1);
 
                 thisRF->gRefRatio = DataIPShortCuts::rNumericArgs(2);
-                thisRFLocal.gRefRatio = DataIPShortCuts::rNumericArgs(2);
 
                 thisRF->maxSimYears = DataEnvironment::MaxNumberSimYears;
-                thisRFLocal.maxSimYears = DataEnvironment::MaxNumberSimYears;
 
                 int numPreviousFields = 2;
                 int numFields = 0;
@@ -2814,7 +2814,6 @@ namespace GroundHeatExchangers {
 
                 if ((numFields - numPreviousFields) % 2 == 0) {
                     thisRF->numGFuncPairs = (numFields - numPreviousFields) / 2;
-                    thisRFLocal.numGFuncPairs = (numFields - numPreviousFields) / 2;
                 } else {
                     errorsFound = true;
                     ShowSevereError("Errors found processing response factor input for Response Factor= " + thisRF->name);
@@ -2822,20 +2821,28 @@ namespace GroundHeatExchangers {
                 }
 
                 thisRF->LNTTS.dimension(thisRF->numGFuncPairs, 0.0);
-                thisRFLocal.LNTTS.dimension(thisRFLocal.numGFuncPairs, 0.0);
 
                 thisRF->GFNC.dimension(thisRF->numGFuncPairs, 0.0);
-                thisRFLocal.GFNC.dimension(thisRFLocal.numGFuncPairs, 0.0);
+
+                std::vector<std::vector<Real64>> LnTTs = {{}};
+                std::vector<std::vector<Real64>> gFn = {{}};
 
                 int indexNum = 3;
                 for (int pairNum = 1; pairNum <= thisRF->numGFuncPairs; ++pairNum) {
                     thisRF->LNTTS(pairNum) = DataIPShortCuts::rNumericArgs(indexNum);
-                    thisRFLocal.LNTTS(pairNum) = DataIPShortCuts::rNumericArgs(indexNum);
-
                     thisRF->GFNC(pairNum) = DataIPShortCuts::rNumericArgs(indexNum + 1);
-                    thisRFLocal.GFNC(pairNum) = DataIPShortCuts::rNumericArgs(indexNum + 1);
+
+                    LnTTs.front().push_back(DataIPShortCuts::rNumericArgs(indexNum));
+                    gFn.front().push_back(DataIPShortCuts::rNumericArgs(indexNum + 1));
+
                     indexNum += 2;
                 }
+
+                Btwxt::GriddedData gFnGridData(LnTTs, gFn);
+                gFnGridData.set_axis_interp_method(0, Btwxt::Method::LINEAR);
+                gFnGridData.set_axis_extrap_method(0, Btwxt::Method::LINEAR);
+
+                thisRFLocal.g = Btwxt::RegularGridInterpolator(gFnGridData);
 
                 responseFactors.push_back(thisRF);
                 respFactorLocal.push_back(thisRFLocal);
@@ -2938,9 +2945,9 @@ namespace GroundHeatExchangers {
 
                 // we just need to loop over the existing vector elements to check for duplicates since we haven't add this one yet
                 for (auto &existingSingleBH : singleBoreholes) {
-                    if (DataIPShortCuts::cAlphaArgs(1) == existingSingleBH->name) {
+                    if (DataIPShortCuts::cAlphaArgs(1) == existingSingleBH->bh_name) {
                         ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                       " object: Duplicate name found: " + existingSingleBH->name);
+                                       " object: Duplicate name found: " + existingSingleBH->bh_name);
                     }
                 }
 
@@ -2948,8 +2955,8 @@ namespace GroundHeatExchangers {
                 std::shared_ptr<Borehole> thisBH(new Borehole);
                 Borehole thisBHLocal;
 
-	            thisBH->name = DataIPShortCuts::cAlphaArgs(1);
-	            thisBHLocal.name = DataIPShortCuts::cAlphaArgs(1);
+	            thisBH->bh_name = DataIPShortCuts::cAlphaArgs(1);
+	            thisBHLocal.bh_name = DataIPShortCuts::cAlphaArgs(1);
 
 	            thisBH->propsPtr = GetVertProps(DataIPShortCuts::cAlphaArgs(2));
 
@@ -3057,11 +3064,14 @@ namespace GroundHeatExchangers {
                     // Response factors come from IDF object
                     for (auto &thisRF : respFactorLocal) {
                         if (UtilityRoutines::SameString(thisRF.name, DataIPShortCuts::cAlphaArgs(6))) {
-                            thisGHE.eftRespFactors = thisRF;
-                            thisGHE.eftRespFactorsExist = true;
+                            thisGHE.gFuncEFT = thisRF;
+                            thisGHE.gFuncEFTExist = true;
                         }
                     }
-                    ShowSevereError("GroundHeatExchanger:ResponseFactors object name \"" + DataIPShortCuts::cAlphaArgs(6) + "\" not found");
+
+                    if (!thisGHE.gFuncEFTExist) {
+                        ShowSevereError("GroundHeatExchanger:ResponseFactors object name \"" + DataIPShortCuts::cAlphaArgs(6) + "\" not found");
+                    }
                 }
 
                 // g values - Borehole wall temperature response factors
@@ -3069,14 +3079,20 @@ namespace GroundHeatExchangers {
                     // Response factors come from IDF object
                     for (auto &thisRF : respFactorLocal) {
                         if (UtilityRoutines::SameString(thisRF.name, DataIPShortCuts::cAlphaArgs(7))) {
-                            thisGHE.tbwRespFactors = thisRF;
-                            thisGHE.tbwRespFactorsExist = true;
+                            thisGHE.gFuncBWT = thisRF;
+                            thisGHE.gFuncBWTExist = true;
                         }
                     }
-                    ShowSevereError("GroundHeatExchanger:ResponseFactors object name \"" + DataIPShortCuts::cAlphaArgs(6) + "\" not found");
+
+                    if (!thisGHE.gFuncBWTExist) {
+                        ShowSevereError("GroundHeatExchanger:ResponseFactors object name \"" + DataIPShortCuts::cAlphaArgs(7) + "\" not found");
+                    }
                 }
 
+                // borehole instances from array object
+                if (!DataIPShortCuts::lAlphaFieldBlanks(8)) {
 
+                }
 
                 // Initialize ground temperature model and get pointer reference
                 // Do this last because it calls getObjectItem
