@@ -73,7 +73,6 @@
 #include <EnergyPlus/DataHVACGlobals.hh>
 #include <EnergyPlus/DataIPShortCuts.hh>
 #include <EnergyPlus/DataLoopNode.hh>
-#include <EnergyPlus/DataPrecisionGlobals.hh>
 #include <EnergyPlus/DataSizing.hh>
 #include <EnergyPlus/EMSManager.hh>
 #include <EnergyPlus/EvaporativeFluidCoolers.hh>
@@ -82,6 +81,7 @@
 #include <EnergyPlus/FuelCellElectricGenerator.hh>
 #include <EnergyPlus/General.hh>
 #include <EnergyPlus/GroundHeatExchangers.hh>
+#include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
 #include <EnergyPlus/HVACInterfaceManager.hh>
 #include <EnergyPlus/HeatPumpWaterToWaterSimple.hh>
 #include <EnergyPlus/HeatPumpWaterToWaterCOOLING.hh>
@@ -141,7 +141,6 @@ namespace EnergyPlus {
         // connections are performed in this module.
 
         // Using/Aliasing
-        using namespace DataPrecisionGlobals;
         using namespace DataGlobals;
         using namespace DataHVACGlobals;
         using namespace DataPlant;
@@ -1012,8 +1011,7 @@ namespace EnergyPlus {
                             } else if (UtilityRoutines::SameString(this_comp_type, "GroundHeatExchanger:System")) {
                                 this_comp.TypeOf_Num = TypeOf_GrndHtExchgSystem;
                                 this_comp.CurOpSchemeType = UncontrolledOpSchemeType;
-                                this_comp.compPtr = GroundHeatExchangers::GLHEBase::factory(TypeOf_GrndHtExchgSystem,
-                                                                                            CompNames(CompNum));
+                                this_comp.compPtr = GroundHeatExchangerEnhanced::EnhancedGHE::factory(CompNames(CompNum));
                             } else if (UtilityRoutines::SameString(this_comp_type, "GroundHeatExchanger:Surface")) {
                                 this_comp.TypeOf_Num = TypeOf_GrndHtExchgSurface;
                                 this_comp.CurOpSchemeType = UncontrolledOpSchemeType;

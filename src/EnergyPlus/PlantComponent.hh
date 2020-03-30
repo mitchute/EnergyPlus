@@ -80,7 +80,7 @@ public:
     {
     }
 
-    ~PlantComponent() = default;
+    virtual ~PlantComponent() = default;
 };
 
 } // namespace EnergyPlus
