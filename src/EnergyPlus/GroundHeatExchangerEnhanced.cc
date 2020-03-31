@@ -97,19 +97,26 @@ namespace GroundHeatExchangerEnhanced {
 
     void getGHEInput()
     {
-        int const numGHE = inputProcessor->getNumObjectsFound("GroundHeatExchanger:System");
-        int const numArray = inputProcessor->getNumObjectsFound("GroundHeatExchanger:Vertical:Array");
+        // module object names
+        std::string const propsModObjName = "GroundHeatExchanger:Vertical:Properties";
+        std::string const respFactModObjName = "GroundHeatExchanger:ResponseFactors";
+        std::string const arrModObjName = "GroundHeatExchanger:Vertical:Array";
+        std::string const bhModObjName = "GroundHeatExchanger:Vertical:Single";
+
+        // num objects
         int const numProps = inputProcessor->getNumObjectsFound("GroundHeatExchanger:Vertical:Properties");
         int const numResponseFactors = inputProcessor->getNumObjectsFound("GroundHeatExchanger:ResponseFactors");
+        int const numArray = inputProcessor->getNumObjectsFound("GroundHeatExchanger:Vertical:Array");
         int const numSingleBHs = inputProcessor->getNumObjectsFound("GroundHeatExchanger:Vertical:Single");
-
-        // TODO: cleanup error handling
+        int const numGHE = inputProcessor->getNumObjectsFound("GroundHeatExchanger:System");
 
         // temporary vectors
         std::vector<GHEProps> propsVect;
         std::vector<GHERespFactors> respFactorsVect;
         std::vector<GHEArray> arraysVect;
         std::vector<GHEBorehole> boreholesVect;
+
+        bool errorsFound = false;
 
         DataIPShortCuts::cCurrentModuleObject = "GroundHeatExchanger:Vertical:Properties";
 
@@ -191,7 +198,6 @@ namespace GroundHeatExchangerEnhanced {
             int ioStatus;
             int numAlphas;
             int numNumbers;
-            bool errorsFound = false;
 
             // get the input data and store it in the Shortcuts structures
             inputProcessor->getObjectItem(DataIPShortCuts::cCurrentModuleObject,
@@ -221,15 +227,22 @@ namespace GroundHeatExchangerEnhanced {
                 }
             }
 
-            // Build out new instance and add it to the vector
+            // Build out new instance
             GHERespFactors newRF;
-
             newRF.name = DataIPShortCuts::cAlphaArgs(1);
 
+            // get props instance
+            bool propsFound = false;
             for (auto &prop : propsVect) {
                 if (prop.propName == DataIPShortCuts::cAlphaArgs(2)) {
                     newRF.props = prop;
+                    propsFound = true;
+                    break;
                 }
+            }
+
+            if (!propsFound) {
+                ShowSevereError( propsModObjName + " object, name: " + DataIPShortCuts::cAlphaArgs(2) + " not found");
             }
 
             newRF.numBH = DataIPShortCuts::rNumericArgs(1);
@@ -242,14 +255,14 @@ namespace GroundHeatExchangerEnhanced {
                 numPairs = (numNumbers - numPreviousNumFields) / 2;
             } else {
                 errorsFound = true;
-                ShowSevereError("Errors found processing response factor input for Response Factor= " + newRF.name);
+                ShowSevereError("Errors found processing response factor input for " + DataIPShortCuts::cCurrentModuleObject +
+                                " object name: " + newRF.name);
                 ShowSevereError("Uneven number of g-function pairs");
             }
 
             if (errorsFound) {
-                ShowFatalError("Errors occurred during input processing.");
+                ShowFatalError("Errors occurred during inputs for object: " + DataIPShortCuts::cCurrentModuleObject + " name: " + newRF.name);
             }
-
 
             // load g-function-LnTTs pairs into temporary arrays
             std::vector<std::vector<Real64>> LnTTs = {{}};
@@ -315,11 +328,17 @@ namespace GroundHeatExchangerEnhanced {
 
             // find correct properties instance
             GHEProps props;
+            bool propsFound = false;
             for (auto &thisProp : propsVect) {
                 if (thisProp.propName == DataIPShortCuts::cAlphaArgs(2)) {
                     props = thisProp;
+                    propsFound = true;
                     break;
                 }
+            }
+
+            if (!propsFound) {
+                ShowSevereError( propsModObjName + " object, name: " + DataIPShortCuts::cAlphaArgs(2) + " not found");
             }
 
             // build out boreholes
@@ -392,15 +411,21 @@ namespace GroundHeatExchangerEnhanced {
 
             // create new instance
             GHEBorehole newBH;
-
             newBH.name = DataIPShortCuts::cAlphaArgs(1);
 
             // get right props object
             GHEProps props;
+            bool propsFound = false;
             for (const auto& thisProp : propsVect) {
                 if (thisProp.propName == DataIPShortCuts::cAlphaArgs(2)) {
                     props = thisProp;
+                    propsFound = true;
+                    break;
                 }
+            }
+
+            if (!propsFound) {
+                ShowSevereError( propsModObjName + " object, name: " + DataIPShortCuts::cAlphaArgs(2) + " not found");
             }
 
             // populate values
@@ -426,7 +451,6 @@ namespace GroundHeatExchangerEnhanced {
             int ioStatus;
             int numAlphas;
             int numNumbers;
-            bool errorsFound = false;
 
             // get the input data and store it in the Shortcuts structures
             inputProcessor->getObjectItem(DataIPShortCuts::cCurrentModuleObject,
@@ -457,13 +481,11 @@ namespace GroundHeatExchangerEnhanced {
             }
 
             // Build out new instance
-            EnhancedGHE thisGHE;
-
-            // Object name
-            thisGHE.name = DataIPShortCuts::cAlphaArgs(1);
+            EnhancedGHE newGHE;
+            newGHE.name = DataIPShortCuts::cAlphaArgs(1);
 
             // Inlet node
-            thisGHE.inletNode = NodeInputManager::GetOnlySingleNode(DataIPShortCuts::cAlphaArgs(2),
+            newGHE.inletNode = NodeInputManager::GetOnlySingleNode(DataIPShortCuts::cAlphaArgs(2),
                                                                        errorsFound,
                                                                        DataIPShortCuts::cCurrentModuleObject,
                                                                        DataIPShortCuts::cAlphaArgs(1),
@@ -473,7 +495,7 @@ namespace GroundHeatExchangerEnhanced {
                                                                        DataLoopNode::ObjectIsNotParent);
 
             // Outlet node
-            thisGHE.outletNode = NodeInputManager::GetOnlySingleNode(DataIPShortCuts::cAlphaArgs(3),
+            newGHE.outletNode = NodeInputManager::GetOnlySingleNode(DataIPShortCuts::cAlphaArgs(3),
                                                                         errorsFound,
                                                                         DataIPShortCuts::cCurrentModuleObject,
                                                                         DataIPShortCuts::cAlphaArgs(1),
@@ -489,25 +511,26 @@ namespace GroundHeatExchangerEnhanced {
                                                "Condenser Water Nodes");
 
             // Design flow rate
-            thisGHE.designVolFlow = DataIPShortCuts::rNumericArgs(1);
-            PlantUtilities::RegisterPlantCompDesignFlow(thisGHE.inletNode, thisGHE.designVolFlow);
+            newGHE.designVolFlow = DataIPShortCuts::rNumericArgs(1);
+            PlantUtilities::RegisterPlantCompDesignFlow(newGHE.inletNode, newGHE.designVolFlow);
 
             // Soil
-            thisGHE.kSoil = DataIPShortCuts::rNumericArgs(2);
-            thisGHE.rhoCpSoil = DataIPShortCuts::rNumericArgs(3);
+            newGHE.kSoil = DataIPShortCuts::rNumericArgs(2);
+            newGHE.rhoCpSoil = DataIPShortCuts::rNumericArgs(3);
 
             // gb values - Exiting fluid temperature response factors
             if (!DataIPShortCuts::lAlphaFieldBlanks(6)) {
                 // Response factors come from IDF object
                 for (auto &thisRF : respFactorsVect) {
                     if (UtilityRoutines::SameString(thisRF.name, DataIPShortCuts::cAlphaArgs(6))) {
-                        thisGHE.gFuncEFT = thisRF;
-                        thisGHE.gFuncEFTExist = true;
+                        newGHE.gFuncEFT = thisRF;
+                        newGHE.gFuncEFTExist = true;
+                        break;
                     }
                 }
 
-                if (!thisGHE.gFuncEFTExist) {
-                    ShowSevereError("GroundHeatExchanger:ResponseFactors object name \"" + DataIPShortCuts::cAlphaArgs(6) + "\" not found");
+                if (!newGHE.gFuncEFTExist) {
+                    ShowSevereError(respFactModObjName + " object, name :" + DataIPShortCuts::cAlphaArgs(6) + " not found");
                 }
             }
 
@@ -516,25 +539,27 @@ namespace GroundHeatExchangerEnhanced {
                 // Response factors come from IDF object
                 for (auto &thisRF : respFactorsVect) {
                     if (UtilityRoutines::SameString(thisRF.name, DataIPShortCuts::cAlphaArgs(7))) {
-                        thisGHE.gFuncBWT = thisRF;
-                        thisGHE.gFuncBWTExist = true;
+                        newGHE.gFuncBWT = thisRF;
+                        newGHE.gFuncBWTExist = true;
                     }
                 }
 
-                if (!thisGHE.gFuncBWTExist) {
-                    ShowSevereError("GroundHeatExchanger:ResponseFactors object name \"" + DataIPShortCuts::cAlphaArgs(7) + "\" not found");
+                if (!newGHE.gFuncBWTExist) {
+                    ShowSevereError(respFactModObjName + " object, name :" + DataIPShortCuts::cAlphaArgs(7) + " not found");
                 }
             }
 
             // either g or gb were not found, so need to generate g-functions
-            if (!thisGHE.gFuncBWTExist | !thisGHE.gFuncEFTExist) {
+            if (!newGHE.gFuncBWTExist | !newGHE.gFuncEFTExist) {
                 if (!DataIPShortCuts::lAlphaFieldBlanks(8)) {
                     // borehole instances from array object
+
                     for (auto &arr : arraysVect) {
                         if (arr.name == DataIPShortCuts::cAlphaArgs(8)) {
-                            thisGHE.boreholes = arr.boreholes;
+                            newGHE.boreholes = arr.boreholes;
                         }
                     }
+
                 } else {
                     // borehole instances from single borehole objects
 
@@ -549,7 +574,7 @@ namespace GroundHeatExchangerEnhanced {
                             auto &bh = *it;
                             if (bh.name == DataIPShortCuts::cAlphaArgs(index)) {
                                 // save this instance
-                                thisGHE.boreholes.push_back(bh);
+                                newGHE.boreholes.push_back(bh);
                                 bhFound = true;
 
                                 // delete to prevent later reuse
@@ -564,18 +589,20 @@ namespace GroundHeatExchangerEnhanced {
                         ++index;
                     }
                 }
-            }
 
-            if (thisGHE.boreholes.empty()) {
-                ShowFatalError("There were problems getting borholes");
+                if (newGHE.boreholes.empty()) {
+                    ShowSevereError("Problems getting inputs for " + DataIPShortCuts::cCurrentModuleObject + " object, name: " + newGHE.name);
+                    ShowSevereError("Model requires both " + respFactModObjName + " objects, or");
+                    ShowSevereError("boreholes to be described using " + bhModObjName + " or " + arrModObjName + " objects");
+                }
             }
 
             // Initialize ground temperature model and get pointer reference
             // Do this last because it calls getObjectItem
-            thisGHE.gtm = GroundTemperatureManager::GetGroundTempModelAndInit(DataIPShortCuts::cAlphaArgs(4), DataIPShortCuts::cAlphaArgs(5));
+            newGHE.gtm = GroundTemperatureManager::GetGroundTempModelAndInit(DataIPShortCuts::cAlphaArgs(4), DataIPShortCuts::cAlphaArgs(5));
 
             // Save object
-            enhancedGHE.push_back(thisGHE);
+            enhancedGHE.push_back(newGHE);
         }
 
     }

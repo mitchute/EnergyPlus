@@ -83,6 +83,7 @@ set( test_src
   General.unit.cc
   GeneralRoutines.unit.cc
   GroundHeatExchangers.unit.cc
+  GroundHeatExchangerEnhanced.unit.cc
   HeatBalanceAirManager.unit.cc
   HeatBalanceKivaManager.unit.cc
   HeatBalanceManager.unit.cc
