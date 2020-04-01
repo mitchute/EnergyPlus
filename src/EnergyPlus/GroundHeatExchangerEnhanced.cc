@@ -84,15 +84,13 @@ namespace GroundHeatExchangerEnhanced {
         }
 
         for (auto &ghe : enhancedGHE) {
-            if (ghe.name == objectName) {
+            if (UtilityRoutines::SameString(ghe.name, objectName)) {
                 return &ghe;
             }
         }
 
-        // If we didn't find it, fatal
         ShowFatalError("Ground Heat Exchanger Factory: Error getting inputs for GHX named: " + objectName);
-        // Shut up the compiler
-        return nullptr;
+        return nullptr; // LCOV_EXCL_LINE
     }
 
     void getGHEInput()
@@ -149,9 +147,9 @@ namespace GroundHeatExchangerEnhanced {
 
             // we just need to loop over the existing vector elements to check for duplicates since we haven't add this one yet
             for (auto &prop : propsVect) {
-                if (DataIPShortCuts::cAlphaArgs(1) == prop.propName) {
+                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), prop.propName)) {
                     ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + prop.propName);
+                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
                 }
             }
 
@@ -159,7 +157,7 @@ namespace GroundHeatExchangerEnhanced {
             GHEProps newProp;
 
             // populate values
-            newProp.propName = DataIPShortCuts::cAlphaArgs(1);
+            newProp.propName = UtilityRoutines::MakeUPPERCase(DataIPShortCuts::cAlphaArgs(1));
             newProp.depth = DataIPShortCuts::rNumericArgs(1);
             newProp.length = DataIPShortCuts::rNumericArgs(2);
             newProp.diameter = DataIPShortCuts::rNumericArgs(3);
@@ -221,20 +219,20 @@ namespace GroundHeatExchangerEnhanced {
 
             // we just need to loop over the existing vector elements to check for duplicates since we haven't added this one yet
             for (auto &rf : respFactorsVect) {
-                if (DataIPShortCuts::cAlphaArgs(1) == rf.name) {
+                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), rf.name)) {
                     ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + rf.name);
+                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
                 }
             }
 
             // Build out new instance
             GHERespFactors newRF;
-            newRF.name = DataIPShortCuts::cAlphaArgs(1);
+            newRF.name = UtilityRoutines::MakeUPPERCase(DataIPShortCuts::cAlphaArgs(1));
 
             // get props instance
             bool propsFound = false;
             for (auto &prop : propsVect) {
-                if (prop.propName == DataIPShortCuts::cAlphaArgs(2)) {
+                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(2), prop.propName)) {
                     newRF.props = prop;
                     propsFound = true;
                     break;
@@ -316,21 +314,21 @@ namespace GroundHeatExchangerEnhanced {
 
             // we just need to loop over the existing vector elements to check for duplicates since we haven't add this one yet
             for (auto &array : arraysVect) {
-                if (DataIPShortCuts::cAlphaArgs(1) == array.name) {
+                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), array.name)) {
                     ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + array.name);
+                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
                 }
             }
 
             // build out new instance
             GHEArray newArray;
-            newArray.name = DataIPShortCuts::cAlphaArgs(1);
+            newArray.name = UtilityRoutines::MakeUPPERCase(DataIPShortCuts::cAlphaArgs(1));
 
             // find correct properties instance
             GHEProps props;
             bool propsFound = false;
             for (auto &thisProp : propsVect) {
-                if (thisProp.propName == DataIPShortCuts::cAlphaArgs(2)) {
+                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(2), thisProp.propName)) {
                     props = thisProp;
                     propsFound = true;
                     break;
@@ -403,21 +401,21 @@ namespace GroundHeatExchangerEnhanced {
 
             // we just need to loop over the existing vector elements to check for duplicates since we haven't add this one yet
             for (auto &bh : boreholesVect) {
-                if (DataIPShortCuts::cAlphaArgs(1) == bh.name) {
+                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), bh.name)) {
                     ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + bh.name);
+                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
                 }
             }
 
             // create new instance
             GHEBorehole newBH;
-            newBH.name = DataIPShortCuts::cAlphaArgs(1);
+            newBH.name = UtilityRoutines::MakeUPPERCase(DataIPShortCuts::cAlphaArgs(1));
 
             // get right props object
             GHEProps props;
             bool propsFound = false;
             for (const auto& thisProp : propsVect) {
-                if (thisProp.propName == DataIPShortCuts::cAlphaArgs(2)) {
+                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(2), thisProp.propName)) {
                     props = thisProp;
                     propsFound = true;
                     break;
@@ -474,15 +472,15 @@ namespace GroundHeatExchangerEnhanced {
 
             // we just need to loop over the existing vector elements to check for duplicates since we haven't add this one yet
             for (auto &ghe : enhancedGHE) {
-                if (DataIPShortCuts::cAlphaArgs(1) == ghe.name) {
+                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), ghe.name)) {
                     ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + ghe.name);
+                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
                 }
             }
 
             // Build out new instance
             EnhancedGHE newGHE;
-            newGHE.name = DataIPShortCuts::cAlphaArgs(1);
+            newGHE.name = UtilityRoutines::MakeUPPERCase(DataIPShortCuts::cAlphaArgs(1));
 
             // Inlet node
             newGHE.inletNode = NodeInputManager::GetOnlySingleNode(DataIPShortCuts::cAlphaArgs(2),
@@ -522,7 +520,7 @@ namespace GroundHeatExchangerEnhanced {
             if (!DataIPShortCuts::lAlphaFieldBlanks(6)) {
                 // Response factors come from IDF object
                 for (auto &thisRF : respFactorsVect) {
-                    if (UtilityRoutines::SameString(thisRF.name, DataIPShortCuts::cAlphaArgs(6))) {
+                    if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(6), thisRF.name)) {
                         newGHE.gFuncEFT = thisRF;
                         newGHE.gFuncEFTExist = true;
                         break;
@@ -538,9 +536,10 @@ namespace GroundHeatExchangerEnhanced {
             if (!DataIPShortCuts::lAlphaFieldBlanks(7)) {
                 // Response factors come from IDF object
                 for (auto &thisRF : respFactorsVect) {
-                    if (UtilityRoutines::SameString(thisRF.name, DataIPShortCuts::cAlphaArgs(7))) {
+                    if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(7), thisRF.name)) {
                         newGHE.gFuncBWT = thisRF;
                         newGHE.gFuncBWTExist = true;
+                        break;
                     }
                 }
 
@@ -555,8 +554,9 @@ namespace GroundHeatExchangerEnhanced {
                     // borehole instances from array object
 
                     for (auto &arr : arraysVect) {
-                        if (arr.name == DataIPShortCuts::cAlphaArgs(8)) {
+                        if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(8), arr.name)) {
                             newGHE.boreholes = arr.boreholes;
+                            break;
                         }
                     }
 
@@ -572,13 +572,14 @@ namespace GroundHeatExchangerEnhanced {
                         bool bhFound = false;
                         for (auto it = boreholesVect.begin(); it < boreholesVect.end(); it++) {
                             auto &bh = *it;
-                            if (bh.name == DataIPShortCuts::cAlphaArgs(index)) {
+                            if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(index), bh.name)) {
                                 // save this instance
                                 newGHE.boreholes.push_back(bh);
                                 bhFound = true;
 
                                 // delete to prevent later reuse
                                 boreholesVect.erase(it);
+                                break;
                             }
                         }
 

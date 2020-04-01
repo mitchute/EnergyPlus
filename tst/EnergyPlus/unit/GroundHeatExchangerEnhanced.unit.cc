@@ -52,6 +52,7 @@
 
 // EnergyPlus Headers
 #include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
+#include <EnergyPlus/GroundTemperatureModeling/GroundTemperatureModelManager.hh>
 
 // Testing Headers
 #include "Fixtures/EnergyPlusFixture.hh"
@@ -98,31 +99,52 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Props_Init)
         "GroundHeatExchanger:ResponseFactors,",
         "  Exiting Fluid Temperature g-functions,  !- Name",
         "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
-        "  120,                     !- Number of Boreholes",
-        "  -15.2996,                !- g-Function Ln(T/Ts) Value 1",
-        "  -0.348322,               !- g-Function g Value 1",
-        "  -14.201,                 !- g-Function Ln(T/Ts) Value 2",
-        "  0.022208,                !- g-Function g Value 2",
-        "  -13.2202,                !- g-Function Ln(T/Ts) Value 3",
-        "  0.412345,                !- g-Function g Value 3",
-        "  -12.2086,                !- g-Function Ln(T/Ts) Value 4",
-        "  0.867498;                !- g-Function g Value 4",
+        "  10,                      !- Number of Boreholes",
+        "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+        "  0.0,                     !- g-Function g Value 1",
+        "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+        "  1.0,                     !- g-Function g Value 2",
+        "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+        "  2.0,                     !- g-Function g Value 3",
+        "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+        "  3.0;                     !- g-Function g Value 4",
         "",
         "GroundHeatExchanger:ResponseFactors,",
         "  Borehole Wall Temperature g-functions,  !- Name",
         "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
-        "  120,                     !- Number of Boreholes",
-        "  -15.2996,                !- g-Function Ln(T/Ts) Value 1",
-        "  -0.348322,               !- g-Function g Value 1",
-        "  -14.201,                 !- g-Function Ln(T/Ts) Value 2",
-        "  0.022208,                !- g-Function g Value 2",
-        "  -13.2202,                !- g-Function Ln(T/Ts) Value 3",
-        "  0.412345,                !- g-Function g Value 3",
-        "  -12.2086,                !- g-Function Ln(T/Ts) Value 4",
-        "  0.867498;                !- g-Function g Value 4",
+        "  10,                      !- Number of Boreholes",
+        "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+        "  0.0,                     !- g-Function g Value 1",
+        "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+        "  1.0,                     !- g-Function g Value 2",
+        "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+        "  2.0,                     !- g-Function g Value 3",
+        "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+        "  3.0;                     !- g-Function g Value 4",
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GroundHeatExchangerEnhanced::getGHEInput();
+    GroundHeatExchangerEnhanced::EnhancedGHE::factory("VERTICAL GROUND HEAT EXCHANGER");
+
+    ASSERT_EQ(1u, GroundHeatExchangerEnhanced::enhancedGHE.size());
+
+    auto tstGHE = GroundHeatExchangerEnhanced::enhancedGHE[0];
+
+    EXPECT_EQ("VERTICAL GROUND HEAT EXCHANGER", tstGHE.name);
+    EXPECT_EQ(0.00330000, tstGHE.designVolFlow);
+    EXPECT_EQ(GroundTemperatureManager::objectType_KusudaGroundTemp, tstGHE.gtm->objectType);
+    EXPECT_EQ(0.692626E+00, tstGHE.kSoil);
+    EXPECT_EQ(0.234700E+07, tstGHE.rhoCpSoil);
+    EXPECT_EQ("EXITING FLUID TEMPERATURE G-FUNCTIONS", tstGHE.gFuncEFT.name);
+    EXPECT_EQ("BOREHOLE WALL TEMPERATURE G-FUNCTIONS", tstGHE.gFuncBWT.name);
+    EXPECT_EQ(0u, tstGHE.boreholes.size());
+    EXPECT_EQ(true, tstGHE.gFuncEFTExist);
+    EXPECT_EQ(true, tstGHE.gFuncBWTExist);
+    EXPECT_EQ(std::vector<Real64>({0.0}), tstGHE.gFuncEFT.g.get_values_at_target(std::vector<Real64>({0.0})));
+    EXPECT_EQ(std::vector<Real64>({0.5}), tstGHE.gFuncEFT.g.get_values_at_target(std::vector<Real64>({0.5})));
+    EXPECT_EQ(std::vector<Real64>({1.5}), tstGHE.gFuncEFT.g.get_values_at_target(std::vector<Real64>({1.5})));
+    EXPECT_EQ(std::vector<Real64>({2.5}), tstGHE.gFuncEFT.g.get_values_at_target(std::vector<Real64>({2.5})));
+    EXPECT_EQ(std::vector<Real64>({3.5}), tstGHE.gFuncEFT.g.get_values_at_target(std::vector<Real64>({3.5})));
+    EXPECT_EQ(std::vector<Real64>({-3.5}), tstGHE.gFuncEFT.g.get_values_at_target(std::vector<Real64>({-3.5})));
 }

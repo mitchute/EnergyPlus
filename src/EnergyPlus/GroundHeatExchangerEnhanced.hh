@@ -232,6 +232,8 @@ namespace GroundHeatExchangerEnhanced {
     void clear_state();
     void getGHEInput();
 
+    extern std::vector<EnhancedGHE> enhancedGHE;
+
 } // namespace GroundHeatExchangerEnhanced
 
 } // namespace EnergyPlus
