@@ -100,7 +100,7 @@ namespace GroundHeatExchangerEnhanced {
         ~Pipe() = default;
     };
 
-    struct GHEProps
+    struct BoreholeProps
     {
         // members
         std::string propName;
@@ -113,22 +113,22 @@ namespace GroundHeatExchangerEnhanced {
         Pipe pipe;
 
         // default constructor
-        GHEProps () : depth(0.0), length(0.0), diameter(0.0), kGrout(0.0), rhoCpGrout(0.0), shankSpace(0.0)
+        BoreholeProps() : depth(0.0), length(0.0), diameter(0.0), kGrout(0.0), rhoCpGrout(0.0), shankSpace(0.0)
         {
         }
 
         // copy constructor
-        GHEProps(GHEProps const &r)
+        BoreholeProps(BoreholeProps const &r)
         {
             propName = r.propName; depth = r.depth; length = r.length; diameter = r.diameter; kGrout = r.kGrout; rhoCpGrout = r.rhoCpGrout;
             shankSpace = r.shankSpace; pipe = r.pipe;
         }
 
         // default destructor
-        ~GHEProps() = default;
+        ~BoreholeProps() = default;
     };
 
-    struct GHEBorehole : GHEProps
+    struct GHEBorehole : BoreholeProps
     {
         // members
         std::string name;
@@ -141,7 +141,7 @@ namespace GroundHeatExchangerEnhanced {
         }
 
         // copy constructor
-        GHEBorehole(GHEBorehole const &r) : GHEProps(r)
+        GHEBorehole(GHEBorehole const &r) : BoreholeProps(r)
         {
             name = r.name; xLoc = r.xLoc; yLoc = r.yLoc;
         };
@@ -166,7 +166,7 @@ namespace GroundHeatExchangerEnhanced {
     {
         // members
         std::string name;
-        GHEProps props;
+        BoreholeProps props;
         Btwxt::RegularGridInterpolator g;
         int numBH;
         int maxSimYears;

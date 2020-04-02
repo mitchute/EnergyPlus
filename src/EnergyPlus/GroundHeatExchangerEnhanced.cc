@@ -109,7 +109,7 @@ namespace GroundHeatExchangerEnhanced {
         int const numGHE = inputProcessor->getNumObjectsFound("GroundHeatExchanger:System");
 
         // temporary vectors
-        std::vector<GHEProps> propsVect;
+        std::vector<BoreholeProps> propsVect;
         std::vector<GHERespFactors> respFactorsVect;
         std::vector<GHEArray> arraysVect;
         std::vector<GHEBorehole> boreholesVect;
@@ -154,7 +154,7 @@ namespace GroundHeatExchangerEnhanced {
             }
 
             // create new instance
-            GHEProps newProp;
+            BoreholeProps newProp;
 
             // populate values
             newProp.propName = UtilityRoutines::MakeUPPERCase(DataIPShortCuts::cAlphaArgs(1));
@@ -325,7 +325,7 @@ namespace GroundHeatExchangerEnhanced {
             newArray.name = UtilityRoutines::MakeUPPERCase(DataIPShortCuts::cAlphaArgs(1));
 
             // find correct properties instance
-            GHEProps props;
+            BoreholeProps props;
             bool propsFound = false;
             for (auto &thisProp : propsVect) {
                 if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(2), thisProp.propName)) {
@@ -412,7 +412,7 @@ namespace GroundHeatExchangerEnhanced {
             newBH.name = UtilityRoutines::MakeUPPERCase(DataIPShortCuts::cAlphaArgs(1));
 
             // get right props object
-            GHEProps props;
+            BoreholeProps props;
             bool propsFound = false;
             for (const auto& thisProp : propsVect) {
                 if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(2), thisProp.propName)) {
