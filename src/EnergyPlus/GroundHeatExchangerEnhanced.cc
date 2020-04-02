@@ -114,8 +114,6 @@ namespace GroundHeatExchangerEnhanced {
         std::vector<GHEArray> arraysVect;
         std::vector<GHEBorehole> boreholesVect;
 
-        bool errorsFound = false;
-
         DataIPShortCuts::cCurrentModuleObject = "GroundHeatExchanger:Vertical:Properties";
 
         for (int propNum = 1; propNum <= numProps; ++propNum) {
@@ -137,21 +135,6 @@ namespace GroundHeatExchangerEnhanced {
                                           DataIPShortCuts::lAlphaFieldBlanks,
                                           DataIPShortCuts::cAlphaFieldNames,
                                           DataIPShortCuts::cNumericFieldNames);
-
-            // the input processor validates the numeric inputs based on the IDD definition
-            // still validate the name to make sure there aren't any duplicates or blanks
-            // blanks are easy: fatal if blank
-            if (DataIPShortCuts::lAlphaFieldBlanks(1)) {
-                ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject + " object: Name cannot be blank");
-            }
-
-            // we just need to loop over the existing vector elements to check for duplicates since we haven't add this one yet
-            for (auto &prop : propsVect) {
-                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), prop.propName)) {
-                    ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
-                }
-            }
 
             // create new instance
             BoreholeProps newProp;
@@ -196,6 +179,7 @@ namespace GroundHeatExchangerEnhanced {
             int ioStatus;
             int numAlphas;
             int numNumbers;
+            bool errorsFound = false;
 
             // get the input data and store it in the Shortcuts structures
             inputProcessor->getObjectItem(DataIPShortCuts::cCurrentModuleObject,
@@ -209,21 +193,6 @@ namespace GroundHeatExchangerEnhanced {
                                           DataIPShortCuts::lAlphaFieldBlanks,
                                           DataIPShortCuts::cAlphaFieldNames,
                                           DataIPShortCuts::cNumericFieldNames);
-
-            // the input processor validates the numeric inputs based on the IDD definition
-            // still validate the name to make sure there aren't any duplicates or blanks
-            // blanks are easy: fatal if blank
-            if (DataIPShortCuts::lAlphaFieldBlanks(1)) {
-                ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject + " object: Name cannot be blank");
-            }
-
-            // we just need to loop over the existing vector elements to check for duplicates since we haven't added this one yet
-            for (auto &rf : respFactorsVect) {
-                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), rf.name)) {
-                    ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
-                }
-            }
 
             // Build out new instance
             GHERespFactors newRF;
@@ -291,6 +260,7 @@ namespace GroundHeatExchangerEnhanced {
             int ioStatus;
             int numAlphas;
             int numNumbers;
+            bool errorsFound = false;
 
             // get the input data and store it in the Shortcuts structures
             inputProcessor->getObjectItem(DataIPShortCuts::cCurrentModuleObject,
@@ -304,21 +274,6 @@ namespace GroundHeatExchangerEnhanced {
                                           DataIPShortCuts::lAlphaFieldBlanks,
                                           DataIPShortCuts::cAlphaFieldNames,
                                           DataIPShortCuts::cNumericFieldNames);
-
-            // the input processor validates the numeric inputs based on the IDD definition
-            // still validate the name to make sure there aren't any duplicates or blanks
-            // blanks are easy: fatal if blank
-            if (DataIPShortCuts::lAlphaFieldBlanks(1)) {
-                ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject + " object: Name cannot be blank");
-            }
-
-            // we just need to loop over the existing vector elements to check for duplicates since we haven't add this one yet
-            for (auto &array : arraysVect) {
-                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), array.name)) {
-                    ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
-                }
-            }
 
             // build out new instance
             GHEArray newArray;
@@ -337,6 +292,7 @@ namespace GroundHeatExchangerEnhanced {
 
             if (!propsFound) {
                 ShowSevereError( propsModObjName + " object, name: " + DataIPShortCuts::cAlphaArgs(2) + " not found");
+                errorsFound = true;
             }
 
             // build out boreholes
@@ -366,6 +322,10 @@ namespace GroundHeatExchangerEnhanced {
                 }
             }
 
+            if (errorsFound) {
+                ShowFatalError("Errors occurred during inputs for object: " + DataIPShortCuts::cCurrentModuleObject + " name: " + newArray.name);
+            }
+
             // save array instance
             arraysVect.push_back(newArray);
         }
@@ -378,6 +338,7 @@ namespace GroundHeatExchangerEnhanced {
             int ioStatus;
             int numAlphas;
             int numNumbers;
+            bool errorsFound = false;
 
             // get the input data and store it in the Shortcuts structures
             inputProcessor->getObjectItem(DataIPShortCuts::cCurrentModuleObject,
@@ -391,21 +352,6 @@ namespace GroundHeatExchangerEnhanced {
                                           DataIPShortCuts::lAlphaFieldBlanks,
                                           DataIPShortCuts::cAlphaFieldNames,
                                           DataIPShortCuts::cNumericFieldNames);
-
-            // the input processor validates the numeric inputs based on the IDD definition
-            // still validate the name to make sure there aren't any duplicates or blanks
-            // blanks are easy: fatal if blank
-            if (DataIPShortCuts::lAlphaFieldBlanks(1)) {
-                ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject + " object: Name cannot be blank");
-            }
-
-            // we just need to loop over the existing vector elements to check for duplicates since we haven't add this one yet
-            for (auto &bh : boreholesVect) {
-                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), bh.name)) {
-                    ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
-                }
-            }
 
             // create new instance
             GHEBorehole newBH;
@@ -424,6 +370,11 @@ namespace GroundHeatExchangerEnhanced {
 
             if (!propsFound) {
                 ShowSevereError( propsModObjName + " object, name: " + DataIPShortCuts::cAlphaArgs(2) + " not found");
+                errorsFound = true;
+            }
+
+            if (errorsFound) {
+                ShowFatalError("Errors occurred during inputs for object: " + DataIPShortCuts::cCurrentModuleObject + " name: " + newBH.name);
             }
 
             // populate values
@@ -449,6 +400,7 @@ namespace GroundHeatExchangerEnhanced {
             int ioStatus;
             int numAlphas;
             int numNumbers;
+            bool errorsFound = false;
 
             // get the input data and store it in the Shortcuts structures
             inputProcessor->getObjectItem(DataIPShortCuts::cCurrentModuleObject,
@@ -462,21 +414,6 @@ namespace GroundHeatExchangerEnhanced {
                                           DataIPShortCuts::lAlphaFieldBlanks,
                                           DataIPShortCuts::cAlphaFieldNames,
                                           DataIPShortCuts::cNumericFieldNames);
-
-            // the input processor validates the numeric inputs based on the IDD definition
-            // still validate the name to make sure there aren't any duplicates or blanks
-            // blanks are easy: fatal if blank
-            if (DataIPShortCuts::lAlphaFieldBlanks(1)) {
-                ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject + " object: Name cannot be blank");
-            }
-
-            // we just need to loop over the existing vector elements to check for duplicates since we haven't add this one yet
-            for (auto &ghe : enhancedGHE) {
-                if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(1), ghe.name)) {
-                    ShowFatalError("Invalid input for " + DataIPShortCuts::cCurrentModuleObject +
-                                   " object: Duplicate name found: " + DataIPShortCuts::cAlphaArgs(1));
-                }
-            }
 
             // Build out new instance
             EnhancedGHE newGHE;
@@ -545,6 +482,7 @@ namespace GroundHeatExchangerEnhanced {
 
                 if (!newGHE.gFuncBWTExist) {
                     ShowSevereError(respFactModObjName + " object, name :" + DataIPShortCuts::cAlphaArgs(7) + " not found");
+                    errorsFound = true;
                 }
             }
 
@@ -585,6 +523,7 @@ namespace GroundHeatExchangerEnhanced {
 
                         if (!bhFound) {
                             ShowSevereError("Borehole \"" + DataIPShortCuts::cAlphaArgs(index) + "\" not found");
+                            errorsFound = true;
                         }
 
                         ++index;
@@ -595,7 +534,12 @@ namespace GroundHeatExchangerEnhanced {
                     ShowSevereError("Problems getting inputs for " + DataIPShortCuts::cCurrentModuleObject + " object, name: " + newGHE.name);
                     ShowSevereError("Model requires both " + respFactModObjName + " objects, or");
                     ShowSevereError("boreholes to be described using " + bhModObjName + " or " + arrModObjName + " objects");
+                    errorsFound = true;
                 }
+            }
+
+            if (errorsFound) {
+                ShowFatalError("Errors occurred during inputs for object: " + DataIPShortCuts::cCurrentModuleObject + " name: " + newGHE.name);
             }
 
             // Initialize ground temperature model and get pointer reference
