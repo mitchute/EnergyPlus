@@ -567,7 +567,7 @@ namespace GroundHeatExchangerEnhanced {
                     int numPreviousAlphaFields = 7;
                     int numBH = numAlphas - numPreviousAlphaFields;
 
-                    int index = 8;
+                    int index = 9;
                     for (int bhNum = 1; bhNum < numBH; ++bhNum) {
                         bool bhFound = false;
                         for (auto it = boreholesVect.begin(); it < boreholesVect.end(); it++) {
