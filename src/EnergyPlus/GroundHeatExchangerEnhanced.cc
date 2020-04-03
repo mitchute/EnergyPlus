@@ -161,10 +161,11 @@ namespace GroundHeatExchangerEnhanced {
                 ShowWarningError("U-tube spacing is reference from the u-tube pipe center.");
                 ShowWarningError("Shank spacing is set to minimum possible value.");
                 newProp.shankSpace = newProp.pipe.outerDia;
-            } else if (newProp.shankSpace > (newProp.diameter - newProp.pipe.outerDia)) {
+            } else if (newProp.shankSpace > (newProp.diameter - 2.0 * newProp.pipe.outerDia)) {
                 ShowWarningError("Borehole shank spacing is invalid.");
                 ShowWarningError("U-tube spacing is reference from the u-tube pipe center.");
                 ShowWarningError("Shank spacing is set to the maximum possible value.");
+                newProp.shankSpace = newProp.diameter - 2.0 * newProp.pipe.outerDia;
             }
 
             // save instance
@@ -210,6 +211,7 @@ namespace GroundHeatExchangerEnhanced {
 
             if (!propsFound) {
                 ShowSevereError( propsModObjName + " object, name: " + DataIPShortCuts::cAlphaArgs(2) + " not found");
+                errorsFound = true;
             }
 
             newRF.numBH = DataIPShortCuts::rNumericArgs(1);
@@ -295,6 +297,10 @@ namespace GroundHeatExchangerEnhanced {
                 errorsFound = true;
             }
 
+            if (errorsFound) {
+                ShowFatalError("Errors occurred during inputs for object: " + DataIPShortCuts::cCurrentModuleObject + " name: " + newArray.name);
+            }
+
             // build out boreholes
             int numBHinXDirection = DataIPShortCuts::rNumericArgs(1);
             int numBHinYDirection = DataIPShortCuts::rNumericArgs(2);
@@ -320,10 +326,6 @@ namespace GroundHeatExchangerEnhanced {
                     // save bh instance
                     newArray.boreholes.push_back(bh);
                 }
-            }
-
-            if (errorsFound) {
-                ShowFatalError("Errors occurred during inputs for object: " + DataIPShortCuts::cCurrentModuleObject + " name: " + newArray.name);
             }
 
             // save array instance
@@ -466,6 +468,7 @@ namespace GroundHeatExchangerEnhanced {
 
                 if (!newGHE.gFuncEFTExist) {
                     ShowSevereError(respFactModObjName + " object, name :" + DataIPShortCuts::cAlphaArgs(6) + " not found");
+                    errorsFound = true;
                 }
             }
 

@@ -198,48 +198,48 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_g_functions)
 TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Array)
 {
     std::string const idf_objects = delimited_string({
-         "GroundHeatExchanger:System,",
-         "  Vertical Ground Heat Exchanger,  !- Name",
-         "  GHE Inlet Node,          !- Inlet Node Name",
-         "  GHE Outlet Node,         !- Outlet Node Name",
-         "  0.00330000,              !- Design Flow Rate {m3/s}",
-         "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
-         "  Vertical Ground Heat Exchanger Ground Temps,  !- Undisturbed Ground Temperature Model Name",
-         "  0.692626E+00,            !- Ground Thermal Conductivity {W/m-K}",
-         "  0.234700E+07,            !- Ground Thermal Heat Capacity {J/m3-K}",
-         "  ,                        !- GHE:ResponseFactors Exiting Fluid Temperature Object Name",
-         "  ,                        !- GHE:ResponseFactors Borehole Wall Temperature Object Name",
-         "  GHE-Array;               !- GroundHeatExchanger:Vertical:Array Object Name",
-         "",
-         "GroundHeatExchanger:Vertical:Properties,",
-         "  Vertical Ground Heat Exchanger Props,  !- Name",
-         "  1,                       !- Depth of Top of Borehole {m}",
-         "  76.2,                    !- Borehole Length {m}",
-         "  0.127016,                !- Borehole Diameter {m}",
-         "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
-         "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
-         "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
-         "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
-         "  2.66667E-02,             !- Pipe Outer Diameter {m}",
-         "  2.41285E-03,             !- Pipe Thickness {m}",
-         "  5.1225E-02;              !- U-Tube Distance {m}",
-         "",
-         "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
-         "  Vertical Ground Heat Exchanger Ground Temps,  !- Name",
-         "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
-         "  920,                     !- Soil Density {kg/m3}",
-         "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
-         "  13.375,                  !- Average Soil Surface Temperature {C}",
-         "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
-         "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
-         "",
-         "GroundHeatExchanger:Vertical:Array,",
-         "  GHE-Array,               !- Name",
-         "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
-         "  2,                       !- Number of Boreholes in X-Direction",
-         "  2,                       !- Number of Boreholes in Y-Direction",
-         "  5;                       !- Borehole Spacing {m}",
-     });
+        "GroundHeatExchanger:System,",
+        "  Vertical Ground Heat Exchanger,  !- Name",
+        "  GHE Inlet Node,          !- Inlet Node Name",
+        "  GHE Outlet Node,         !- Outlet Node Name",
+        "  0.00330000,              !- Design Flow Rate {m3/s}",
+        "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Undisturbed Ground Temperature Model Name",
+        "  0.692626E+00,            !- Ground Thermal Conductivity {W/m-K}",
+        "  0.234700E+07,            !- Ground Thermal Heat Capacity {J/m3-K}",
+        "  ,                        !- GHE:ResponseFactors Exiting Fluid Temperature Object Name",
+        "  ,                        !- GHE:ResponseFactors Borehole Wall Temperature Object Name",
+        "  GHE-Array;               !- GroundHeatExchanger:Vertical:Array Object Name",
+        "",
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  Vertical Ground Heat Exchanger Props,  !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  76.2,                    !- Borehole Length {m}",
+        "  0.127016,                !- Borehole Diameter {m}",
+        "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  2.66667E-02,             !- Pipe Outer Diameter {m}",
+        "  2.41285E-03,             !- Pipe Thickness {m}",
+        "  5.1225E-02;              !- U-Tube Distance {m}",
+        "",
+        "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Name",
+        "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
+        "  920,                     !- Soil Density {kg/m3}",
+        "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
+        "  13.375,                  !- Average Soil Surface Temperature {C}",
+        "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
+        "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
+        "",
+        "GroundHeatExchanger:Vertical:Array,",
+        "  GHE-Array,               !- Name",
+        "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+        "  2,                       !- Number of Boreholes in X-Direction",
+        "  2,                       !- Number of Boreholes in Y-Direction",
+        "  5;                       !- Borehole Spacing {m}",
+    });
 
     ASSERT_TRUE(process_idf(idf_objects));
 
@@ -340,68 +340,68 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Array)
 TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Boreholes)
 {
     std::string const idf_objects = delimited_string({
-         "GroundHeatExchanger:System,",
-         "  Vertical Ground Heat Exchanger,  !- Name",
-         "  GHE Inlet Node,          !- Inlet Node Name",
-         "  GHE Outlet Node,         !- Outlet Node Name",
-         "  0.00330000,              !- Design Flow Rate {m3/s}",
-         "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
-         "  Vertical Ground Heat Exchanger Ground Temps,  !- Undisturbed Ground Temperature Model Name",
-         "  0.692626E+00,            !- Ground Thermal Conductivity {W/m-K}",
-         "  0.234700E+07,            !- Ground Thermal Heat Capacity {J/m3-K}",
-         "  ,                        !- GHE:ResponseFactors Exiting Fluid Temperature Object Name",
-         "  ,                        !- GHE:ResponseFactors Borehole Wall Temperature Object Name",
-         "  ,                        !- GroundHeatExchanger:Vertical:Array Object Name",
-         "  BH-1,                    !- GroundHeatExchanger:Vertical:Single Object Name 1",
-         "  BH-2,                    !- GroundHeatExchanger:Vertical:Single Object Name 2",
-         "  BH-3,                    !- GroundHeatExchanger:Vertical:Single Object Name 3",
-         "  BH-4;                    !- GroundHeatExchanger:Vertical:Single Object Name 4",
-         "",
-         "GroundHeatExchanger:Vertical:Properties,",
-         "  Vertical Ground Heat Exchanger Props,  !- Name",
-         "  1,                       !- Depth of Top of Borehole {m}",
-         "  76.2,                    !- Borehole Length {m}",
-         "  0.127016,                !- Borehole Diameter {m}",
-         "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
-         "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
-         "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
-         "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
-         "  2.66667E-02,             !- Pipe Outer Diameter {m}",
-         "  2.41285E-03,             !- Pipe Thickness {m}",
-         "  5.1225E-02;              !- U-Tube Distance {m}",
-         "",
-         "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
-         "  Vertical Ground Heat Exchanger Ground Temps,  !- Name",
-         "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
-         "  920,                     !- Soil Density {kg/m3}",
-         "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
-         "  13.375,                  !- Average Soil Surface Temperature {C}",
-         "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
-         "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
-         "",
-         "GroundHeatExchanger:Vertical:Single,",
-         "  BH-1,                   !- Name",
-         "  Vertical Ground Heat Exchanger Props,   !- GHE Props",
-         "  0,                       !- X Location {m}",
-         "  0;                       !- Y Location {m}",
-         "",
-         "GroundHeatExchanger:Vertical:Single,",
-         "  BH-2,                   !- Name",
-         "  Vertical Ground Heat Exchanger Props,   !- GHE Props",
-         "  0,                       !- X Location {m}",
-         "  5;                       !- Y Location {m}",
-         "",
-         "GroundHeatExchanger:Vertical:Single,",
-         "  BH-3,                   !- Name",
-         "  Vertical Ground Heat Exchanger Props,   !- GHE Props",
-         "  5,                       !- X Location {m}",
-         "  0;                       !- Y Location {m}",
-         "",
-         "GroundHeatExchanger:Vertical:Single,",
-         "  BH-4,                   !- Name",
-         "  Vertical Ground Heat Exchanger Props,   !- GHE Props",
-         "  5,                       !- X Location {m}",
-         "  5;                       !- Y Location {m}",
+        "GroundHeatExchanger:System,",
+        "  Vertical Ground Heat Exchanger,  !- Name",
+        "  GHE Inlet Node,          !- Inlet Node Name",
+        "  GHE Outlet Node,         !- Outlet Node Name",
+        "  0.00330000,              !- Design Flow Rate {m3/s}",
+        "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Undisturbed Ground Temperature Model Name",
+        "  0.692626E+00,            !- Ground Thermal Conductivity {W/m-K}",
+        "  0.234700E+07,            !- Ground Thermal Heat Capacity {J/m3-K}",
+        "  ,                        !- GHE:ResponseFactors Exiting Fluid Temperature Object Name",
+        "  ,                        !- GHE:ResponseFactors Borehole Wall Temperature Object Name",
+        "  ,                        !- GroundHeatExchanger:Vertical:Array Object Name",
+        "  BH-1,                    !- GroundHeatExchanger:Vertical:Single Object Name 1",
+        "  BH-2,                    !- GroundHeatExchanger:Vertical:Single Object Name 2",
+        "  BH-3,                    !- GroundHeatExchanger:Vertical:Single Object Name 3",
+        "  BH-4;                    !- GroundHeatExchanger:Vertical:Single Object Name 4",
+        "",
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  Vertical Ground Heat Exchanger Props,  !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  76.2,                    !- Borehole Length {m}",
+        "  0.127016,                !- Borehole Diameter {m}",
+        "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  2.66667E-02,             !- Pipe Outer Diameter {m}",
+        "  2.41285E-03,             !- Pipe Thickness {m}",
+        "  5.1225E-02;              !- U-Tube Distance {m}",
+        "",
+        "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Name",
+        "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
+        "  920,                     !- Soil Density {kg/m3}",
+        "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
+        "  13.375,                  !- Average Soil Surface Temperature {C}",
+        "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
+        "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
+        "",
+        "GroundHeatExchanger:Vertical:Single,",
+        "  BH-1,                   !- Name",
+        "  Vertical Ground Heat Exchanger Props,   !- GHE Props",
+        "  0,                       !- X Location {m}",
+        "  0;                       !- Y Location {m}",
+        "",
+        "GroundHeatExchanger:Vertical:Single,",
+        "  BH-2,                   !- Name",
+        "  Vertical Ground Heat Exchanger Props,   !- GHE Props",
+        "  0,                       !- X Location {m}",
+        "  5;                       !- Y Location {m}",
+        "",
+        "GroundHeatExchanger:Vertical:Single,",
+        "  BH-3,                   !- Name",
+        "  Vertical Ground Heat Exchanger Props,   !- GHE Props",
+        "  5,                       !- X Location {m}",
+        "  0;                       !- Y Location {m}",
+        "",
+        "GroundHeatExchanger:Vertical:Single,",
+        "  BH-4,                   !- Name",
+        "  Vertical Ground Heat Exchanger Props,   !- GHE Props",
+        "  5,                       !- X Location {m}",
+        "  5;                       !- Y Location {m}",
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
@@ -498,4 +498,499 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Boreholes)
     EXPECT_NEAR(2.18410E-02, bh3->pipe.innerDia, 1E-3);
     EXPECT_NEAR(1.09205E-02, bh3->pipe.innerRadius, 1E-3);
     EXPECT_NEAR(2.41285E-03, bh3->pipe.wallThickness, 1E-3);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Min_Shankspace)
+{
+    std::string const idf_objects = delimited_string({
+        "GroundHeatExchanger:System,",
+        "  Vertical Ground Heat Exchanger,  !- Name",
+        "  GHE Inlet Node,          !- Inlet Node Name",
+        "  GHE Outlet Node,         !- Outlet Node Name",
+        "  0.00330000,              !- Design Flow Rate {m3/s}",
+        "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Undisturbed Ground Temperature Model Name",
+        "  0.692626E+00,            !- Ground Thermal Conductivity {W/m-K}",
+        "  0.234700E+07,            !- Ground Thermal Heat Capacity {J/m3-K}",
+        "  Exiting Fluid Temperature g-functions,  !- GHE:ResponseFactors Exiting Fluid Temperature Object Name",
+        "  Borehole Wall Temperature g-functions;  !- GHE:ResponseFactors Borehole Wall Temperature Object Name",
+        "",
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  Vertical Ground Heat Exchanger Props,  !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  76.2,                    !- Borehole Length {m}",
+        "  0.127016,                !- Borehole Diameter {m}",
+        "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  2.66667E-02,             !- Pipe Outer Diameter {m}",
+        "  2.41285E-03,             !- Pipe Thickness {m}",
+        "  0.001;                   !- U-Tube Distance {m}",
+        "",
+        "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Name",
+        "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
+        "  920,                     !- Soil Density {kg/m3}",
+        "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
+        "  13.375,                  !- Average Soil Surface Temperature {C}",
+        "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
+        "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
+        "",
+        "GroundHeatExchanger:ResponseFactors,",
+        "  Exiting Fluid Temperature g-functions,  !- Name",
+        "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+        "  10,                      !- Number of Boreholes",
+        "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+        "  0.0,                     !- g-Function g Value 1",
+        "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+        "  1.0,                     !- g-Function g Value 2",
+        "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+        "  2.0,                     !- g-Function g Value 3",
+        "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+        "  3.0;                     !- g-Function g Value 4",
+        "",
+        "GroundHeatExchanger:ResponseFactors,",
+        "  Borehole Wall Temperature g-functions,  !- Name",
+        "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+        "  10,                      !- Number of Boreholes",
+        "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+        "  0.0,                     !- g-Function g Value 1",
+        "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+        "  1.0,                     !- g-Function g Value 2",
+        "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+        "  2.0,                     !- g-Function g Value 3",
+        "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+        "  3.0;                     !- g-Function g Value 4",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+
+    EnhancedGHE::factory("VERTICAL GROUND HEAT EXCHANGER");
+
+    ASSERT_EQ(1u, enhancedGHE.size());
+
+    EnhancedGHE *tstGHE = &enhancedGHE[0];
+
+    EXPECT_EQ("VERTICAL GROUND HEAT EXCHANGER", tstGHE->name);
+    EXPECT_EQ(0.00330000, tstGHE->designVolFlow);
+    EXPECT_EQ(GroundTemperatureManager::objectType_KusudaGroundTemp, tstGHE->gtm->objectType);
+    EXPECT_EQ(0.692626E+00, tstGHE->kSoil);
+    EXPECT_EQ(0.234700E+07, tstGHE->rhoCpSoil);
+
+    EXPECT_EQ("EXITING FLUID TEMPERATURE G-FUNCTIONS", tstGHE->gFuncEFT.name);
+    EXPECT_EQ("BOREHOLE WALL TEMPERATURE G-FUNCTIONS", tstGHE->gFuncBWT.name);
+
+    EXPECT_EQ(0u, tstGHE->boreholes.size());
+
+    EXPECT_EQ(true, tstGHE->gFuncEFTExist);
+    EXPECT_EQ(true, tstGHE->gFuncBWTExist);
+
+    EXPECT_EQ(std::vector<Real64>({0.0}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({0.0})));
+    EXPECT_EQ(std::vector<Real64>({0.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({0.5})));
+    EXPECT_EQ(std::vector<Real64>({1.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({1.5})));
+    EXPECT_EQ(std::vector<Real64>({2.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({2.5})));
+    EXPECT_EQ(std::vector<Real64>({3.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({3.5})));
+    EXPECT_EQ(std::vector<Real64>({-3.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({-3.5})));
+
+    EXPECT_EQ(std::vector<Real64>({0.0}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({0.0})));
+    EXPECT_EQ(std::vector<Real64>({0.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({0.5})));
+    EXPECT_EQ(std::vector<Real64>({1.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({1.5})));
+    EXPECT_EQ(std::vector<Real64>({2.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({2.5})));
+    EXPECT_EQ(std::vector<Real64>({3.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({3.5})));
+    EXPECT_EQ(std::vector<Real64>({-3.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({-3.5})));
+
+    GHERespFactors *eft = &tstGHE->gFuncEFT;
+    EXPECT_EQ("VERTICAL GROUND HEAT EXCHANGER PROPS", eft->props.propName);
+    EXPECT_NEAR(1, eft->props.depth, 1E-1);
+    EXPECT_NEAR(0.127016, eft->props.diameter, 1E-6);
+    EXPECT_NEAR(0.692626E+00, eft->props.kGrout, 1E-6);
+    EXPECT_NEAR(3.90E+06, eft->props.rhoCpGrout, 1);
+    EXPECT_NEAR(2.66667E-02, eft->props.shankSpace, 1E-2);
+    EXPECT_NEAR(0.391312E+00, eft->props.pipe.k, 1E-3);
+    EXPECT_NEAR(1.542E+06, eft->props.pipe.rhoCp, 1);
+    EXPECT_NEAR(2.66667E-02, eft->props.pipe.outerDia, 1E-3);
+    EXPECT_NEAR(1.33334E-02, eft->props.pipe.outerRadius, 1E-3);
+    EXPECT_NEAR(2.66667E-02, eft->props.pipe.outerDia, 1E-3);
+    EXPECT_NEAR(1.33334E-02, eft->props.pipe.outerRadius, 1E-3);
+    EXPECT_NEAR(2.18410E-02, eft->props.pipe.innerDia, 1E-3);
+    EXPECT_NEAR(1.09205E-02, eft->props.pipe.innerRadius, 1E-3);
+    EXPECT_NEAR(2.41285E-03, eft->props.pipe.wallThickness, 1E-3);
+
+    GHERespFactors *bwt = &tstGHE->gFuncBWT;
+    EXPECT_EQ("VERTICAL GROUND HEAT EXCHANGER PROPS", bwt->props.propName);
+    EXPECT_NEAR(1, bwt->props.depth, 1E-1);
+    EXPECT_NEAR(0.127016, bwt->props.diameter, 1E-6);
+    EXPECT_NEAR(0.692626E+00, bwt->props.kGrout, 1E-6);
+    EXPECT_NEAR(3.90E+06, bwt->props.rhoCpGrout, 1);
+    EXPECT_NEAR(2.66667E-02, bwt->props.shankSpace, 1E-2);
+    EXPECT_NEAR(0.391312E+00, bwt->props.pipe.k, 1E-3);
+    EXPECT_NEAR(1.542E+06, bwt->props.pipe.rhoCp, 1);
+    EXPECT_NEAR(2.66667E-02, bwt->props.pipe.outerDia, 1E-3);
+    EXPECT_NEAR(1.33334E-02, bwt->props.pipe.outerRadius, 1E-3);
+    EXPECT_NEAR(2.66667E-02, bwt->props.pipe.outerDia, 1E-3);
+    EXPECT_NEAR(1.33334E-02, bwt->props.pipe.outerRadius, 1E-3);
+    EXPECT_NEAR(2.18410E-02, bwt->props.pipe.innerDia, 1E-3);
+    EXPECT_NEAR(1.09205E-02, bwt->props.pipe.innerRadius, 1E-3);
+    EXPECT_NEAR(2.41285E-03, bwt->props.pipe.wallThickness, 1E-3);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Max_Shankspace)
+{
+    std::string const idf_objects = delimited_string({
+        "GroundHeatExchanger:System,",
+        "  Vertical Ground Heat Exchanger,  !- Name",
+        "  GHE Inlet Node,          !- Inlet Node Name",
+        "  GHE Outlet Node,         !- Outlet Node Name",
+        "  0.00330000,              !- Design Flow Rate {m3/s}",
+        "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Undisturbed Ground Temperature Model Name",
+        "  0.692626E+00,            !- Ground Thermal Conductivity {W/m-K}",
+        "  0.234700E+07,            !- Ground Thermal Heat Capacity {J/m3-K}",
+        "  Exiting Fluid Temperature g-functions,  !- GHE:ResponseFactors Exiting Fluid Temperature Object Name",
+        "  Borehole Wall Temperature g-functions;  !- GHE:ResponseFactors Borehole Wall Temperature Object Name",
+        "",
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  Vertical Ground Heat Exchanger Props,  !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  76.2,                    !- Borehole Length {m}",
+        "  0.127016,                !- Borehole Diameter {m}",
+        "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  2.66667E-02,             !- Pipe Outer Diameter {m}",
+        "  2.41285E-03,             !- Pipe Thickness {m}",
+        "  0.127016;                !- U-Tube Distance {m}",
+        "",
+        "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Name",
+        "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
+        "  920,                     !- Soil Density {kg/m3}",
+        "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
+        "  13.375,                  !- Average Soil Surface Temperature {C}",
+        "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
+        "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
+        "",
+        "GroundHeatExchanger:ResponseFactors,",
+        "  Exiting Fluid Temperature g-functions,  !- Name",
+        "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+        "  10,                      !- Number of Boreholes",
+        "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+        "  0.0,                     !- g-Function g Value 1",
+        "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+        "  1.0,                     !- g-Function g Value 2",
+        "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+        "  2.0,                     !- g-Function g Value 3",
+        "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+        "  3.0;                     !- g-Function g Value 4",
+        "",
+        "GroundHeatExchanger:ResponseFactors,",
+        "  Borehole Wall Temperature g-functions,  !- Name",
+        "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+        "  10,                      !- Number of Boreholes",
+        "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+        "  0.0,                     !- g-Function g Value 1",
+        "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+        "  1.0,                     !- g-Function g Value 2",
+        "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+        "  2.0,                     !- g-Function g Value 3",
+        "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+        "  3.0;                     !- g-Function g Value 4",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+
+    EnhancedGHE::factory("VERTICAL GROUND HEAT EXCHANGER");
+
+    ASSERT_EQ(1u, enhancedGHE.size());
+
+    EnhancedGHE *tstGHE = &enhancedGHE[0];
+
+    EXPECT_EQ("VERTICAL GROUND HEAT EXCHANGER", tstGHE->name);
+    EXPECT_EQ(0.00330000, tstGHE->designVolFlow);
+    EXPECT_EQ(GroundTemperatureManager::objectType_KusudaGroundTemp, tstGHE->gtm->objectType);
+    EXPECT_EQ(0.692626E+00, tstGHE->kSoil);
+    EXPECT_EQ(0.234700E+07, tstGHE->rhoCpSoil);
+
+    EXPECT_EQ("EXITING FLUID TEMPERATURE G-FUNCTIONS", tstGHE->gFuncEFT.name);
+    EXPECT_EQ("BOREHOLE WALL TEMPERATURE G-FUNCTIONS", tstGHE->gFuncBWT.name);
+
+    EXPECT_EQ(0u, tstGHE->boreholes.size());
+
+    EXPECT_EQ(true, tstGHE->gFuncEFTExist);
+    EXPECT_EQ(true, tstGHE->gFuncBWTExist);
+
+    EXPECT_EQ(std::vector<Real64>({0.0}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({0.0})));
+    EXPECT_EQ(std::vector<Real64>({0.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({0.5})));
+    EXPECT_EQ(std::vector<Real64>({1.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({1.5})));
+    EXPECT_EQ(std::vector<Real64>({2.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({2.5})));
+    EXPECT_EQ(std::vector<Real64>({3.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({3.5})));
+    EXPECT_EQ(std::vector<Real64>({-3.5}), tstGHE->gFuncEFT.g.get_values_at_target(std::vector<Real64>({-3.5})));
+
+    EXPECT_EQ(std::vector<Real64>({0.0}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({0.0})));
+    EXPECT_EQ(std::vector<Real64>({0.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({0.5})));
+    EXPECT_EQ(std::vector<Real64>({1.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({1.5})));
+    EXPECT_EQ(std::vector<Real64>({2.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({2.5})));
+    EXPECT_EQ(std::vector<Real64>({3.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({3.5})));
+    EXPECT_EQ(std::vector<Real64>({-3.5}), tstGHE->gFuncBWT.g.get_values_at_target(std::vector<Real64>({-3.5})));
+
+    GHERespFactors *eft = &tstGHE->gFuncEFT;
+    EXPECT_EQ("VERTICAL GROUND HEAT EXCHANGER PROPS", eft->props.propName);
+    EXPECT_NEAR(1, eft->props.depth, 1E-1);
+    EXPECT_NEAR(0.127016, eft->props.diameter, 1E-6);
+    EXPECT_NEAR(0.692626E+00, eft->props.kGrout, 1E-6);
+    EXPECT_NEAR(3.90E+06, eft->props.rhoCpGrout, 1);
+    EXPECT_NEAR(7.36826E-02, eft->props.shankSpace, 1E-2);
+    EXPECT_NEAR(0.391312E+00, eft->props.pipe.k, 1E-3);
+    EXPECT_NEAR(1.542E+06, eft->props.pipe.rhoCp, 1);
+    EXPECT_NEAR(2.66667E-02, eft->props.pipe.outerDia, 1E-3);
+    EXPECT_NEAR(1.33334E-02, eft->props.pipe.outerRadius, 1E-3);
+    EXPECT_NEAR(2.66667E-02, eft->props.pipe.outerDia, 1E-3);
+    EXPECT_NEAR(1.33334E-02, eft->props.pipe.outerRadius, 1E-3);
+    EXPECT_NEAR(2.18410E-02, eft->props.pipe.innerDia, 1E-3);
+    EXPECT_NEAR(1.09205E-02, eft->props.pipe.innerRadius, 1E-3);
+    EXPECT_NEAR(2.41285E-03, eft->props.pipe.wallThickness, 1E-3);
+
+    GHERespFactors *bwt = &tstGHE->gFuncBWT;
+    EXPECT_EQ("VERTICAL GROUND HEAT EXCHANGER PROPS", bwt->props.propName);
+    EXPECT_NEAR(1, bwt->props.depth, 1E-1);
+    EXPECT_NEAR(0.127016, bwt->props.diameter, 1E-6);
+    EXPECT_NEAR(0.692626E+00, bwt->props.kGrout, 1E-6);
+    EXPECT_NEAR(3.90E+06, bwt->props.rhoCpGrout, 1);
+    EXPECT_NEAR(7.36826E-02, bwt->props.shankSpace, 1E-2);
+    EXPECT_NEAR(0.391312E+00, bwt->props.pipe.k, 1E-3);
+    EXPECT_NEAR(1.542E+06, bwt->props.pipe.rhoCp, 1);
+    EXPECT_NEAR(2.66667E-02, bwt->props.pipe.outerDia, 1E-3);
+    EXPECT_NEAR(1.33334E-02, bwt->props.pipe.outerRadius, 1E-3);
+    EXPECT_NEAR(2.66667E-02, bwt->props.pipe.outerDia, 1E-3);
+    EXPECT_NEAR(1.33334E-02, bwt->props.pipe.outerRadius, 1E-3);
+    EXPECT_NEAR(2.18410E-02, bwt->props.pipe.innerDia, 1E-3);
+    EXPECT_NEAR(1.09205E-02, bwt->props.pipe.innerRadius, 1E-3);
+    EXPECT_NEAR(2.41285E-03, bwt->props.pipe.wallThickness, 1E-3);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Props_Name_Response_Factor)
+{
+    std::string const idf_objects = delimited_string({
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  Bad Props Name,          !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  76.2,                    !- Borehole Length {m}",
+        "  0.127016,                !- Borehole Diameter {m}",
+        "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  2.66667E-02,             !- Pipe Outer Diameter {m}",
+        "  2.41285E-03,             !- Pipe Thickness {m}",
+        "  0.127016;                !- U-Tube Distance {m}",
+        "",
+        "GroundHeatExchanger:ResponseFactors,",
+        "  Exiting Fluid Temperature g-functions,  !- Name",
+        "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+        "  10,                      !- Number of Boreholes",
+        "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+        "  0.0,                     !- g-Function g Value 1",
+        "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+        "  1.0,                     !- g-Function g Value 2",
+        "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+        "  2.0,                     !- g-Function g Value 3",
+        "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+        "  3.0;                     !- g-Function g Value 4",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    ASSERT_ANY_THROW(EnhancedGHE::factory("VERTICAL GROUND HEAT EXCHANGER"));
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Props_Name_Array)
+{
+    std::string const idf_objects = delimited_string({
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  Bad Props Name,          !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  76.2,                    !- Borehole Length {m}",
+        "  0.127016,                !- Borehole Diameter {m}",
+        "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  2.66667E-02,             !- Pipe Outer Diameter {m}",
+        "  2.41285E-03,             !- Pipe Thickness {m}",
+        "  0.127016;                !- U-Tube Distance {m}",
+        "",
+        "GroundHeatExchanger:Vertical:Array,",
+        "  GHE-Array,               !- Name",
+        "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+        "  2,                       !- Number of Boreholes in X-Direction",
+        "  2,                       !- Number of Boreholes in Y-Direction",
+        "  5;                       !- Borehole Spacing {m}",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    ASSERT_ANY_THROW(EnhancedGHE::factory("VERTICAL GROUND HEAT EXCHANGER"));
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Props_Name_Borehole)
+{
+    std::string const idf_objects = delimited_string({
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  Bad Props Name,          !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  76.2,                    !- Borehole Length {m}",
+        "  0.127016,                !- Borehole Diameter {m}",
+        "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  2.66667E-02,             !- Pipe Outer Diameter {m}",
+        "  2.41285E-03,             !- Pipe Thickness {m}",
+        "  0.127016;                !- U-Tube Distance {m}",
+        "",
+        "GroundHeatExchanger:Vertical:Single,",
+        "  BH-1,                   !- Name",
+        "  Vertical Ground Heat Exchanger Props,   !- GHE Props",
+        "  0,                       !- X Location {m}",
+        "  0;                       !- Y Location {m}",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    ASSERT_ANY_THROW(EnhancedGHE::factory("VERTICAL GROUND HEAT EXCHANGER"));
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_EWT_g_function_Name)
+{
+    std::string const idf_objects = delimited_string({
+                                                         "GroundHeatExchanger:System,",
+                                                         "  Vertical Ground Heat Exchanger,  !- Name",
+                                                         "  GHE Inlet Node,          !- Inlet Node Name",
+                                                         "  GHE Outlet Node,         !- Outlet Node Name",
+                                                         "  0.00330000,              !- Design Flow Rate {m3/s}",
+                                                         "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
+                                                         "  Vertical Ground Heat Exchanger Ground Temps,  !- Undisturbed Ground Temperature Model Name",
+                                                         "  0.692626E+00,            !- Ground Thermal Conductivity {W/m-K}",
+                                                         "  0.234700E+07,            !- Ground Thermal Heat Capacity {J/m3-K}",
+                                                         "  Bad g-functions name,    !- GHE:ResponseFactors Exiting Fluid Temperature Object Name",
+                                                         "  Borehole Wall Temperature g-functions;  !- GHE:ResponseFactors Borehole Wall Temperature Object Name",
+                                                         "",
+                                                         "GroundHeatExchanger:Vertical:Properties,",
+                                                         "  Vertical Ground Heat Exchanger Props,  !- Name",
+                                                         "  1,                       !- Depth of Top of Borehole {m}",
+                                                         "  76.2,                    !- Borehole Length {m}",
+                                                         "  0.127016,                !- Borehole Diameter {m}",
+                                                         "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
+                                                         "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+                                                         "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
+                                                         "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
+                                                         "  2.66667E-02,             !- Pipe Outer Diameter {m}",
+                                                         "  2.41285E-03,             !- Pipe Thickness {m}",
+                                                         "  5.1225E-02;              !- U-Tube Distance {m}",
+                                                         "",
+                                                         "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
+                                                         "  Vertical Ground Heat Exchanger Ground Temps,  !- Name",
+                                                         "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
+                                                         "  920,                     !- Soil Density {kg/m3}",
+                                                         "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
+                                                         "  13.375,                  !- Average Soil Surface Temperature {C}",
+                                                         "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
+                                                         "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
+                                                         "",
+                                                         "GroundHeatExchanger:ResponseFactors,",
+                                                         "  Exiting Fluid Temperature g-functions,  !- Name",
+                                                         "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+                                                         "  10,                      !- Number of Boreholes",
+                                                         "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+                                                         "  0.0,                     !- g-Function g Value 1",
+                                                         "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+                                                         "  1.0,                     !- g-Function g Value 2",
+                                                         "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+                                                         "  2.0,                     !- g-Function g Value 3",
+                                                         "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+                                                         "  3.0;                     !- g-Function g Value 4",
+                                                         "",
+                                                         "GroundHeatExchanger:ResponseFactors,",
+                                                         "  Borehole Wall Temperature g-functions,  !- Name",
+                                                         "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+                                                         "  10,                      !- Number of Boreholes",
+                                                         "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+                                                         "  0.0,                     !- g-Function g Value 1",
+                                                         "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+                                                         "  1.0,                     !- g-Function g Value 2",
+                                                         "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+                                                         "  2.0,                     !- g-Function g Value 3",
+                                                         "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+                                                         "  3.0;                     !- g-Function g Value 4",
+                                                     });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    ASSERT_ANY_THROW(EnhancedGHE::factory("VERTICAL GROUND HEAT EXCHANGER"));
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_BWT_g_function_Name)
+{
+    std::string const idf_objects = delimited_string({
+        "GroundHeatExchanger:System,",
+        "  Vertical Ground Heat Exchanger,  !- Name",
+        "  GHE Inlet Node,          !- Inlet Node Name",
+        "  GHE Outlet Node,         !- Outlet Node Name",
+        "  0.00330000,              !- Design Flow Rate {m3/s}",
+        "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Undisturbed Ground Temperature Model Name",
+        "  0.692626E+00,            !- Ground Thermal Conductivity {W/m-K}",
+        "  0.234700E+07,            !- Ground Thermal Heat Capacity {J/m3-K}",
+        "  Exiting Fluid Temperature g-functions,  !- GHE:ResponseFactors Exiting Fluid Temperature Object Name",
+        "  Bad g-function name;  !- GHE:ResponseFactors Borehole Wall Temperature Object Name",
+        "",
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  Vertical Ground Heat Exchanger Props,  !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  76.2,                    !- Borehole Length {m}",
+        "  0.127016,                !- Borehole Diameter {m}",
+        "  0.692626E+00,            !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.391312E+00,            !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.542E+06,               !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  2.66667E-02,             !- Pipe Outer Diameter {m}",
+        "  2.41285E-03,             !- Pipe Thickness {m}",
+        "  5.1225E-02;              !- U-Tube Distance {m}",
+        "",
+        "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
+        "  Vertical Ground Heat Exchanger Ground Temps,  !- Name",
+        "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
+        "  920,                     !- Soil Density {kg/m3}",
+        "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
+        "  13.375,                  !- Average Soil Surface Temperature {C}",
+        "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
+        "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
+        "",
+        "GroundHeatExchanger:ResponseFactors,",
+        "  Exiting Fluid Temperature g-functions,  !- Name",
+        "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+        "  10,                      !- Number of Boreholes",
+        "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+        "  0.0,                     !- g-Function g Value 1",
+        "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+        "  1.0,                     !- g-Function g Value 2",
+        "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+        "  2.0,                     !- g-Function g Value 3",
+        "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+        "  3.0;                     !- g-Function g Value 4",
+        "",
+        "GroundHeatExchanger:ResponseFactors,",
+        "  Borehole Wall Temperature g-functions,  !- Name",
+        "  Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name",
+        "  10,                      !- Number of Boreholes",
+        "  0.0,                     !- g-Function Ln(T/Ts) Value 1",
+        "  0.0,                     !- g-Function g Value 1",
+        "  1.0,                     !- g-Function Ln(T/Ts) Value 2",
+        "  1.0,                     !- g-Function g Value 2",
+        "  2.0,                     !- g-Function Ln(T/Ts) Value 3",
+        "  2.0,                     !- g-Function g Value 3",
+        "  3.0,                     !- g-Function Ln(T/Ts) Value 4",
+        "  3.0;                     !- g-Function g Value 4",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    ASSERT_ANY_THROW(EnhancedGHE::factory("VERTICAL GROUND HEAT EXCHANGER"));
 }
