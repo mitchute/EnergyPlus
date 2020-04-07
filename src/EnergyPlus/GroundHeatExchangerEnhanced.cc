@@ -214,14 +214,12 @@ namespace GroundHeatExchangerEnhanced {
                 errorsFound = true;
             }
 
-            newRF.numBH = DataIPShortCuts::rNumericArgs(1);
             newRF.maxSimYears = DataEnvironment::MaxNumberSimYears;
 
             // get number of g-function pairs
-            int numPreviousNumFields = 1;
             int numPairs = 0;
-            if ((numNumbers - numPreviousNumFields) % 2 == 0) {
-                numPairs = (numNumbers - numPreviousNumFields) / 2;
+            if (numNumbers % 2 == 0) {
+                numPairs = numNumbers / 2;
             } else {
                 errorsFound = true;
                 ShowSevereError("Errors found processing response factor input for " + DataIPShortCuts::cCurrentModuleObject +
@@ -237,7 +235,7 @@ namespace GroundHeatExchangerEnhanced {
             std::vector<std::vector<Real64>> LnTTs = {{}};
             std::vector<std::vector<Real64>> gFn = {{}};
 
-            int indexNum = 2;
+            int indexNum = 1;
             for (int pairNum = 1; pairNum <= numPairs; ++pairNum) {
                 LnTTs.front().push_back(DataIPShortCuts::rNumericArgs(indexNum));
                 gFn.front().push_back(DataIPShortCuts::rNumericArgs(indexNum + 1));
@@ -451,9 +449,12 @@ namespace GroundHeatExchangerEnhanced {
             newGHE.designVolFlow = DataIPShortCuts::rNumericArgs(1);
             PlantUtilities::RegisterPlantCompDesignFlow(newGHE.inletNode, newGHE.designVolFlow);
 
+            // Number of boreholes
+            newGHE.numBH = DataIPShortCuts::rNumericArgs(2);
+
             // Soil
-            newGHE.kSoil = DataIPShortCuts::rNumericArgs(2);
-            newGHE.rhoCpSoil = DataIPShortCuts::rNumericArgs(3);
+            newGHE.kSoil = DataIPShortCuts::rNumericArgs(3);
+            newGHE.rhoCpSoil = DataIPShortCuts::rNumericArgs(4);
 
             // gb values - Exiting fluid temperature response factors
             if (!DataIPShortCuts::lAlphaFieldBlanks(6)) {
@@ -489,20 +490,29 @@ namespace GroundHeatExchangerEnhanced {
                 }
             }
 
+            // error checking variables
+            bool initFromArrObj = false;
+            bool initFromBHObjs = false;
+            std::string arrName;
+
             // either g or gb were not found, so need to generate g-functions
-            if (!newGHE.gFuncBWTExist | !newGHE.gFuncEFTExist) {
+            if ((DataIPShortCuts::lAlphaFieldBlanks(6) && !newGHE.gFuncBWTExist) | (DataIPShortCuts::lAlphaFieldBlanks(7) && !newGHE.gFuncEFTExist)) {
                 if (!DataIPShortCuts::lAlphaFieldBlanks(8)) {
                     // borehole instances from array object
+                    initFromArrObj = true;
 
+                    std::string arrObjName;
                     for (auto &arr : arraysVect) {
                         if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(8), arr.name)) {
                             newGHE.boreholes = arr.boreholes;
+                            arrObjName = arr.name;
                             break;
                         }
                     }
 
                 } else {
                     // borehole instances from single borehole objects
+                    initFromBHObjs = true;
 
                     // get single boreholes
                     int numPreviousAlphaFields = 7;
@@ -538,6 +548,15 @@ namespace GroundHeatExchangerEnhanced {
                     ShowSevereError("Model requires both " + respFactModObjName + " objects, or");
                     ShowSevereError("boreholes to be described using " + bhModObjName + " or " + arrModObjName + " objects");
                     errorsFound = true;
+                } else if (newGHE.numBH != (int)newGHE.boreholes.size()) {
+                    if (initFromArrObj) {
+                        ShowSevereError("Number of boreholes specified does not match number specified in " + arrModObjName + " object, name: " + arrName);
+                    } else if (initFromBHObjs) {
+                        ShowSevereError("Number of boreholes specified does not match number specified from " + bhModObjName + " objects");
+                    } else {
+                        assert(false); // LCOV_EXCL_LINE
+                    }
+                    errorsFound = true;
                 }
             }
 
@@ -566,27 +585,36 @@ namespace GroundHeatExchangerEnhanced {
         SetupOutputVariable("Ground Heat Exchanger Farfield Ground Temperature",OutputProcessor::Unit::C, this->farFieldGroundTemp,"System","Average", this->name);
     }
 
-    void EnhancedGHE::simulate(const PlantLocation &EP_UNUSED(calledFromLocation), bool EP_UNUSED(FirstHVACIteration), Real64 &EP_UNUSED(CurLoad), bool EP_UNUSED(RunFlag))
-    {
-    }
-
-    void EnhancedGHE::getDesignCapacities(const PlantLocation &EP_UNUSED(calledFromLocation), Real64 &EP_UNUSED(MaxLoad), Real64 &EP_UNUSED(MinLoad), Real64 &EP_UNUSED(OptLoad))
-    {
-    }
-
-    void EnhancedGHE::getDesignTemperatures(Real64 &EP_UNUSED(TempDesCondIn), Real64 &EP_UNUSED(TempDesEvapOut))
-    {
-    }
-
-    void EnhancedGHE::getSizingFactor(Real64 &EP_UNUSED(sizFac))
-    {
-    }
-
     void EnhancedGHE::onInitLoopEquip(const PlantLocation &EP_UNUSED(calledFromLocation))
     {
         if (this->oneTimeInit) {
             this->setupOutputVars();
+
+            if (!this->gFuncEFTExist) {
+            	this->generateEFTgFunc();
+	            this->gFuncEFTExist = true;
+            }
+
+            if (!this->gFuncBWTExist) {
+            	this->generateBWTgFunc();
+	            this->gFuncBWTExist = true;
+            }
+
+            this->oneTimeInit = false;
         }
+    }
+
+    void EnhancedGHE::generateEFTgFunc()
+    {
+    	GHEBorehole avgBH;
+    }
+
+    void EnhancedGHE::generateBWTgFunc()
+    {
+    }
+
+    void EnhancedGHE::simulate(const PlantLocation &EP_UNUSED(calledFromLocation), bool EP_UNUSED(FirstHVACIteration), Real64 &EP_UNUSED(CurLoad), bool EP_UNUSED(RunFlag))
+    {
     }
 
 } // namespace GroundHeatExchangerEnhanced

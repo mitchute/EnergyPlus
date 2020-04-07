@@ -1820,6 +1820,7 @@
     GHE Inlet Node,          !- Inlet Node Name
     GHE Outlet Node,         !- Outlet Node Name
     0.00330000,              !- Design Flow Rate {m3/s}
+    120,                     !- Number of Boreholes
     Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type
     Vertical Ground Heat Exchanger Ground Temps,  !- Undisturbed Ground Temperature Model Name
     0.692626E+00,            !- Ground Thermal Conductivity {W/m-K}
@@ -1852,7 +1853,6 @@
   GroundHeatExchanger:ResponseFactors,
     Vertical Ground Heat Exchanger g-functions,  !- Name
     Vertical Ground Heat Exchanger Props,  !- GHE:Vertical:Properties Object Name
-    120,                     !- Number of Boreholes
     -15.2996,                !- g-Function Ln(T/Ts) Value 1
     -0.348322,               !- g-Function g Value 1
     -14.201,                 !- g-Function Ln(T/Ts) Value 2

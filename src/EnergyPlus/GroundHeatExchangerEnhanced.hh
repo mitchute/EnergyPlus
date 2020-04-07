@@ -168,17 +168,16 @@ namespace GroundHeatExchangerEnhanced {
         std::string name;
         BoreholeProps props;
         Btwxt::RegularGridInterpolator g;
-        int numBH;
         int maxSimYears;
 
         // default constructor
-        GHERespFactors() : numBH(0), maxSimYears(0)
+        GHERespFactors() : maxSimYears(0)
         {
         }
 
         // copy constructor
         GHERespFactors(GHERespFactors const &r) {
-            name = r.name; props = r.props; g = r.g; numBH = r.numBH; maxSimYears = r.maxSimYears;
+            name = r.name; props = r.props; g = r.g; maxSimYears = r.maxSimYears;
         }
 
         // default destructor
@@ -192,9 +191,10 @@ namespace GroundHeatExchangerEnhanced {
         std::string name;
         int inletNode;
         int outletNode;
+        Real64 designVolFlow;
+        int numBH;
         Real64 kSoil;
         Real64 rhoCpSoil;
-        Real64 designVolFlow;
         std::shared_ptr<BaseGroundTempsModel> gtm;
         Real64 aveBHWallTemp;
         Real64 heatRateToSoil;
@@ -210,7 +210,7 @@ namespace GroundHeatExchangerEnhanced {
         std::vector<GHEBorehole> boreholes;
 
         // default constructor
-        EnhancedGHE() : oneTimeInit(true), inletNode(0), outletNode(0), kSoil(0.0), rhoCpSoil(0.0), designVolFlow(0.0), aveBHWallTemp(0.0),
+        EnhancedGHE() : oneTimeInit(true), inletNode(0), outletNode(0), designVolFlow(0.0), numBH(0), kSoil(0.0), rhoCpSoil(0.0), aveBHWallTemp(0.0),
                         heatRateToSoil(0.0), inletTemp(0.0), outletTemp(0.0), massFlowRate(0.0), aveFluidTemp(0.0), farFieldGroundTemp(0.0),
                         gFuncEFTExist(false), gFuncBWTExist(false)
         {
@@ -223,10 +223,9 @@ namespace GroundHeatExchangerEnhanced {
         static PlantComponent *factory(std::string const &objectName);
         void setupOutputVars();
         void simulate(const PlantLocation &calledFromLocation, bool FirstHVACIteration, Real64 &CurLoad, bool RunFlag) override;
-        void getDesignCapacities(const PlantLocation &calledFromLocation, Real64 &MaxLoad, Real64 &MinLoad, Real64 &OptLoad) override;
-        void getDesignTemperatures(Real64 &TempDesCondIn, Real64 &TempDesEvapOut) override;
-        void getSizingFactor(Real64 &sizFac) override;
         void onInitLoopEquip(const PlantLocation &calledFromLocation) override;
+        void generateEFTgFunc();
+        void generateBWTgFunc();
     };
 
     void clear_state();
