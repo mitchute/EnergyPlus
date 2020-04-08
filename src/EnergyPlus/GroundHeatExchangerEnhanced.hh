@@ -62,6 +62,37 @@ namespace EnergyPlus {
 
 namespace GroundHeatExchangerEnhanced {
 
+struct FluidWorker
+{
+    // Members
+    std::string fluidName;
+    int loopNum;
+    int fluidIdx;
+
+    // Default constructor
+    FluidWorker() : loopNum(0), fluidIdx(0)
+    {
+    }
+
+    // Copy constructor
+    FluidWorker(const FluidWorker &r) {
+        fluidName = r.fluidName;
+        loopNum = r.loopNum;
+        fluidIdx = r.fluidIdx;
+    }
+
+    // Default destructor
+    ~FluidWorker() = default;
+
+    // Member methods
+    void initialize(int _loopNum);
+    Real64 getCp(Real64 const &temperature, const std::string &routineName);
+    Real64 getCond(Real64 const &temperature, const std::string &routineName);
+    Real64 getVisc(Real64 const &temperature, const std::string &routineName);
+    Real64 getRho(Real64 const &temperature, const std::string &routineName);
+    Real64 getPrandtl(Real64 const &temperature, const std::string &routineName);
+};
+
     struct Pipe
     {
         Real64 k;
@@ -71,6 +102,7 @@ namespace GroundHeatExchangerEnhanced {
         Real64 innerRadius;
         Real64 outerRadius;
         Real64 wallThickness;
+        FluidWorker fluid;
 
         // default constructor
         Pipe() : k(0.0), rhoCp(0.0), innerDia(0.0), outerDia(0.0), innerRadius(0.0), outerRadius(0.0), wallThickness(0.0)
@@ -84,20 +116,32 @@ namespace GroundHeatExchangerEnhanced {
             rhoCp = _rhoCp;
             outerDia = _outerDia;
             wallThickness = _wallThickness;
-
-            innerDia = outerDia - 2 * wallThickness;
-            innerRadius = innerDia / 2.0;
-            outerRadius = outerDia / 2.0;
+            innerDia = 0.0;
+            innerRadius = 0.0;
+            outerRadius = 0.0;
+            initGeometry();
         }
 
         // copy constructor
         Pipe(Pipe const &r) {
             k = r.k; rhoCp = r.rhoCp; innerDia = r.innerDia; outerDia = r.outerDia; innerRadius = r.innerRadius;
-            outerRadius = r.outerRadius; wallThickness = r.wallThickness;
+            outerRadius = r.outerRadius; wallThickness = r.wallThickness; fluid = r.fluid;
         }
 
         // default destructor
         ~Pipe() = default;
+
+        // member methods
+        void initGeometry();
+        Real64 mdotToRe(Real64 flowRate, Real64 temperature);
+//        Real64 calcFrictionFactor(Real64 Re);
+//        Real64 calcConductionResistance();
+//        Real64 calcConvectionResistance(Real64 flowRate, Real64 temperature);
+//        Real64 calcResistance(Real64 flowRate, Real64 temperature);
+//        Real64 turbulentNusselt(Real64 Re, Real64 temperature);
+//        static Real64 laminarNusselt();
+//        static Real64 laminarFrictionFactor(Real64 Re);
+//        static Real64 turbulentFrictionFactor(Real64 Re);
     };
 
     struct BoreholeProps
@@ -208,11 +252,17 @@ namespace GroundHeatExchangerEnhanced {
         GHERespFactors gFuncEFT;
         GHERespFactors gFuncBWT;
         std::vector<GHEBorehole> boreholes;
+        GHEBorehole aveBH;
+        int loopNum;
+        int loopSideNum;
+        int branchNum;
+        int compNum;
+        FluidWorker fluid;
 
         // default constructor
         EnhancedGHE() : oneTimeInit(true), inletNode(0), outletNode(0), designVolFlow(0.0), numBH(0), kSoil(0.0), rhoCpSoil(0.0), aveBHWallTemp(0.0),
                         heatRateToSoil(0.0), inletTemp(0.0), outletTemp(0.0), massFlowRate(0.0), aveFluidTemp(0.0), farFieldGroundTemp(0.0),
-                        gFuncEFTExist(false), gFuncBWTExist(false)
+                        gFuncEFTExist(false), gFuncBWTExist(false), loopNum(0), loopSideNum(0), branchNum(0), compNum(0)
         {
         }
 

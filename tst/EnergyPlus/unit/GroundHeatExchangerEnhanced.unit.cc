@@ -52,6 +52,7 @@
 
 // EnergyPlus Headers
 #include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
+#include <EnergyPlus/Plant/DataPlant.hh>
 #include <EnergyPlus/GroundTemperatureModeling/GroundTemperatureModelManager.hh>
 
 // Testing Headers
@@ -1117,4 +1118,68 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Num_BH)
 
     ASSERT_TRUE(process_idf(idf_objects));
     ASSERT_ANY_THROW(EnhancedGHE::factory("GHE"));
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Fluid_Worker_Props)
+{
+    int loopNum = 1;
+    DataPlant::PlantLoop.allocate(1);
+    DataPlant::PlantLoop(loopNum).FluidIndex = 1;
+    DataPlant::PlantLoop(loopNum).FluidName = "WATER";
+
+    // test init
+    FluidWorker tst;
+    tst.initialize(loopNum);
+    EXPECT_EQ(tst.fluidIdx, 1);
+    EXPECT_EQ(tst.fluidName, "WATER");
+
+    static std::string const routineName = "GHE_Enhanced_Fluid_Worker_Test_Props";
+    Real64 const temp = 20.0;
+
+    // test getCp
+    EXPECT_NEAR(tst.getCp(temp, routineName), 4181, 1E-01);
+
+    // test getCond
+    EXPECT_NEAR(tst.getCond(temp, routineName), 0.598, 1E-3);
+
+    // test getVisc
+    EXPECT_NEAR(tst.getVisc(temp, routineName), 1E-3, 1E-03);
+
+    // test getRho
+    EXPECT_NEAR(tst.getRho(temp, routineName), 998.2, 1E-01);
+
+    // test getPrandlt
+    EXPECT_NEAR(tst.getPrandtl(temp, routineName), 7.0, 1E-02);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Pipe_Init_Geometry)
+{
+    Pipe tst(1.0, 1.0, 1.0, 0.1);
+    EXPECT_NEAR(tst.k, 1.0, 1E-03);
+    EXPECT_NEAR(tst.rhoCp, 1.0, 1E-03);
+    EXPECT_NEAR(tst.outerDia, 1.0, 1E-03);
+    EXPECT_NEAR(tst.wallThickness, 0.1, 1E-03);
+    EXPECT_NEAR(tst.innerDia, 0.8, 1E-03);
+    EXPECT_NEAR(tst.outerRadius, 0.5, 1E-03);
+    EXPECT_NEAR(tst.innerRadius, 0.4, 1E-03);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Pipe_mdotToRe)
+{
+    int loopNum = 1;
+    DataPlant::PlantLoop.allocate(1);
+    DataPlant::PlantLoop(loopNum).FluidIndex = 1;
+    DataPlant::PlantLoop(loopNum).FluidName = "WATER";
+
+    // init fluid
+    FluidWorker fluid;
+    fluid.initialize(loopNum);
+
+    // setup pipe
+    Pipe tst(1.0, 1.0, 1.0, 0.1);
+    tst.fluid = fluid;
+
+    Real64 const mdot = 10;
+    Real64 const temp = 20.0;
+    EXPECT_NEAR(tst.mdotToRe(mdot, temp), 15890, 1.0);
 }

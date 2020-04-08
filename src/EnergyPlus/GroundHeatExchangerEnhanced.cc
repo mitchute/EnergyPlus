@@ -55,6 +55,8 @@
 #include <EnergyPlus/BranchNodeConnections.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataIPShortCuts.hh>
+#include <EnergyPlus/Plant/DataPlant.hh>
+#include <EnergyPlus/FluidProperties.hh>
 #include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
 #include <EnergyPlus/InputProcessing/InputProcessor.hh>
 #include <EnergyPlus/NodeInputManager.hh>
@@ -590,14 +592,47 @@ namespace GroundHeatExchangerEnhanced {
         if (this->oneTimeInit) {
             this->setupOutputVars();
 
-            if (!this->gFuncEFTExist) {
-            	this->generateEFTgFunc();
-	            this->gFuncEFTExist = true;
+            // populate location on the plant loop
+            bool errorsFound = false;
+            PlantUtilities::ScanPlantLoopsForObject(this->name, DataPlant::TypeOf_GrndHtExchgSystem, this->loopNum, this->loopSideNum, this->branchNum, this->compNum, errorsFound, _, _, _, _, _);
+
+            // error if not found
+            if (errorsFound) {
+                ShowFatalError("Program terminated due to previous conditions.");
             }
 
+            // setup fluid worker
+            this->fluid.initialize(this->loopNum);
+
+            // create an "average" borehole
+            this->aveBH;
+            for (auto &bh : this->boreholes) {
+                this->aveBH.depth += bh.depth;
+                this->aveBH.length += bh.length;
+                this->aveBH.diameter += bh.diameter;
+                this->aveBH.kGrout += bh.kGrout;
+                this->aveBH.rhoCpGrout += bh.rhoCpGrout;
+                this->aveBH.shankSpace += bh.shankSpace;
+                this->aveBH.pipe.k += bh.pipe.k;
+                this->aveBH.pipe.rhoCp += bh.pipe.rhoCp;
+                this->aveBH.pipe.outerDia += bh.pipe.outerDia;
+                this->aveBH.pipe.wallThickness += bh.pipe.wallThickness;
+            }
+
+            // setup pipe
+            this->aveBH.pipe.initGeometry();
+            this->aveBH.pipe.fluid = this->fluid;
+
+            // check for EFT g-functions
+            if (!this->gFuncEFTExist) {
+            	this->generateEFTgFunc();
+            	this->gFuncEFTExist = true;
+            }
+
+            // check for BWT g-functions
             if (!this->gFuncBWTExist) {
             	this->generateBWTgFunc();
-	            this->gFuncBWTExist = true;
+            	this->gFuncBWTExist = true;
             }
 
             this->oneTimeInit = false;
@@ -606,7 +641,7 @@ namespace GroundHeatExchangerEnhanced {
 
     void EnhancedGHE::generateEFTgFunc()
     {
-    	GHEBorehole avgBH;
+
     }
 
     void EnhancedGHE::generateBWTgFunc()
@@ -615,6 +650,56 @@ namespace GroundHeatExchangerEnhanced {
 
     void EnhancedGHE::simulate(const PlantLocation &EP_UNUSED(calledFromLocation), bool EP_UNUSED(FirstHVACIteration), Real64 &EP_UNUSED(CurLoad), bool EP_UNUSED(RunFlag))
     {
+    }
+
+    void FluidWorker::initialize(int _loopNum)
+    {
+        this->fluidName = DataPlant::PlantLoop(_loopNum).FluidName;
+        this->loopNum = _loopNum;
+        this->fluidIdx = DataPlant::PlantLoop(_loopNum).FluidIndex;
+    }
+
+    Real64 FluidWorker::getCp(Real64 const &temperature, const std::string &routineName)
+    {
+        return FluidProperties::GetSpecificHeatGlycol(this->fluidName, temperature, this->fluidIdx, routineName);
+    }
+
+    Real64 FluidWorker::getCond(Real64 const &temperature, const std::string &routineName)
+    {
+        return FluidProperties::GetConductivityGlycol(this->fluidName, temperature, this->fluidIdx, routineName);
+    }
+
+    Real64 FluidWorker::getVisc(Real64 const &temperature, const std::string &routineName)
+    {
+        return FluidProperties::GetViscosityGlycol(this->fluidName, temperature, this->fluidIdx, routineName);
+    }
+
+    Real64 FluidWorker::getRho(Real64 const &temperature, const std::string &routineName)
+    {
+        return FluidProperties::GetDensityGlycol(this->fluidName, temperature, this->fluidIdx, routineName);
+    }
+
+    Real64 FluidWorker::getPrandtl(Real64 const &temperature, const std::string &routineName)
+    {
+        Real64 cp = this->getCp(temperature, routineName);
+        Real64 mu = this->getVisc(temperature, routineName);
+        Real64 k = this->getCond(temperature, routineName);
+
+        return cp * mu / k;
+    }
+
+    void Pipe::initGeometry()
+    {
+        this->innerDia = this->outerDia - 2 * this->wallThickness;
+        this->innerRadius = this->innerDia / 2.0;
+        this->outerRadius = this->outerDia / 2.0;
+    }
+
+    Real64 Pipe::mdotToRe(Real64 flowRate, Real64 temperature)
+    {
+        static std::string const routineName("Pipe::mdotToRe");
+        Real64 mu = this->fluid.getVisc(temperature, routineName);
+        return 4.0 * flowRate / (mu * DataGlobals::Pi * this->innerDia);
     }
 
 } // namespace GroundHeatExchangerEnhanced
