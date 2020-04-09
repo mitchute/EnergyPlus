@@ -78,6 +78,20 @@ namespace GroundHeatExchangerEnhanced {
         enhancedGHE.clear();
     }
 
+    Real64 smoothingFunc(Real64 const &x, Real64 const &a, Real64 const &b)
+    {
+        //  Sigmoid smoothing function
+        //
+        //  https://en.wikipedia.org/wiki/Sigmoid_function
+        //
+        //  param x: independent variable
+        //  param a: fitting parameter 1
+        //  param b: fitting parameter 2
+        //  @return float between 0-1
+
+        return 1 / (1 + std::exp(-(x - a) / b));
+    }
+
     PlantComponent *EnhancedGHE::factory(std::string const &objectName)
     {
         if (getInput) {
@@ -701,6 +715,118 @@ namespace GroundHeatExchangerEnhanced {
         Real64 mu = this->fluid.getVisc(temperature, routineName);
         return 4.0 * flowRate / (mu * DataGlobals::Pi * this->innerDia);
     }
+
+    Real64 Pipe::laminarFrictionFactor(Real64 Re)
+    {
+        // laminar friction factor
+
+        // param Re: Reynolds number
+        // returns: friction factor
+
+        return 64 / Re;
+    }
+
+    Real64 Pipe::turbulentFrictionFactor(Real64 Re)
+    {
+        // turbulent friction factor
+
+        // Petukhov, B. S. (1970). Advances in Heat Transfer, volume 6, chapter Heat transfer and
+        // friction in turbulent pipe flow with variable physical properties, pages 503–564.
+        // Academic Press, Inc., New York, NY.
+
+        // param Re: Reynolds number
+        // returns: friction factor
+
+        return std::pow(0.79 * std::log(Re) - 1.64, -2.0);
+    }
+
+    Real64 Pipe::frictionFactor(Real64 Re)
+    {
+        // smooth pipe friction factor
+
+        // param Re: Reynolds number
+        // returns: friction factor
+
+        Real64 lowRe = 1500;
+        Real64 highRe = 5000;
+
+        if (Re < lowRe) {
+            this->friction = laminarFrictionFactor(Re);
+        } else if (lowRe <= Re && Re < highRe) {
+            Real64 fLow = laminarFrictionFactor(Re);
+            Real64 fHigh = turbulentFrictionFactor(Re);
+            Real64 sigma = smoothingFunc(Re, 3000, 450);
+            this->friction = (1 - sigma) * fLow + sigma * fHigh;
+        } else
+            this->friction = turbulentFrictionFactor(Re);
+        return this->friction;
+    }
+
+    Real64 Pipe::laminarNusselt()
+{
+    // laminar Nusselt number for smooth pipes
+    // mean(4.36, 3.66)
+
+    // returns Nusselt number
+
+    return 4.01;
+}
+
+    Real64 Pipe::turbulentNusselt(Real64 Re, Real64 temperature)
+{
+    // turbulent Nusselt number
+
+    // Gnielinski, V. 1976. 'New equations for heat and mass transfer in turbulent pipe and channel flow.'
+    // International Chemical Engineering 16(1976), pp. 359-368.
+
+    // param Re: Reynolds number
+    // param temperature: temperature, C
+    // returns: Nusselt number
+
+    static std::string const routineName("Pipe::turbulentNusselt");
+
+    // friction factor
+    Real64 f = this->frictionFactor(Re);
+
+    // Prandtl number
+    Real64 Pr = this->fluid.getPrandtl(temperature, routineName);
+
+    return (f / 8) * (Re - 1000) * Pr / (1 + 12.7 * std::pow(f / 8, 0.5) * (std::pow(Pr, 2.0 / 3.0) - 1));
+}
+
+    Real64 Pipe::convectionResistance(Real64 flowRate, Real64 temperature)
+{
+    // Calculates the convection resistance using Gnielinski and Petukhov, in [k/(W/m)]
+
+    // Gnielinski, V. 1976. 'New equations for heat and mass transfer in turbulent pipe and channel flow.'
+    // International Chemical Engineering 16(1976), pp. 359-368.
+
+    // param flow_rate: mass flow rate, kg/s
+    // param temperature: temperature, C
+    // returns: convection resistance, K/(W/m)
+
+    static std::string const routineName("Pipe::calcConvectionResistance");
+
+    Real64 lowRe = 2000;
+    Real64 highRe = 4000;
+
+    Real64 Re = this->mdotToRe(flowRate, temperature);
+    Real64 Nu = 0;
+
+    if (Re < lowRe) {
+        Nu = Pipe::laminarNusselt();
+    } else if (lowRe <= Re && Re < highRe) {
+        Real64 NuLow = laminarNusselt();
+        Real64 NuHigh = turbulentNusselt(Re, temperature);
+        Real64 sigma = smoothingFunc(Re, 3000, 150);
+        Nu = (1 - sigma) * NuLow + sigma * NuHigh;
+    } else
+        Nu = Pipe::turbulentNusselt(Re, temperature);
+
+    Real64 k = this->fluid.getCond(temperature, routineName);
+    this->resistConv = 1 / (Nu * DataGlobals::Pi * k);
+    return this->resistConv;
+}
 
 } // namespace GroundHeatExchangerEnhanced
 

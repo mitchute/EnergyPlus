@@ -1183,3 +1183,48 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Pipe_mdotToRe)
     Real64 const temp = 20.0;
     EXPECT_NEAR(tst.mdotToRe(mdot, temp), 15890, 1.0);
 }
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Pipe_smoothingFunc)
+{
+    Real64 tol = 1E-3;
+    EXPECT_NEAR(GroundHeatExchangerEnhanced::smoothingFunc(-8, 0, 1), 0.0, tol);
+    EXPECT_NEAR(GroundHeatExchangerEnhanced::smoothingFunc(8, 0, 1), 1.0, tol);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Pipe_friction_factor)
+{
+    Pipe tst(0.389, 1.77E+06, 0.0267, 0.00243);
+
+    Real64 reynoldsNum = 0;
+    Real64 const tol = 0.000001;
+
+    // laminar tests
+    reynoldsNum = 100;
+    EXPECT_NEAR(tst.frictionFactor(reynoldsNum), 64.0 / reynoldsNum, tol);
+
+    reynoldsNum = 1000;
+    EXPECT_NEAR(tst.frictionFactor(reynoldsNum), 64.0 / reynoldsNum, tol);
+
+    reynoldsNum = 1400;
+    EXPECT_NEAR(tst.frictionFactor(reynoldsNum), 64.0 / reynoldsNum, tol);
+
+    // transitional tests
+    reynoldsNum = 2000;
+    EXPECT_NEAR(tst.frictionFactor(reynoldsNum), 0.034003503, tol);
+
+    reynoldsNum = 3000;
+    EXPECT_NEAR(tst.frictionFactor(reynoldsNum), 0.033446219, tol);
+
+    reynoldsNum = 4000;
+    EXPECT_NEAR(tst.frictionFactor(reynoldsNum), 0.03895358, tol);
+
+    // turbulent tests
+    reynoldsNum = 5000;
+    EXPECT_NEAR(tst.frictionFactor(reynoldsNum), pow(0.79 * log(reynoldsNum) - 1.64, -2.0), tol);
+
+    reynoldsNum = 15000;
+    EXPECT_NEAR(tst.frictionFactor(reynoldsNum), pow(0.79 * log(reynoldsNum) - 1.64, -2.0), tol);
+
+    reynoldsNum = 25000;
+    EXPECT_NEAR(tst.frictionFactor(reynoldsNum), pow(0.79 * log(reynoldsNum) - 1.64, -2.0), tol);
+}

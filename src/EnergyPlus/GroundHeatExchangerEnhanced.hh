@@ -103,29 +103,28 @@ struct FluidWorker
         Real64 outerRadius;
         Real64 wallThickness;
         FluidWorker fluid;
+        Real64 friction;
+        Real64 convResist;
 
         // default constructor
-        Pipe() : k(0.0), rhoCp(0.0), innerDia(0.0), outerDia(0.0), innerRadius(0.0), outerRadius(0.0), wallThickness(0.0)
+        Pipe() : k(0.0), rhoCp(0.0), innerDia(0.0), outerDia(0.0), innerRadius(0.0), outerRadius(0.0), wallThickness(0.0),
+                 friction(0.0), convResist(0.0)
         {
         }
 
         // member constructor
         Pipe(Real64 const &_k, Real64 const &_rhoCp, Real64 const& _outerDia, Real64 const &_wallThickness)
         {
-            k = _k;
-            rhoCp = _rhoCp;
-            outerDia = _outerDia;
-            wallThickness = _wallThickness;
-            innerDia = 0.0;
-            innerRadius = 0.0;
-            outerRadius = 0.0;
+            k = _k; rhoCp = _rhoCp; outerDia = _outerDia;  wallThickness = _wallThickness; innerDia = 0.0; innerRadius = 0.0;
+            outerRadius = 0.0; friction = 0.0; convResist = 0.0;
             initGeometry();
         }
 
         // copy constructor
         Pipe(Pipe const &r) {
             k = r.k; rhoCp = r.rhoCp; innerDia = r.innerDia; outerDia = r.outerDia; innerRadius = r.innerRadius;
-            outerRadius = r.outerRadius; wallThickness = r.wallThickness; fluid = r.fluid;
+            outerRadius = r.outerRadius; wallThickness = r.wallThickness; fluid = r.fluid; friction = r.friction;
+            convResist = r.convResist;
         }
 
         // default destructor
@@ -134,14 +133,14 @@ struct FluidWorker
         // member methods
         void initGeometry();
         Real64 mdotToRe(Real64 flowRate, Real64 temperature);
-//        Real64 calcFrictionFactor(Real64 Re);
+        static Real64 laminarFrictionFactor(Real64 Re);
+        static Real64 turbulentFrictionFactor(Real64 Re);
+        Real64 frictionFactor(Real64 Re);
+        static Real64 laminarNusselt();
+        Real64 turbulentNusselt(Real64 Re, Real64 temperature);
+        Real64 convectionResistance(Real64 flowRate, Real64 temperature);
 //        Real64 calcConductionResistance();
-//        Real64 calcConvectionResistance(Real64 flowRate, Real64 temperature);
 //        Real64 calcResistance(Real64 flowRate, Real64 temperature);
-//        Real64 turbulentNusselt(Real64 Re, Real64 temperature);
-//        static Real64 laminarNusselt();
-//        static Real64 laminarFrictionFactor(Real64 Re);
-//        static Real64 turbulentFrictionFactor(Real64 Re);
     };
 
     struct BoreholeProps
@@ -280,6 +279,7 @@ struct FluidWorker
 
     void clear_state();
     void getGHEInput();
+    Real64 smoothingFunc(Real64 const &x, Real64 const &a, Real64 const &b);
 
     extern std::vector<EnhancedGHE> enhancedGHE;
 
