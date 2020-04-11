@@ -105,10 +105,12 @@ struct FluidWorker
         FluidWorker fluid;
         Real64 friction;
         Real64 convResist;
+        Real64 condResist;
+        Real64 totResist;
 
         // default constructor
         Pipe() : k(0.0), rhoCp(0.0), innerDia(0.0), outerDia(0.0), innerRadius(0.0), outerRadius(0.0), wallThickness(0.0),
-                 friction(0.0), convResist(0.0)
+                 friction(0.0), convResist(0.0), condResist(0.0), totResist(0.0)
         {
         }
 
@@ -116,31 +118,31 @@ struct FluidWorker
         Pipe(Real64 const &_k, Real64 const &_rhoCp, Real64 const& _outerDia, Real64 const &_wallThickness)
         {
             k = _k; rhoCp = _rhoCp; outerDia = _outerDia;  wallThickness = _wallThickness; innerDia = 0.0; innerRadius = 0.0;
-            outerRadius = 0.0; friction = 0.0; convResist = 0.0;
-            initGeometry();
+            outerRadius = 0.0; friction = 0.0; convResist = 0.0; condResist = 0.0; totResist = 0.0;
+            initialize();
         }
 
         // copy constructor
         Pipe(Pipe const &r) {
             k = r.k; rhoCp = r.rhoCp; innerDia = r.innerDia; outerDia = r.outerDia; innerRadius = r.innerRadius;
             outerRadius = r.outerRadius; wallThickness = r.wallThickness; fluid = r.fluid; friction = r.friction;
-            convResist = r.convResist;
+            convResist = r.convResist; condResist = r.condResist; totResist = r.totResist;
         }
 
         // default destructor
         ~Pipe() = default;
 
         // member methods
-        void initGeometry();
-        Real64 mdotToRe(Real64 flowRate, Real64 temperature);
-        static Real64 laminarFrictionFactor(Real64 Re);
-        static Real64 turbulentFrictionFactor(Real64 Re);
-        Real64 frictionFactor(Real64 Re);
+        void initialize();
+        Real64 mdotToRe(Real64 const &flowRate, Real64 const &temperature);
+        static Real64 laminarFrictionFactor(Real64 const &Re);
+        static Real64 turbulentFrictionFactor(Real64 const &Re);
+        Real64 frictionFactor(Real64 const &Re);
         static Real64 laminarNusselt();
-        Real64 turbulentNusselt(Real64 Re, Real64 temperature);
-        Real64 convectionResistance(Real64 flowRate, Real64 temperature);
-//        Real64 calcConductionResistance();
-//        Real64 calcResistance(Real64 flowRate, Real64 temperature);
+        Real64 turbulentNusselt(Real64 const &Re, Real64 const &temperature);
+        Real64 calcConvResist(Real64 const &flowRate, Real64 const &temperature);
+        Real64 calcCondResist();
+        Real64 calcResistance(Real64 const &flowRate, Real64 const &temperature);
     };
 
     struct BoreholeProps
@@ -150,21 +152,22 @@ struct FluidWorker
         Real64 depth;
         Real64 length;
         Real64 diameter;
+        Real64 radius;
         Real64 kGrout;
         Real64 rhoCpGrout;
         Real64 shankSpace;
         Pipe pipe;
 
         // default constructor
-        BoreholeProps() : depth(0.0), length(0.0), diameter(0.0), kGrout(0.0), rhoCpGrout(0.0), shankSpace(0.0)
+        BoreholeProps() : depth(0.0), length(0.0), diameter(0.0), radius(0.0),kGrout(0.0), rhoCpGrout(0.0), shankSpace(0.0)
         {
         }
 
         // copy constructor
         BoreholeProps(BoreholeProps const &r)
         {
-            propName = r.propName; depth = r.depth; length = r.length; diameter = r.diameter; kGrout = r.kGrout; rhoCpGrout = r.rhoCpGrout;
-            shankSpace = r.shankSpace; pipe = r.pipe;
+            propName = r.propName; depth = r.depth; length = r.length; diameter = r.diameter; radius = r.radius;
+            kGrout = r.kGrout; rhoCpGrout = r.rhoCpGrout; shankSpace = r.shankSpace; pipe = r.pipe;
         }
 
         // default destructor
@@ -177,20 +180,49 @@ struct FluidWorker
         std::string name;
         Real64 xLoc;
         Real64 yLoc;
+        Real64 theta1;
+        Real64 theta2;
+        Real64 theta3;
+        Real64 sigma;
+        Real64 kSoil;
 
         // default constructor
-        GHEBorehole() : xLoc(0.0), yLoc(0.0)
+        GHEBorehole() : xLoc(0.0), yLoc(0.0), theta1(0.0), theta2(0.0), theta3(0.0), sigma(0.0),
+                        kSoil(0.0)
         {
+        }
+
+        // member constructor for testing only
+        GHEBorehole(Real64 const &_diameter, Real64 const &_shankSpace, Real64 const &_kSoil, Real64 const &_kGrout,
+                    Real64 const &_kPipe, Real64 const &_pipeOuterDia, Real64 const &_pipeWallThickness)
+        {
+            xLoc = 0.0; yLoc = 0.0; theta1 = 0.0; theta2 = 0.0; theta3 = 0.0; sigma = 0.0; kSoil = 0.0;
+            diameter = _diameter; shankSpace = _shankSpace; kGrout = _kGrout; pipe.k = _kPipe;
+            pipe.outerDia = _pipeOuterDia; pipe.wallThickness = _pipeWallThickness;
+            this->initialize(_kSoil);
         }
 
         // copy constructor
         GHEBorehole(GHEBorehole const &r) : BoreholeProps(r)
         {
-            name = r.name; xLoc = r.xLoc; yLoc = r.yLoc;
+            name = r.name; xLoc = r.xLoc; yLoc = r.yLoc; theta1 = r.theta1; theta2 = r.theta2;
+            theta3 = r.theta3; sigma = r.sigma; kSoil = r.kSoil;
         };
 
         // default destructor
         ~GHEBorehole() = default;
+
+        // member methods
+        void initialize(Real64 const &_kSoil);
+        Real64 calcTotIntResistWorker(Real64 const &beta);
+        Real64 calcTotIntResist(Real64 const &pipeResist);
+        Real64 calcTotIntResist(Real64 const &flowRate, Real64 const &temperature);
+        Real64 calcAveResistWorker(Real64 const &beta);
+        Real64 calcAveResist(Real64 const &pipeResist);
+        Real64 calcAveResist(Real64 const &flowRate, Real64 const &temperature);
+        Real64 calcGroutResist(Real64 const &pipeResist);
+        Real64 calcGroutResist(Real64 const &flowRate, Real64 const &temperature);
+        Real64 calcDirectCouplingResist(Real64 const &flowRate, Real64 const &temperature);
     };
 
     struct GHEArray

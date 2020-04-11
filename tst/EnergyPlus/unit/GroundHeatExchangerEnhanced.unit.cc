@@ -1228,3 +1228,206 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Pipe_friction_factor)
     reynoldsNum = 25000;
     EXPECT_NEAR(tst.frictionFactor(reynoldsNum), pow(0.79 * log(reynoldsNum) - 1.64, -2.0), tol);
 }
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Pipe_convection_resist)
+{
+    int loopNum = 1;
+    DataPlant::PlantLoop.allocate(1);
+    DataPlant::PlantLoop(loopNum).FluidIndex = 1;
+    DataPlant::PlantLoop(loopNum).FluidName = "WATER";
+
+    // init fluid
+    FluidWorker fluid;
+    fluid.initialize(loopNum);
+
+    Pipe tst(0.4, 1.805E+06, 0.0334, 0.00325);
+    tst.fluid = fluid;
+
+    Real64 const tol = 1E-06;
+
+    Real64 const temperature = 20;
+    Real64 mdot = 0.0;
+
+    // Laminar
+    Real64 resisLam = tst.calcConvResist(mdot, temperature);
+    EXPECT_NEAR(resisLam, 0.132652, tol);
+
+    // Transitional
+    mdot = 0.07;
+    Real64 resitTrans = tst.calcConvResist(mdot, temperature);
+    EXPECT_NEAR(resitTrans, 0.026448, tol);
+
+    // Turbulent
+    mdot = 2.0;
+    Real64 resistTurb = tst.calcConvResist(mdot, temperature);
+    EXPECT_NEAR(resistTurb, 0.000932, tol);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Pipe_conduction_resist)
+{
+    Pipe tst(0.4, 1.805E+06, 0.0334, 0.00325);
+
+    Real64 const tol = 1E-06;
+
+    Real64 condResist = tst.calcCondResist();
+    EXPECT_NEAR(condResist, 0.0861146, tol);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Pipe_total_resist)
+{
+    int loopNum = 1;
+    DataPlant::PlantLoop.allocate(1);
+    DataPlant::PlantLoop(loopNum).FluidIndex = 1;
+    DataPlant::PlantLoop(loopNum).FluidName = "WATER";
+
+    // init fluid
+    FluidWorker fluid;
+    fluid.initialize(loopNum);
+
+    Pipe tst(0.4, 1.805E+06, 0.0334, 0.00325);
+    tst.fluid = fluid;
+
+    Real64 const tol = 1E-06;
+
+    Real64 const temperature = 20;
+    Real64 mdot = 0.0;
+
+    // Laminar
+    Real64 totResist = tst.calcResistance(mdot, temperature);
+    EXPECT_NEAR(totResist, 0.132652 + 0.0861146, tol);
+
+    // Transitional
+    mdot = 0.07;
+    totResist = tst.calcResistance(mdot, temperature);
+    EXPECT_NEAR(totResist, 0.026448 + 0.0861146, tol);
+
+    // Turbulent
+    mdot = 2.0;
+    totResist = tst.calcResistance(mdot, temperature);
+    EXPECT_NEAR(totResist, 0.000932 + 0.0861146, tol);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_tot_internal_resist)
+{
+    Real64 const tol = 1E-5;
+
+    {
+        GHEBorehole tst(0.096, 0.032, 4.0, 0.6, 0.389,0.032, 0.00243);
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.32365, tol);
+    }
+
+    {
+        GHEBorehole tst(0.096, 0.032, 4.0, 1.2, 0.389,0.032, 0.00243);
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.23126, tol);
+    }
+
+    {
+        GHEBorehole tst(0.096, 0.032, 4.0, 1.8, 0.389,0.032, 0.00243);
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.19830, tol);
+    }
+
+    {
+        GHEBorehole tst(0.096, 0.032, 4.0, 2.4, 0.389,0.032, 0.00243);
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.18070, tol);
+    }
+
+    {
+        GHEBorehole tst(0.096, 0.032, 4.0, 3.0, 0.389,0.032, 0.00243);
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.16947, tol);
+    }
+
+    {
+        int loopNum = 1;
+        DataPlant::PlantLoop.allocate(1);
+        DataPlant::PlantLoop(loopNum).FluidIndex = 1;
+        DataPlant::PlantLoop(loopNum).FluidName = "WATER";
+
+        // init fluid
+        FluidWorker fluid;
+        fluid.initialize(loopNum);
+
+        GHEBorehole tst(0.096, 0.032, 4.0, 3.0, 0.389,0.032, 0.00243);
+        tst.pipe.fluid = fluid;
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcTotIntResist(20, 0.1), 0.20799, tol);
+    }
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_grout_resist)
+{
+    Real64 const tol = 1E-5;
+
+    {
+        GHEBorehole tst(0.096, 0.032, 4.0, 0.6, 0.389,0.032, 0.00243);
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcGroutResist(0.05), 0.17701, tol);
+    }
+
+    {
+        GHEBorehole tst(0.096, 0.032, 4.0, 1.2, 0.389,0.032, 0.00243);
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcGroutResist(0.05), 0.09211, tol);
+    }
+
+    {
+        GHEBorehole tst(0.096, 0.032, 4.0, 1.8, 0.389,0.032, 0.00243);
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcGroutResist(0.05), 0.06329, tol);
+    }
+
+    {
+        GHEBorehole tst(0.096, 0.032, 4.0, 2.4, 0.389,0.032, 0.00243);
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcGroutResist(0.05), 0.04861, tol);
+    }
+
+    {
+        int loopNum = 1;
+        DataPlant::PlantLoop.allocate(1);
+        DataPlant::PlantLoop(loopNum).FluidIndex = 1;
+        DataPlant::PlantLoop(loopNum).FluidName = "WATER";
+
+        // init fluid
+        FluidWorker fluid;
+        fluid.initialize(loopNum);
+
+        GHEBorehole tst(0.096, 0.032, 4.0, 3.0, 0.389, 0.032, 0.00243);
+        tst.pipe.fluid = fluid;
+        EXPECT_NEAR(tst.theta1, 0.33333, tol);
+        EXPECT_NEAR(tst.theta2, 3.0, tol);
+        EXPECT_NEAR(tst.calcGroutResist(20, 0.1), 0.04068, tol);
+    }
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_direct_coupling_resist)
+{
+    Real64 const tol = 1E-5;
+
+    int loopNum = 1;
+    DataPlant::PlantLoop.allocate(1);
+    DataPlant::PlantLoop(loopNum).FluidIndex = 1;
+    DataPlant::PlantLoop(loopNum).FluidName = "WATER";
+
+    // init fluid
+    FluidWorker fluid;
+    fluid.initialize(loopNum);
+
+    GHEBorehole tst(0.096, 0.032, 4.0, 3.0, 0.389, 0.032, 0.00243);
+    tst.pipe.fluid = fluid;
+    EXPECT_NEAR(tst.calcDirectCouplingResist(20, 0.1), 0.68937, tol);
+}

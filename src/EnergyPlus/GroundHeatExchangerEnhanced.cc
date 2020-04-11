@@ -634,7 +634,7 @@ namespace GroundHeatExchangerEnhanced {
             }
 
             // setup pipe
-            this->aveBH.pipe.initGeometry();
+            this->aveBH.initialize(this->kSoil);
             this->aveBH.pipe.fluid = this->fluid;
 
             // check for EFT g-functions
@@ -702,21 +702,21 @@ namespace GroundHeatExchangerEnhanced {
         return cp * mu / k;
     }
 
-    void Pipe::initGeometry()
+    void Pipe::initialize()
     {
         this->innerDia = this->outerDia - 2 * this->wallThickness;
         this->innerRadius = this->innerDia / 2.0;
         this->outerRadius = this->outerDia / 2.0;
     }
 
-    Real64 Pipe::mdotToRe(Real64 flowRate, Real64 temperature)
+    Real64 Pipe::mdotToRe(Real64 const &flowRate, Real64 const &temperature)
     {
         static std::string const routineName("Pipe::mdotToRe");
         Real64 mu = this->fluid.getVisc(temperature, routineName);
         return 4.0 * flowRate / (mu * DataGlobals::Pi * this->innerDia);
     }
 
-    Real64 Pipe::laminarFrictionFactor(Real64 Re)
+    Real64 Pipe::laminarFrictionFactor(Real64 const &Re)
     {
         // laminar friction factor
 
@@ -726,7 +726,7 @@ namespace GroundHeatExchangerEnhanced {
         return 64 / Re;
     }
 
-    Real64 Pipe::turbulentFrictionFactor(Real64 Re)
+    Real64 Pipe::turbulentFrictionFactor(Real64 const &Re)
     {
         // turbulent friction factor
 
@@ -740,7 +740,7 @@ namespace GroundHeatExchangerEnhanced {
         return std::pow(0.79 * std::log(Re) - 1.64, -2.0);
     }
 
-    Real64 Pipe::frictionFactor(Real64 Re)
+    Real64 Pipe::frictionFactor(Real64 const &Re)
     {
         // smooth pipe friction factor
 
@@ -763,39 +763,39 @@ namespace GroundHeatExchangerEnhanced {
     }
 
     Real64 Pipe::laminarNusselt()
-{
-    // laminar Nusselt number for smooth pipes
-    // mean(4.36, 3.66)
+    {
+        // laminar Nusselt number for smooth pipes
+        // mean(4.36, 3.66)
 
-    // returns Nusselt number
+        // returns Nusselt number
 
-    return 4.01;
-}
+        return 4.01;
+    }
 
-    Real64 Pipe::turbulentNusselt(Real64 Re, Real64 temperature)
-{
-    // turbulent Nusselt number
+    Real64 Pipe::turbulentNusselt(Real64 const &Re, Real64 const &temperature)
+    {
+        // turbulent Nusselt number
 
-    // Gnielinski, V. 1976. 'New equations for heat and mass transfer in turbulent pipe and channel flow.'
-    // International Chemical Engineering 16(1976), pp. 359-368.
+        // Gnielinski, V. 1976. 'New equations for heat and mass transfer in turbulent pipe and channel flow.'
+        // International Chemical Engineering 16(1976), pp. 359-368.
 
-    // param Re: Reynolds number
-    // param temperature: temperature, C
-    // returns: Nusselt number
+        // param Re: Reynolds number
+        // param temperature: temperature, C
+        // returns: Nusselt number
 
-    static std::string const routineName("Pipe::turbulentNusselt");
+        static std::string const routineName("Pipe::turbulentNusselt");
 
-    // friction factor
-    Real64 f = this->frictionFactor(Re);
+        // friction factor
+        Real64 f = this->frictionFactor(Re);
 
-    // Prandtl number
-    Real64 Pr = this->fluid.getPrandtl(temperature, routineName);
+        // Prandtl number
+        Real64 Pr = this->fluid.getPrandtl(temperature, routineName);
 
-    return (f / 8) * (Re - 1000) * Pr / (1 + 12.7 * std::pow(f / 8, 0.5) * (std::pow(Pr, 2.0 / 3.0) - 1));
-}
+        return (f / 8) * (Re - 1000) * Pr / (1 + 12.7 * std::pow(f / 8, 0.5) * (std::pow(Pr, 2.0 / 3.0) - 1));
+    }
 
-    Real64 Pipe::convectionResistance(Real64 flowRate, Real64 temperature)
-{
+    Real64 Pipe::calcConvResist(Real64 const &flowRate, Real64 const &temperature)
+    {
     // Calculates the convection resistance using Gnielinski and Petukhov, in [k/(W/m)]
 
     // Gnielinski, V. 1976. 'New equations for heat and mass transfer in turbulent pipe and channel flow.'
@@ -805,7 +805,7 @@ namespace GroundHeatExchangerEnhanced {
     // param temperature: temperature, C
     // returns: convection resistance, K/(W/m)
 
-    static std::string const routineName("Pipe::calcConvectionResistance");
+    static std::string const routineName("Pipe::calcConvResist");
 
     Real64 lowRe = 2000;
     Real64 highRe = 4000;
@@ -823,10 +823,179 @@ namespace GroundHeatExchangerEnhanced {
     } else
         Nu = Pipe::turbulentNusselt(Re, temperature);
 
-    Real64 k = this->fluid.getCond(temperature, routineName);
-    this->resistConv = 1 / (Nu * DataGlobals::Pi * k);
-    return this->resistConv;
-}
+    this->convResist = 1 / (Nu * DataGlobals::Pi * this->fluid.getCond(temperature, routineName));
+    return this->convResist;
+    }
+
+    Real64 Pipe::calcCondResist()
+    {
+        // Calculates the thermal resistance of a pipe, in [K/(W/m)].
+
+        // Javed, S. and Spitler, J.D. 2017. 'Accuracy of borehole thermal resistance calculation methods
+        // for grouted single U-tube ground heat exchangers.' Applied Energy. 187: 790-806.
+
+        // returns: conduction resistance, K/(W/m)
+        this->condResist = std::log(this->outerDia / this->innerDia) / (2 * DataGlobals::Pi * this->k);
+        return this->condResist;
+    }
+
+    Real64 Pipe::calcResistance(Real64 const &flowRate, Real64 const &temperature)
+    {
+        // Calculates the combined conduction and convection pipe resistance
+
+        // Javed, S. and Spitler, J.D. 2017. 'Accuracy of borehole thermal resistance calculation methods
+        // for grouted single U-tube ground heat exchangers.' Applied Energy. 187: 790-806.
+
+        // Equation 3
+
+        // param flowRate: mass flow rate, kg/s
+        // param temperature: temperature, C
+        // returns: pipe resistance, K/(W/m)
+
+        this->totResist = this->calcConvResist(flowRate, temperature) + this->calcCondResist();
+        return this->totResist;
+    }
+
+    void GHEBorehole::initialize(Real64 const &_kSoil)
+    {
+        this->pipe.initialize();
+        this->kSoil = _kSoil;
+        this->radius = this->diameter / 2.0;
+        this->theta1 = this->shankSpace / (2 * this->radius);
+        this->theta2 = this->radius / this->pipe.outerRadius;
+        this->theta3 = 1 / (2 * this->theta1 * this->theta2);
+        this->sigma = (this->kGrout - this->kSoil) / (this->kGrout + this->kSoil);
+    }
+
+    Real64 GHEBorehole::calcTotIntResistWorker(Real64 const &beta)
+    {
+        // Calculates the total internal thermal resistance of the borehole using the first-order multipole method.
+
+        // Javed, S. & Spitler, J.D. 2016. 'Accuracy of Borehole Thermal Resistance Calculation Methods
+        // for Grouted Single U-tube Ground Heat Exchangers.' Applied Energy. 187:790-806.
+
+        // Equation 26
+
+        Real64 final_term_1 = log(pow(1 + pow_2(this->theta1), sigma) / (this->theta3 * pow(1 - pow_2(this->theta1), sigma)));
+        Real64 num_term_2 = pow_2(this->theta3) * pow_2(1 - pow_4(this->theta1) + 4 * sigma * pow_2(this->theta1));
+        Real64 den_term_2_pt_1 = (1 + beta) / (1 - beta) * pow_2(1 - pow_4(this->theta1));
+        Real64 den_term_2_pt_2 = pow_2(this->theta3) * pow_2(1 - pow_4(this->theta1));
+        Real64 den_term_2_pt_3 = 8 * sigma * pow_2(this->theta1) * pow_2(this->theta3) * (1 + pow_4(this->theta1));
+        Real64 den_term_2 = den_term_2_pt_1 - den_term_2_pt_2 + den_term_2_pt_3;
+        Real64 final_term_2 = num_term_2 / den_term_2;
+
+        return (1 / (DataGlobals::Pi * kGrout)) * (beta + final_term_1 - final_term_2);
+    }
+
+    Real64 GHEBorehole::calcTotIntResist(Real64 const &pipeResist)
+    {
+        // Calculates the total internal thermal resistance of the borehole using the first-order multipole method.
+
+        // Javed, S. & Spitler, J.D. 2016. 'Accuracy of Borehole Thermal Resistance Calculation Methods
+        // for Grouted Single U-tube Ground Heat Exchangers.' Applied Energy. 187:790-806.
+
+        // Equation 26
+
+        Real64 beta = 2 * DataGlobals::Pi * this->kGrout * pipeResist;
+        return this->calcTotIntResistWorker(beta);
+    }
+
+    Real64 GHEBorehole::calcTotIntResist(Real64 const &flowRate, Real64 const &temperature)
+    {
+        // Calculates the total internal thermal resistance of the borehole using the first-order multipole method.
+
+        // Javed, S. & Spitler, J.D. 2016. 'Accuracy of Borehole Thermal Resistance Calculation Methods
+        // for Grouted Single U-tube Ground Heat Exchangers.' Applied Energy. 187:790-806.
+
+        // Equation 26
+
+        Real64 beta = 2 * DataGlobals::Pi * this->kGrout * this->pipe.calcResistance(flowRate, temperature);
+        return this->calcTotIntResistWorker(beta);
+    }
+
+    Real64 GHEBorehole::calcAveResistWorker(Real64 const &beta)
+    {
+        // Calculates the average thermal resistance of the borehole using the first-order multipole method.
+
+        // Javed, S. & Spitler, J.D. 2016. 'Accuracy of Borehole Thermal Resistance Calculation Methods
+        // for Grouted Single U-tube Ground Heat Exchangers.' Applied Energy.187:790-806.
+
+        // Equation 13
+
+        Real64 const final_term_1 = log(this->theta2 / (2 * this->theta1 * pow(1 - pow_4(this->theta1), sigma)));
+        Real64 const num_final_term_2 = pow_2(this->theta3) * pow_2(1 - (4 * sigma * pow_4(this->theta1)) / (1 - pow_4(this->theta1)));
+        Real64 const den_final_term_2_pt_1 = (1 + beta) / (1 - beta);
+        Real64 const den_final_term_2_pt_2 = pow_2(this->theta3) * (1 + (16 * sigma * pow_4(this->theta1)) / pow_2(1 - pow_4(this->theta1)));
+        Real64 const den_final_term_2 = den_final_term_2_pt_1 + den_final_term_2_pt_2;
+        Real64 const final_term_2 = num_final_term_2 / den_final_term_2;
+
+        return (1 / (4 * DataGlobals::Pi * this->kGrout)) * (beta + final_term_1 - final_term_2);
+    }
+
+    Real64 GHEBorehole::calcAveResist(Real64 const &pipeResist)
+    {
+        // Calculates the average thermal resistance of the borehole using the first-order multipole method.
+
+        // Javed, S. & Spitler, J.D. 2016. 'Accuracy of Borehole Thermal Resistance Calculation Methods
+        // for Grouted Single U-tube Ground Heat Exchangers.' Applied Energy.187:790-806.
+
+        // Equation 13
+
+        Real64 const beta = 2 * DataGlobals::Pi * this->kGrout * pipeResist;
+        return this->calcAveResistWorker(beta);
+    }
+
+    Real64 GHEBorehole::calcAveResist(Real64 const &flowRate, Real64 const &temperature)
+    {
+        // Calculates the average thermal resistance of the borehole using the first-order multipole method.
+
+        // Javed, S. & Spitler, J.D. 2016. 'Accuracy of Borehole Thermal Resistance Calculation Methods
+        // for Grouted Single U-tube Ground Heat Exchangers.' Applied Energy.187:790-806.
+
+        // Equation 13
+
+        Real64 const beta = 2 * DataGlobals::Pi * this->kGrout * this->pipe.calcResistance(flowRate, temperature);
+        return this->calcAveResistWorker(beta);
+    }
+
+    Real64 GHEBorehole::calcGroutResist(Real64 const &pipeResist)
+    {
+        // Calculates grout resistance. Use for validation.
+
+        // Javed, S. & Spitler, J.D. 2016. 'Accuracy of Borehole Thermal Resistance Calculation Methods
+        // for Grouted Single U-tube Ground Heat Exchangers.' Applied Energy. 187:790-806.
+
+        // Equation 3
+
+        return this->calcAveResist(pipeResist) - pipeResist / 2.0;
+    }
+
+    Real64 GHEBorehole::calcGroutResist(Real64 const &flowRate, Real64 const &temperature)
+    {
+        // Calculates grout resistance. Use for validation.
+
+        // Javed, S. & Spitler, J.D. 2016. 'Accuracy of Borehole Thermal Resistance Calculation Methods
+        // for Grouted Single U-tube Ground Heat Exchangers.' Applied Energy. 187:790-806.
+
+        // Equation 3
+
+        return this->calcAveResist(flowRate, temperature) - this->pipe.calcResistance(flowRate, temperature) / 2.0;
+    }
+
+    Real64 GHEBorehole::calcDirectCouplingResist(const Real64 &flowRate, const Real64 &temperature)
+    {
+        Real64 ra = this->calcTotIntResist(flowRate, temperature);
+        Real64 rb = this->calcAveResist(flowRate, temperature);
+        Real64 r12 = (4.0 * ra * rb) / (4.0 * rb - ra);
+
+        // reset high if negative
+        // may need further investigation
+        if (r12 < 0.0) {
+            r12 = 70;
+        }
+
+        return r12;
+    }
 
 } // namespace GroundHeatExchangerEnhanced
 
