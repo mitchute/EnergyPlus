@@ -1312,35 +1312,35 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_tot_internal_resist)
     Real64 const tol = 1E-5;
 
     {
-        GHEBorehole tst(0.096, 0.032, 4.0, 0.6, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 0.6, 0.389, 0.032, 0.00243);
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
         EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.32365, tol);
     }
 
     {
-        GHEBorehole tst(0.096, 0.032, 4.0, 1.2, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 1.2, 0.389,0.032, 0.00243);
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
         EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.23126, tol);
     }
 
     {
-        GHEBorehole tst(0.096, 0.032, 4.0, 1.8, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 1.8, 0.389,0.032, 0.00243);
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
         EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.19830, tol);
     }
 
     {
-        GHEBorehole tst(0.096, 0.032, 4.0, 2.4, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 2.4, 0.389,0.032, 0.00243);
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
         EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.18070, tol);
     }
 
     {
-        GHEBorehole tst(0.096, 0.032, 4.0, 3.0, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 3.0, 0.389,0.032, 0.00243);
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
         EXPECT_NEAR(tst.calcTotIntResist(0.05), 0.16947, tol);
@@ -1356,7 +1356,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_tot_internal_resist)
         FluidWorker fluid;
         fluid.initialize(loopNum);
 
-        GHEBorehole tst(0.096, 0.032, 4.0, 3.0, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 3.0, 0.389,0.032, 0.00243);
         tst.pipe.fluid = fluid;
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
@@ -1369,28 +1369,28 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_grout_resist)
     Real64 const tol = 1E-5;
 
     {
-        GHEBorehole tst(0.096, 0.032, 4.0, 0.6, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 0.6, 0.389,0.032, 0.00243);
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
         EXPECT_NEAR(tst.calcGroutResist(0.05), 0.17701, tol);
     }
 
     {
-        GHEBorehole tst(0.096, 0.032, 4.0, 1.2, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 1.2, 0.389,0.032, 0.00243);
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
         EXPECT_NEAR(tst.calcGroutResist(0.05), 0.09211, tol);
     }
 
     {
-        GHEBorehole tst(0.096, 0.032, 4.0, 1.8, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 1.8, 0.389,0.032, 0.00243);
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
         EXPECT_NEAR(tst.calcGroutResist(0.05), 0.06329, tol);
     }
 
     {
-        GHEBorehole tst(0.096, 0.032, 4.0, 2.4, 0.389,0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 2.4, 0.389,0.032, 0.00243);
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
         EXPECT_NEAR(tst.calcGroutResist(0.05), 0.04861, tol);
@@ -1406,7 +1406,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_grout_resist)
         FluidWorker fluid;
         fluid.initialize(loopNum);
 
-        GHEBorehole tst(0.096, 0.032, 4.0, 3.0, 0.389, 0.032, 0.00243);
+        GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 3.0, 0.389, 0.032, 0.00243);
         tst.pipe.fluid = fluid;
         EXPECT_NEAR(tst.theta1, 0.33333, tol);
         EXPECT_NEAR(tst.theta2, 3.0, tol);
@@ -1427,7 +1427,41 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_direct_coupling_resist)
     FluidWorker fluid;
     fluid.initialize(loopNum);
 
-    GHEBorehole tst(0.096, 0.032, 4.0, 3.0, 0.389, 0.032, 0.00243);
+    GHEBorehole tst(0.096, 0.032, 4.0, 8E+05, 3.0, 0.389, 0.032, 0.00243);
     tst.pipe.fluid = fluid;
     EXPECT_NEAR(tst.calcDirectCouplingResist(20, 0.1), 0.68937, tol);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_short_timestep_g_functions)
+{
+    Real64 const tol = 1E-5;
+
+    int loopNum = 1;
+    DataPlant::PlantLoop.allocate(1);
+    DataPlant::PlantLoop(loopNum).FluidIndex = 1;
+    DataPlant::PlantLoop(loopNum).FluidName = "WATER";
+
+    // init fluid
+    FluidWorker fluid;
+    fluid.initialize(loopNum);
+
+    GHEBorehole tst;
+    tst.pipe.outerDia = 0.02670;
+    tst.pipe.wallThickness = 0.00243;
+    tst.pipe.k = 0.4;
+    tst.pipe.rhoCp = 1.5853E+06;
+    tst.diameter = 0.109982;
+    tst.kGrout = 2.4;
+    tst.rhoCpGrout = 3.9E+06;
+    tst.shankSpace = 0.04556;
+    tst.length = 100;
+    tst.initialize(2.432, 2.432E+06);
+    tst.pipe.fluid = fluid;
+
+    Real64 mdot = 0.1;
+    Real64 temperature = 20.0;
+    tst.calcShortTimestepGFunctions(mdot, temperature);
+
+    EXPECT_NEAR(tst.gSTS.back(), 2.28844, tol);
+    EXPECT_NEAR(tst.lnttsSTS.back(), -8.99972, tol);
 }

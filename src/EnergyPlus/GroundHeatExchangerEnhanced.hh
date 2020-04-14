@@ -185,35 +185,40 @@ struct FluidWorker
         Real64 theta3;
         Real64 sigma;
         Real64 kSoil;
+        Real64 rhoCpSoil;
+        Real64 c0;
+        std::vector<Real64> gSTS;
+        std::vector<Real64> lnttsSTS;
 
         // default constructor
         GHEBorehole() : xLoc(0.0), yLoc(0.0), theta1(0.0), theta2(0.0), theta3(0.0), sigma(0.0),
-                        kSoil(0.0)
+                        kSoil(0.0), rhoCpSoil(0.0), c0(0.0)
         {
         }
 
         // member constructor for testing only
-        GHEBorehole(Real64 const &_diameter, Real64 const &_shankSpace, Real64 const &_kSoil, Real64 const &_kGrout,
-                    Real64 const &_kPipe, Real64 const &_pipeOuterDia, Real64 const &_pipeWallThickness)
+        GHEBorehole(Real64 const &_diameter, Real64 const &_shankSpace, Real64 const &_kSoil, Real64 const &_rhoCpSoil,
+                    Real64 const &_kGrout, Real64 const &_kPipe, Real64 const &_pipeOuterDia, Real64 const &_pipeWallThickness)
         {
-            xLoc = 0.0; yLoc = 0.0; theta1 = 0.0; theta2 = 0.0; theta3 = 0.0; sigma = 0.0; kSoil = 0.0;
-            diameter = _diameter; shankSpace = _shankSpace; kGrout = _kGrout; pipe.k = _kPipe;
-            pipe.outerDia = _pipeOuterDia; pipe.wallThickness = _pipeWallThickness;
-            this->initialize(_kSoil);
+            xLoc = 0.0; yLoc = 0.0; theta1 = 0.0; theta2 = 0.0; theta3 = 0.0; sigma = 0.0; kSoil = _kSoil;
+            rhoCpSoil = _rhoCpSoil; diameter = _diameter; shankSpace = _shankSpace; kGrout = _kGrout;
+            pipe.k = _kPipe; c0 = 0.0; pipe.outerDia = _pipeOuterDia; pipe.wallThickness = _pipeWallThickness;
+            this->initialize(_kSoil, _rhoCpSoil);
         }
 
         // copy constructor
         GHEBorehole(GHEBorehole const &r) : BoreholeProps(r)
         {
             name = r.name; xLoc = r.xLoc; yLoc = r.yLoc; theta1 = r.theta1; theta2 = r.theta2;
-            theta3 = r.theta3; sigma = r.sigma; kSoil = r.kSoil;
+            theta3 = r.theta3; sigma = r.sigma; kSoil = r.kSoil; rhoCpSoil = r.rhoCpSoil;
+            c0 = r.c0;
         };
 
         // default destructor
         ~GHEBorehole() = default;
 
         // member methods
-        void initialize(Real64 const &_kSoil);
+        void initialize(Real64 const &_kSoil, Real64 const &_rhoCpSoil);
         Real64 calcTotIntResistWorker(Real64 const &beta);
         Real64 calcTotIntResist(Real64 const &pipeResist);
         Real64 calcTotIntResist(Real64 const &flowRate, Real64 const &temperature);
@@ -223,6 +228,7 @@ struct FluidWorker
         Real64 calcGroutResist(Real64 const &pipeResist);
         Real64 calcGroutResist(Real64 const &flowRate, Real64 const &temperature);
         Real64 calcDirectCouplingResist(Real64 const &flowRate, Real64 const &temperature);
+        void calcShortTimestepGFunctions(Real64 const &flowRate, Real64 const &temperature);
     };
 
     struct GHEArray
@@ -312,6 +318,7 @@ struct FluidWorker
     void clear_state();
     void getGHEInput();
     Real64 smoothingFunc(Real64 const &x, Real64 const &a, Real64 const &b);
+    std::vector<Real64> solveTDM(std::vector<Real64> a, std::vector<Real64> b, std::vector<Real64> c, std::vector<Real64> d);
 
     extern std::vector<EnhancedGHE> enhancedGHE;
 

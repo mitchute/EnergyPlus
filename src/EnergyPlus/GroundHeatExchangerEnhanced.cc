@@ -92,6 +92,44 @@ namespace GroundHeatExchangerEnhanced {
         return 1 / (1 + std::exp(-(x - a) / b));
     }
 
+    std::vector<Real64> solveTDM(std::vector<Real64> a, std::vector<Real64> b, std::vector<Real64> c, std::vector<Real64> d)
+    {
+        // Tri-diagonal matrix solver
+
+        // This solver expects the ghost points at a(0) and c(n) to be present
+
+        // a(0) = 0
+        // c(n) = 0
+
+        // len(a) = len(b) = len(c) = len(d)
+
+        // Adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Linear_Algebra/Tridiagonal_matrix_algorithm#C++
+
+        // param a: west diagonal vector from coefficient matrix
+        // param b: center diagonal vector from coefficient matrix
+        // param c: east diagonal vector from coefficient matrix
+        // param d: column vector
+        // returns solution vector
+
+        u_int n = d.size() - 1;
+
+        c[0] /= b[0];
+        d[0] /= b[0];
+
+        for (u_int i = 1; i < n; ++i) {
+            c[i] /= b[i] - a[i] * c[i - 1];
+            d[i] = (d[i] - a[i] * d[i - 1]) / (b[i] - a[i] * c[i - 1]);
+        }
+
+        d[n] = (d[n] - a[n] * d[n - 1]) / (b[n] - a[n] * c[n - 1]);
+
+        for (int i = n; i-- > 0;) {
+            d[i] -= c[i] * d[i + 1];
+        }
+
+        return d;
+    }
+
     PlantComponent *EnhancedGHE::factory(std::string const &objectName)
     {
         if (getInput) {
@@ -633,8 +671,8 @@ namespace GroundHeatExchangerEnhanced {
                 this->aveBH.pipe.wallThickness += bh.pipe.wallThickness;
             }
 
-            // setup pipe
-            this->aveBH.initialize(this->kSoil);
+            // setup borehole
+            this->aveBH.initialize(this->kSoil, this->rhoCpSoil);
             this->aveBH.pipe.fluid = this->fluid;
 
             // check for EFT g-functions
@@ -660,6 +698,13 @@ namespace GroundHeatExchangerEnhanced {
 
     void EnhancedGHE::generateBWTgFunc()
     {
+        std::string const routineName = "EnhancedGHE::generateBWTgFunc";
+
+        Real64 volFlowPerBH = this->designVolFlow / this->numBH;
+        Real64 temperature = 20.0;
+        Real64 rho = this->fluid.getRho(temperature, routineName);
+        Real64 mdot = volFlowPerBH * rho;
+        this->aveBH.calcShortTimestepGFunctions(mdot, temperature);
     }
 
     void EnhancedGHE::simulate(const PlantLocation &EP_UNUSED(calledFromLocation), bool EP_UNUSED(FirstHVACIteration), Real64 &EP_UNUSED(CurLoad), bool EP_UNUSED(RunFlag))
@@ -856,10 +901,12 @@ namespace GroundHeatExchangerEnhanced {
         return this->totResist;
     }
 
-    void GHEBorehole::initialize(Real64 const &_kSoil)
+    void GHEBorehole::initialize(Real64 const &_kSoil, Real64 const &_rhoCpSoil)
     {
         this->pipe.initialize();
         this->kSoil = _kSoil;
+        this->rhoCpSoil = _rhoCpSoil;
+        this->c0 = 2.0 * DataGlobals::Pi * this->kSoil;
         this->radius = this->diameter / 2.0;
         this->theta1 = this->shankSpace / (2 * this->radius);
         this->theta2 = this->radius / this->pipe.outerRadius;
@@ -876,15 +923,15 @@ namespace GroundHeatExchangerEnhanced {
 
         // Equation 26
 
-        Real64 final_term_1 = log(pow(1 + pow_2(this->theta1), sigma) / (this->theta3 * pow(1 - pow_2(this->theta1), sigma)));
-        Real64 num_term_2 = pow_2(this->theta3) * pow_2(1 - pow_4(this->theta1) + 4 * sigma * pow_2(this->theta1));
+        Real64 final_term_1 = log(pow(1 + pow_2(this->theta1), this->sigma) / (this->theta3 * pow(1 - pow_2(this->theta1), this->sigma)));
+        Real64 num_term_2 = pow_2(this->theta3) * pow_2(1 - pow_4(this->theta1) + 4 * this->sigma * pow_2(this->theta1));
         Real64 den_term_2_pt_1 = (1 + beta) / (1 - beta) * pow_2(1 - pow_4(this->theta1));
         Real64 den_term_2_pt_2 = pow_2(this->theta3) * pow_2(1 - pow_4(this->theta1));
-        Real64 den_term_2_pt_3 = 8 * sigma * pow_2(this->theta1) * pow_2(this->theta3) * (1 + pow_4(this->theta1));
+        Real64 den_term_2_pt_3 = 8 * this->sigma * pow_2(this->theta1) * pow_2(this->theta3) * (1 + pow_4(this->theta1));
         Real64 den_term_2 = den_term_2_pt_1 - den_term_2_pt_2 + den_term_2_pt_3;
         Real64 final_term_2 = num_term_2 / den_term_2;
 
-        return (1 / (DataGlobals::Pi * kGrout)) * (beta + final_term_1 - final_term_2);
+        return (1 / (DataGlobals::Pi * this->kGrout)) * (beta + final_term_1 - final_term_2);
     }
 
     Real64 GHEBorehole::calcTotIntResist(Real64 const &pipeResist)
@@ -922,10 +969,10 @@ namespace GroundHeatExchangerEnhanced {
 
         // Equation 13
 
-        Real64 const final_term_1 = log(this->theta2 / (2 * this->theta1 * pow(1 - pow_4(this->theta1), sigma)));
-        Real64 const num_final_term_2 = pow_2(this->theta3) * pow_2(1 - (4 * sigma * pow_4(this->theta1)) / (1 - pow_4(this->theta1)));
+        Real64 const final_term_1 = log(this->theta2 / (2 * this->theta1 * pow(1 - pow_4(this->theta1), this->sigma)));
+        Real64 const num_final_term_2 = pow_2(this->theta3) * pow_2(1 - (4 * this->sigma * pow_4(this->theta1)) / (1 - pow_4(this->theta1)));
         Real64 const den_final_term_2_pt_1 = (1 + beta) / (1 - beta);
-        Real64 const den_final_term_2_pt_2 = pow_2(this->theta3) * (1 + (16 * sigma * pow_4(this->theta1)) / pow_2(1 - pow_4(this->theta1)));
+        Real64 const den_final_term_2_pt_2 = pow_2(this->theta3) * (1 + (16 * this->sigma * pow_4(this->theta1)) / pow_2(1 - pow_4(this->theta1)));
         Real64 const den_final_term_2 = den_final_term_2_pt_1 + den_final_term_2_pt_2;
         Real64 const final_term_2 = num_final_term_2 / den_final_term_2;
 
@@ -995,6 +1042,271 @@ namespace GroundHeatExchangerEnhanced {
         }
 
         return r12;
+    }
+
+    void GHEBorehole::calcShortTimestepGFunctions(Real64 const &flowRate, Real64 const &temperature)
+    {
+        // X. Xu and Jeffrey D. Spitler. 2006. 'Modeling of Vertical Ground Loop Heat Exchangers
+        // with Variable Convective Resistance and Thermal Mass of the Fluid.' in Proceedings of
+        // the 10th International Conference on Thermal Energy Storage-EcoStock. Pomona, NJ, May 31-June 2.
+
+        static std::string const routineName("GHEBorehole::calcShortTimestepGFunctions");
+
+        enum class CellType
+        {
+            FLUID,
+            CONVECTION,
+            PIPE,
+            GROUT,
+            SOIL
+        };
+
+        struct Cell
+        {
+            // Members
+            CellType type;
+            Real64 radius_center;
+            Real64 radius_outer;
+            Real64 radius_inner;
+            Real64 thickness;
+            Real64 vol;
+            Real64 conductivity;
+            Real64 rhoCp;
+            Real64 temperature;
+            Real64 temperature_prev_ts;
+
+            // Default constructor
+            Cell()
+                : type(), radius_center(0.0), radius_outer(0.0), radius_inner(0.0), thickness(0.0), vol(0.0), conductivity(0.0), rhoCp(0.0),
+                  temperature(0.0), temperature_prev_ts(0.0)
+            {
+            }
+
+            // Destructor
+            ~Cell() = default;
+        };
+
+        // vector to hold 1-D cells
+        std::vector<Cell> Cells;
+
+        // setup pipe, convection, and fluid layer geometries
+        int const num_pipe_cells = 4;
+        int const num_conv_cells = 1;
+        int const num_fluid_cells = 3;
+        Real64 const pcf_cell_thickness = this->pipe.wallThickness / num_pipe_cells;
+        Real64 const radius_pipe_out = std::sqrt(2) * this->pipe.outerRadius;
+        Real64 const radius_pipe_in = radius_pipe_out - this->pipe.wallThickness;
+        Real64 const radius_conv = radius_pipe_in - num_conv_cells * pcf_cell_thickness;
+        Real64 const radius_fluid = radius_conv - (num_fluid_cells - 0.5) * pcf_cell_thickness; // accounts for half thickness of boundary cell
+
+        // setup grout layer geometry
+        int const num_grout_cells = 27;
+        Real64 const radius_grout = this->radius;
+        Real64 const grout_cell_thickness = (radius_grout - radius_pipe_out) / num_grout_cells;
+
+        // setup soil layer geometry
+        int const num_soil_cells = 500;
+        Real64 const radius_soil = 10;
+        Real64 const soil_cell_thickness = (radius_soil - radius_grout) / num_soil_cells;
+
+        // calculate equivalent thermal resistance between borehole wall and fluid
+        Real64 bhResistance = this->calcAveResist(flowRate, temperature);
+        Real64 bhConvectionResistance = this->pipe.calcConvResist(flowRate, temperature);
+        Real64 bh_equivalent_resistance_tube_grout = bhResistance - bhConvectionResistance / 2.0;
+        Real64 bh_equivalent_resistance_convection = bhResistance - bh_equivalent_resistance_tube_grout;
+
+        Real64 initial_temperature = temperature;
+        Real64 cpFluid_init = this->pipe.fluid.getCp(temperature, routineName);
+        Real64 fluidDensity_init = this->pipe.fluid.getRho(temperature, routineName);
+
+        // initialize the fluid cells
+        for (int i = 0; i < num_fluid_cells; ++i) {
+            Cell thisCell;
+            thisCell.type = CellType::FLUID;
+            thisCell.thickness = pcf_cell_thickness;
+            thisCell.radius_center = radius_fluid + i * thisCell.thickness;
+
+            // boundary cell is only half thickness
+            if (i == 0) {
+                thisCell.radius_inner = thisCell.radius_center;
+            } else {
+                thisCell.radius_inner = thisCell.radius_center - thisCell.thickness / 2.0;
+            }
+
+            thisCell.radius_outer = thisCell.radius_center + thisCell.thickness / 2.0;
+            thisCell.conductivity = 200;
+            thisCell.rhoCp = 2.0 * cpFluid_init * fluidDensity_init * pow_2(this->pipe.innerRadius) / (pow_2(radius_conv) - pow_2(radius_fluid));
+            Cells.push_back(thisCell);
+        }
+
+        // initialize the convection cells
+        for (int i = 0; i < num_conv_cells; ++i) {
+            Cell thisCell;
+            thisCell.thickness = pcf_cell_thickness;
+            thisCell.radius_inner = radius_conv + i * thisCell.thickness;
+            thisCell.radius_center = thisCell.radius_inner + thisCell.thickness / 2.0;
+            thisCell.radius_outer = thisCell.radius_inner + thisCell.thickness;
+            thisCell.conductivity = log(radius_pipe_in / radius_conv) / (2 * DataGlobals::Pi * bh_equivalent_resistance_convection);
+            thisCell.rhoCp = 1;
+            Cells.push_back(thisCell);
+        }
+
+        // initialize pipe cells
+        for (int i = 0; i < num_pipe_cells; ++i) {
+            Cell thisCell;
+            thisCell.type = CellType::PIPE;
+            thisCell.thickness = pcf_cell_thickness;
+            thisCell.radius_inner = radius_pipe_in + i * thisCell.thickness;
+            thisCell.radius_center = thisCell.radius_inner + thisCell.thickness / 2.0;
+            thisCell.radius_outer = thisCell.radius_inner + thisCell.thickness;
+            thisCell.conductivity = log(radius_grout / radius_pipe_in) / (2 * DataGlobals::Pi * bh_equivalent_resistance_tube_grout);
+            thisCell.rhoCp = this->pipe.rhoCp;
+            Cells.push_back(thisCell);
+        }
+
+        // initialize grout cells
+        for (int i = 0; i < num_grout_cells; ++i) {
+            Cell thisCell;
+            thisCell.type = CellType::GROUT;
+            thisCell.thickness = grout_cell_thickness;
+            thisCell.radius_inner = radius_pipe_out + i * thisCell.thickness;
+            thisCell.radius_center = thisCell.radius_inner + thisCell.thickness / 2.0;
+            thisCell.radius_outer = thisCell.radius_inner + thisCell.thickness;
+            thisCell.conductivity = log(radius_grout / radius_pipe_in) / (2 * DataGlobals::Pi * bh_equivalent_resistance_tube_grout);
+            thisCell.rhoCp = this->rhoCpGrout;
+            Cells.push_back(thisCell);
+        }
+
+        // initialize soil cells
+        for (int i = 0; i < num_soil_cells; ++i) {
+            Cell thisCell;
+            thisCell.type = CellType::SOIL;
+            thisCell.thickness = soil_cell_thickness;
+            thisCell.radius_inner = radius_grout + i * thisCell.thickness;
+            thisCell.radius_center = thisCell.radius_inner + thisCell.thickness / 2.0;
+            thisCell.radius_outer = thisCell.radius_inner + thisCell.thickness;
+            thisCell.conductivity = this->kSoil;
+            thisCell.rhoCp = this->rhoCpSoil;
+            Cells.push_back(thisCell);
+        }
+
+        // other non-geometric specific setup
+        for (auto &thisCell : Cells) {
+            thisCell.vol = DataGlobals::Pi * (pow_2(thisCell.radius_outer) - pow_2(thisCell.radius_inner));
+            thisCell.temperature = initial_temperature;
+        }
+
+        // set upper limit of time for the short time-step g-function calcs so there is some overlap
+        Real64 const lntts_max_for_short_timestep = -9.0;
+        Real64 const alphaSoil = this->kSoil / this->rhoCpSoil;
+        Real64 const t_s = pow_2(this->length) / (9.0 * alphaSoil);
+
+        Real64 const time_step = 120;
+        Real64 const time_max_for_short_timestep = exp(lntts_max_for_short_timestep) * t_s;
+        Real64 total_time = 0;
+
+        Real64 const heat_flux = 40.0;
+
+        // time step loop
+        while (total_time < time_max_for_short_timestep) {
+
+            for (auto &thisCell : Cells) {
+                thisCell.temperature_prev_ts = thisCell.temperature;
+            }
+
+            std::vector<Real64> a;
+            std::vector<Real64> b;
+            std::vector<Real64> c;
+            std::vector<Real64> d;
+
+            // setup tdma matrices
+            int num_cells = Cells.size();
+            for (int cell_index = 0; cell_index < num_cells; ++cell_index) {
+                if (cell_index == 0) {
+                    // heat flux BC
+
+                    auto &thisCell = Cells[cell_index];
+                    auto &eastCell = Cells[cell_index + 1];
+
+                    Real64 FE1 = log(thisCell.radius_outer / thisCell.radius_center) / (2 * DataGlobals::Pi * thisCell.conductivity);
+                    Real64 FE2 = log(eastCell.radius_center / eastCell.radius_inner) / (2 * DataGlobals::Pi * eastCell.conductivity);
+                    Real64 AE = 1 / (FE1 + FE2);
+
+                    Real64 AD = thisCell.rhoCp * thisCell.vol / time_step;
+
+                    a.push_back(0);
+                    b.push_back(-AE / AD - 1);
+                    c.push_back(AE / AD);
+                    d.push_back(-thisCell.temperature_prev_ts - heat_flux / AD);
+
+                } else if (cell_index == num_cells - 1) {
+                    // const ground temp bc
+
+                    auto &thisCell = Cells[cell_index];
+
+                    a.push_back(0);
+                    b.push_back(1);
+                    c.push_back(0);
+                    d.push_back(thisCell.temperature_prev_ts);
+
+                } else {
+                    // all other cells
+
+                    auto &westCell = Cells[cell_index - 1];
+                    auto &thisCell = Cells[cell_index];
+                    auto &eastCell = Cells[cell_index + 1];
+
+                    Real64 FE1 = log(thisCell.radius_outer / thisCell.radius_center) / (2 * DataGlobals::Pi * thisCell.conductivity);
+                    Real64 FE2 = log(eastCell.radius_center / eastCell.radius_inner) / (2 * DataGlobals::Pi * eastCell.conductivity);
+                    Real64 AE = 1 / (FE1 + FE2);
+
+                    Real64 FW1 = log(westCell.radius_outer / westCell.radius_center) / (2 * DataGlobals::Pi * westCell.conductivity);
+                    Real64 FW2 = log(thisCell.radius_center / thisCell.radius_inner) / (2 * DataGlobals::Pi * thisCell.conductivity);
+                    Real64 AW = -1 / (FW1 + FW2);
+
+                    Real64 AD = thisCell.rhoCp * thisCell.vol / time_step;
+
+                    a.push_back(-AW / AD);
+                    b.push_back(AW / AD - AE / AD - 1);
+                    c.push_back(AE / AD);
+                    d.push_back(-thisCell.temperature_prev_ts);
+                }
+            } // end tdma setup
+
+            // solve for new temperatures
+            std::vector<Real64> new_temps = solveTDM(a, b, c, d);
+
+            for (int cell_index = 0; cell_index < num_cells; ++cell_index) {
+                Cells[cell_index].temperature = new_temps[cell_index];
+            }
+
+            // calculate bh wall temp
+            Real64 T_bhWall = 0.0;
+            for (int cell_index = 0; cell_index < num_cells; ++cell_index) {
+                auto &leftCell = Cells[cell_index];
+                auto &rightCell = Cells[cell_index + 1];
+
+                if (leftCell.type == CellType::GROUT && rightCell.type == CellType::SOIL) {
+
+                    Real64 left_conductance = 2 * DataGlobals::Pi * leftCell.conductivity / log(leftCell.radius_outer / leftCell.radius_inner);
+                    Real64 right_conductance = 2 * DataGlobals::Pi * rightCell.conductivity / log(rightCell.radius_center / leftCell.radius_inner);
+
+                    T_bhWall = (left_conductance * leftCell.temperature + right_conductance * rightCell.temperature) /
+                               (left_conductance + right_conductance);
+                    break;
+                }
+            }
+
+            total_time += time_step;
+
+            // computed at BH wall
+            this->lnttsSTS.push_back(log(total_time / t_s));
+            this->gSTS.push_back(this->c0 * ((T_bhWall - initial_temperature) / heat_flux));
+
+            // uncomment to compute at center of BH
+            // g.push_back(this->c0 * ((Cells[0].temperature - initial_temperature) / heat_flux - bhResistance));
+
+        } // end timestep loop
     }
 
 } // namespace GroundHeatExchangerEnhanced
