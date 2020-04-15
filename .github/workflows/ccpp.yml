@@ -16,6 +16,6 @@ jobs:
     - name: cmake
       run: mkdir build && cd build && cmake ..
     - name: build
-      run: make energyplus
+      run: cd build && make energyplus
     - name: test
-      run: cd Products && ./energyplus -D ../../testfiles/1ZoneUncontrolled.idf
+      run: cd build/Products && ./energyplus -D ../../testfiles/1ZoneUncontrolled.idf
