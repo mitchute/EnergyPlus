@@ -8140,6 +8140,70 @@ namespace FluidProperties {
 
     //*****************************************************************************
 
+    Real64 GetEnthalpyGlycol(std::string const &Glycol,    // carries in substance name
+                              Real64 const Temperature,     // actual temperature given as input
+                              int &GlycolIndex,             // Index to Glycol Properties
+                              std::string const &CalledFrom // routine this function was called from (error messages)
+    )
+    {
+
+        // FUNCTION INFORMATION:
+        //       AUTHOR         Matt Mitchell
+        //       DATE WRITTEN   June 2020
+        //       MODIFIED       N/A
+        //       RE-ENGINEERED  N/A
+
+        // PURPOSE OF THIS FUNCTION:
+        // This subroutine finds the enthalpy for glycols at different
+        // temperatures.
+
+        // METHODOLOGY EMPLOYED:
+        // Linear interpolation is used to find enthalpy values for a
+        // particular glycol (water or some mixture of water and another fluid).
+        // Warnings are given if the point is not clearly in the bounds of the
+        // glycol data.  The value returned is the appropriate limit value.
+
+        // REFERENCES:
+        // GetFluidPropertiesData: subroutine enforces that temperatures in
+        // all temperature lists are entered in ascending order.
+
+        // FUNCTION PARAMETERS:
+        static std::string const RoutineName("GetEnthalpyGlycol: ");
+
+        // Get the input if we haven't already
+        if (GetInput) {
+            GetFluidPropertiesData();
+            GetInput = false;
+        }
+
+        // If no glycols, no fluid properties can be evaluated
+        int GlycolNum = 0;
+        if (NumOfGlycols == 0) ReportFatalGlycolErrors(NumOfGlycols, GlycolNum, true, Glycol, "GetEnthalpyGlycol", "enthalpy", CalledFrom);
+
+        // If glycol index has not yet been found for this fluid, find its value now
+        if (GlycolIndex > 0) {
+            GlycolNum = GlycolIndex;
+        } else { // Find which refrigerant (index) is being requested
+            GlycolNum = FindGlycol(Glycol);
+            if (GlycolNum == 0) {
+                ReportFatalGlycolErrors(NumOfGlycols, GlycolNum, true, Glycol, "GetEnthalpyGlycol", "enthalpy", CalledFrom);
+            }
+            GlycolIndex = GlycolNum;
+        }
+
+        // If user didn't input data (shouldn't get this far, but just in case...), we can't find a value
+        if (!GlycolData(GlycolIndex).CpDataPresent) {
+            ReportFatalGlycolErrors(
+                NumOfGlycols, GlycolNum, GlycolData(GlycolIndex).CpDataPresent, Glycol, "GetEnthalpyGlycol", "enthalpy", CalledFrom);
+        }
+
+        Real64 cp = GetSpecificHeatGlycol(Glycol, Temperature, GlycolIndex, CalledFrom);
+        Real64 enthalpy = cp * Temperature;
+        return enthalpy;
+    }
+
+    //*****************************************************************************
+
     void GetInterpValue_error()
     {
         ShowFatalError("GetInterpValue: Temperatures for fluid property data too close together, division by zero");

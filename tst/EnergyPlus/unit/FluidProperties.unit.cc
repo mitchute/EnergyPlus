@@ -55,12 +55,16 @@
 
 #include <cmath>
 #include <ctgmath>
+#include <fstream>
 
 #include "Fixtures/EnergyPlusFixture.hh"
 
 using namespace EnergyPlus;
 using namespace ObjexxFCL;
 using namespace EnergyPlus::FluidProperties;
+
+std::ofstream static pgFile("PG.csv", std::ofstream::out);
+std::ofstream static egFile("EG.csv", std::ofstream::out);
 
 TEST_F(EnergyPlusFixture, FluidProperties_GetDensityGlycol)
 {
@@ -85,4 +89,156 @@ TEST_F(EnergyPlusFixture, FluidProperties_GetDensityGlycol)
     EXPECT_NEAR(988.60, GetDensityGlycol("GLHXFLUID", 85.0, FluidIndex, "UnitTest"), 0.01);
     EXPECT_NEAR(972.03, GetDensityGlycol("GLHXFLUID", 105.0, FluidIndex, "UnitTest"), 0.01);
     EXPECT_NEAR(953.41, GetDensityGlycol("GLHXFLUID", 125.0, FluidIndex, "UnitTest"), 0.01);
+}
+
+TEST_F(EnergyPlusFixture, FluidProperties_GetEnthalpyGlycol)
+{
+
+    std::string const idf_objects = delimited_string(
+        {
+            "FluidProperties:GlycolConcentration,",
+            "  PG10,            !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.1;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  PG20,            !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.2;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  PG30,            !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.3;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  PG40,            !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.4;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  PG50,            !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.5;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  PG60,            !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.6;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  PG70,            !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.7;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  PG80,            !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.8;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  PG90,            !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.9;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  EG10,            !- Name",
+            "  EthyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.1;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  EG20,            !- Name",
+            "  EthyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.2;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  EG30,            !- Name",
+            "  EthyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.3;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  EG40,            !- Name",
+            "  EthyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.4;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  EG50,            !- Name",
+            "  EthyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.5;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  EG60,            !- Name",
+            "  EthyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.6;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  EG70,            !- Name",
+            "  EthyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.7;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  EG80,            !- Name",
+            "  EthyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.8;             !- Glycol Concentration",
+            "",
+            "FluidProperties:GlycolConcentration,",
+            "  EG90,            !- Name",
+            "  EthyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.9;             !- Glycol Concentration",
+            "",
+        });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    EXPECT_FALSE(has_err_output());
+
+    pgFile << ",0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9\n";
+    egFile << ",0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9\n";
+
+    std::vector<Real64> temps {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+    std::map<int, std::string> pgNames{{0, "PG10"}, {1, "PG20"}, {2, "PG30"}, {3, "PG40"}, {4, "PG50"}, {5, "PG60"}, {6, "PG70"}, {7, "PG80"}, {8, "P90"}};
+    std::map<int, std::string> egNames{{9, "EG10"}, {10, "EG20"}, {11, "EG30"}, {12, "EG40"}, {13, "EG50"}, {14, "EG60"}, {15, "EG70"}, {16, "EG80"}, {17, "EG90"}};
+
+    // PG
+    for (auto &t : temps) {
+        pgFile << t << ",";
+        for (auto &it : pgNames) {
+            int idx = it.first;
+            pgFile << GetEnthalpyGlycol(it.second, t, idx, "UnitTest");
+            if (idx < 8) {
+                pgFile << ",";
+            }
+        }
+        pgFile << "\n";
+    }
+
+    // EG
+    for (auto &t : temps) {
+        egFile << t << ",";
+        for (auto &it : egNames) {
+            int idx = it.first;
+            egFile << GetEnthalpyGlycol(it.second, t, idx, "UnitTest");
+            if (idx < 17) {
+                egFile << ",";
+            }
+        }
+        egFile << "\n";
+    }
 }

@@ -568,6 +568,14 @@ namespace FluidProperties {
 
     //*****************************************************************************
 
+    Real64 GetEnthalpyGlycol(std::string const &Glycol,    // carries in substance name
+                             Real64 Temperature,           // actual temperature given as input
+                             int &GlycolIndex,             // Index to Glycol Properties
+                             std::string const &CalledFrom // routine this function was called from (error messages)
+    );
+
+    //*****************************************************************************
+
     void GetInterpValue_error();
 
     inline Real64 GetInterpValue(Real64 const Tact, // actual temperature at which we want the property of interest
