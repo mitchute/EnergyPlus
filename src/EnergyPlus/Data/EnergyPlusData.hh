@@ -72,6 +72,7 @@
 #include <EnergyPlus/CondenserLoopTowers.hh>
 #include <EnergyPlus/ExteriorEnergyUse.hh>
 #include <EnergyPlus/Fans.hh>
+#include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
 #include <EnergyPlus/OutputFiles.hh>
 #include <EnergyPlus/Pipes.hh>
 #include <EnergyPlus/PlantChillers.hh>
@@ -106,6 +107,7 @@ namespace EnergyPlus {
         DataGlobal dataGlobals;
         ExteriorEnergyUseData exteriorEnergyUse;
         FansData fans;
+        GroundHeatExchangerEnhancedData dataGroundHeatExchangerEnhanced;
         PipesData pipes;
 
         PlantChillersData dataPlantChillers;
@@ -151,6 +153,7 @@ namespace EnergyPlus {
             dataGlobals.clear_state();
             exteriorEnergyUse.clear_state();
             fans.clear_state();
+            dataGroundHeatExchangerEnhanced.clear_state();
             //outputReportTabular.clear_state();
             pipes.clear_state();
             dataPlantChillers.clear_state();

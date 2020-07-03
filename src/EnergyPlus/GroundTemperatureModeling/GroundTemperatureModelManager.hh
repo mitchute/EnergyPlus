@@ -55,14 +55,13 @@
 #include <ObjexxFCL/Array1D.hh>
 
 // EnergyPlus Headers
-#include <EnergyPlus/DataGlobals.hh>
 #include <EnergyPlus/EnergyPlus.hh>
-#include <EnergyPlus/Data/EnergyPlusData.hh>
 #include <EnergyPlus/GroundTemperatureModeling/BaseGroundTemperatureModel.hh>
 
 namespace EnergyPlus {
 
-    struct DataGlobal;
+    // Forward declarations
+    struct EnergyPlusData;
 
 namespace GroundTemperatureManager {
 

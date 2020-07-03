@@ -65,7 +65,9 @@
 #include <EnergyPlus/PlantComponent.hh>
 
 namespace EnergyPlus {
+
     // Forward declarations
+    struct BranchInputManagerData;
     struct EnergyPlusData;
 
     namespace PlantPipingSystemsManager {

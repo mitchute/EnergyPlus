@@ -113,7 +113,6 @@
 #include <EnergyPlus/Furnaces.hh>
 #include <EnergyPlus/GlobalNames.hh>
 #include <EnergyPlus/GroundHeatExchangers.hh>
-#include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
 #include <EnergyPlus/GroundTemperatureModeling/GroundTemperatureModelManager.hh>
 #include <EnergyPlus/HeatPumpWaterToWaterCOOLING.hh>
 #include <EnergyPlus/HeatPumpWaterToWaterHEATING.hh>
@@ -298,7 +297,6 @@ void EnergyPlus::clearAllStates(OutputFiles &outputFiles)
     Furnaces::clear_state();
     GlobalNames::clear_state();
     GroundHeatExchangers::clear_state();
-    GroundHeatExchangerEnhanced::clear_state();
     GroundTemperatureManager::clear_state();
     HeatBalanceAirManager::clear_state();
     HeatBalanceIntRadExchange::clear_state();

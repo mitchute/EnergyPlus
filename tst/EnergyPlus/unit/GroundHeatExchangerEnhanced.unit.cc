@@ -51,11 +51,11 @@
 #include <gtest/gtest.h>
 
 // EnergyPlus Headers
-#include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/Plant/DataPlant.hh>
-#include <EnergyPlus/DataSizing.hh>
+#include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
 #include <EnergyPlus/GroundTemperatureModeling/GroundTemperatureModelManager.hh>
+#include <EnergyPlus/DataSizing.hh>
 
 // Testing Headers
 #include "Fixtures/EnergyPlusFixture.hh"
@@ -130,9 +130,9 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_g_functions)
 
     EnhancedGHE::factory(state, "GHE");
 
-    ASSERT_EQ(1u, enhancedGHE.size());
+    ASSERT_EQ(1u, state.dataGroundHeatExchangerEnhanced.enhancedGHE.size());
 
-    EnhancedGHE *tstGHE = &enhancedGHE[0];
+    EnhancedGHE *tstGHE = &state.dataGroundHeatExchangerEnhanced.enhancedGHE[0];
 
     EXPECT_EQ("GHE", tstGHE->name);
     EXPECT_EQ(0.00330000, tstGHE->designVolFlow);
@@ -249,9 +249,9 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Array)
 
     EnhancedGHE::factory(state, "GHE");
 
-    ASSERT_EQ(1u, enhancedGHE.size());
+    ASSERT_EQ(1u, state.dataGroundHeatExchangerEnhanced.enhancedGHE.size());
 
-    EnhancedGHE *tstGHE = &enhancedGHE[0];
+    EnhancedGHE *tstGHE = &state.dataGroundHeatExchangerEnhanced.enhancedGHE[0];
 
     EXPECT_EQ("GHE", tstGHE->name);
     EXPECT_EQ(0.00330000, tstGHE->designVolFlow);
@@ -414,9 +414,9 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Boreholes)
 
     EnhancedGHE::factory(state, "GHE");
 
-    ASSERT_EQ(1u, enhancedGHE.size());
+    ASSERT_EQ(1u, state.dataGroundHeatExchangerEnhanced.enhancedGHE.size());
 
-    EnhancedGHE *tstGHE = &enhancedGHE[0];
+    EnhancedGHE *tstGHE = &state.dataGroundHeatExchangerEnhanced.enhancedGHE[0];
 
     EXPECT_EQ("GHE", tstGHE->name);
     EXPECT_EQ(0.00330000, tstGHE->designVolFlow);
@@ -574,9 +574,9 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Min_Shankspace)
 
     EnhancedGHE::factory(state, "GHE");
 
-    ASSERT_EQ(1u, enhancedGHE.size());
+    ASSERT_EQ(1u, state.dataGroundHeatExchangerEnhanced.enhancedGHE.size());
 
-    EnhancedGHE *tstGHE = &enhancedGHE[0];
+    EnhancedGHE *tstGHE = &state.dataGroundHeatExchangerEnhanced.enhancedGHE[0];
 
     EXPECT_EQ("GHE", tstGHE->name);
     EXPECT_EQ(0.00330000, tstGHE->designVolFlow);
@@ -709,9 +709,9 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Max_Shankspace)
 
     EnhancedGHE::factory(state, "GHE");
 
-    ASSERT_EQ(1u, enhancedGHE.size());
+    ASSERT_EQ(1u, state.dataGroundHeatExchangerEnhanced.enhancedGHE.size());
 
-    EnhancedGHE *tstGHE = &enhancedGHE[0];
+    EnhancedGHE *tstGHE = &state.dataGroundHeatExchangerEnhanced.enhancedGHE[0];
 
     EXPECT_EQ("GHE", tstGHE->name);
     EXPECT_EQ(0.00330000, tstGHE->designVolFlow);
@@ -1519,9 +1519,9 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_long_timestep_g_functions)
 
     EnhancedGHE::factory(state, "GHE");
 
-    ASSERT_EQ(1u, enhancedGHE.size());
+    ASSERT_EQ(1u, state.dataGroundHeatExchangerEnhanced.enhancedGHE.size());
 
-    auto &tstGHE(enhancedGHE[0]);
+    auto &tstGHE(state.dataGroundHeatExchangerEnhanced.enhancedGHE[0]);
 
     DataEnvironment::MaxNumberSimYears = 1;
     DataPlant::TotNumLoops = 1;

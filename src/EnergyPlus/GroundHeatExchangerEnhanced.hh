@@ -354,15 +354,24 @@ namespace GroundHeatExchangerEnhanced {
         Real64 doubleIntegral(const GHEBorehole &bh_i, const GHEBorehole &bh_j, Real64 const &currTime) const;
     };
 
-    void clear_state();
     void getGHEInput(EnergyPlusData &state);
     Real64 smoothingFunc(Real64 const &x, Real64 const &a, Real64 const &b);
     std::vector<Real64> solveTDM(std::vector<Real64> a, std::vector<Real64> b, std::vector<Real64> c, std::vector<Real64> d);
     inline bool isEven(unsigned const &x);
 
-    extern std::vector<EnhancedGHE> enhancedGHE;
-
 } // namespace GroundHeatExchangerEnhanced
+
+struct GroundHeatExchangerEnhancedData : BaseGlobalStruct
+{
+    bool getInput = true;
+    std::vector<GroundHeatExchangerEnhanced::EnhancedGHE> enhancedGHE;
+
+    void clear_state() override
+    {
+        getInput = true;
+        enhancedGHE.clear();
+    }
+};
 
 } // namespace EnergyPlus
 

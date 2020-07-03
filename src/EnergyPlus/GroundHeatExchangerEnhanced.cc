@@ -45,20 +45,14 @@
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-// C++ Headers
-
-// ObjexxFCL Headers
-
-// JSON Headers
-
 // EnergyPlus Headers
-#include "GroundHeatExchangerEnhanced.hh"
 #include <EnergyPlus/BranchNodeConnections.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataIPShortCuts.hh>
 #include <EnergyPlus/Data/EnergyPlusData.hh>
 #include <EnergyPlus/FluidProperties.hh>
 #include <EnergyPlus/InputProcessing/InputProcessor.hh>
+#include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
 #include <EnergyPlus/NodeInputManager.hh>
 #include <EnergyPlus/OutputProcessor.hh>
 #include <EnergyPlus/Plant/DataPlant.hh>
@@ -68,16 +62,6 @@
 namespace EnergyPlus {
 
 namespace GroundHeatExchangerEnhanced {
-
-    bool getInput(true);
-
-    std::vector<GroundHeatExchangerEnhanced::EnhancedGHE> enhancedGHE;
-
-    void clear_state()
-    {
-        getInput = true;
-        enhancedGHE.clear();
-    }
 
     Real64 smoothingFunc(Real64 const &x, Real64 const &a, Real64 const &b)
     {
@@ -135,12 +119,12 @@ namespace GroundHeatExchangerEnhanced {
 
     PlantComponent *EnhancedGHE::factory(EnergyPlusData &state, std::string const &objectName)
     {
-        if (getInput) {
+        if (state.dataGroundHeatExchangerEnhanced.getInput) {
             getGHEInput(state);
-            getInput = false;
+            state.dataGroundHeatExchangerEnhanced.getInput = false;
         }
 
-        for (auto &ghe : enhancedGHE) {
+        for (auto &ghe : state.dataGroundHeatExchangerEnhanced.enhancedGHE) {
             if (UtilityRoutines::SameString(ghe.name, objectName)) {
                 return &ghe;
             }
@@ -627,7 +611,7 @@ namespace GroundHeatExchangerEnhanced {
             newGHE.gtm = GroundTemperatureManager::GetGroundTempModelAndInit(state, DataIPShortCuts::cAlphaArgs(4), DataIPShortCuts::cAlphaArgs(5));
 
             // Save object
-            enhancedGHE.push_back(newGHE);
+            state.dataGroundHeatExchangerEnhanced.enhancedGHE.push_back(newGHE);
         }
 
     }
