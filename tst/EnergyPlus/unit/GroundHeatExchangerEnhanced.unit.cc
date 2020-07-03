@@ -128,7 +128,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_g_functions)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    EnhancedGHE::factory("GHE");
+    EnhancedGHE::factory(state, "GHE");
 
     ASSERT_EQ(1u, enhancedGHE.size());
 
@@ -247,7 +247,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Array)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    EnhancedGHE::factory("GHE");
+    EnhancedGHE::factory(state, "GHE");
 
     ASSERT_EQ(1u, enhancedGHE.size());
 
@@ -412,7 +412,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Boreholes)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    EnhancedGHE::factory("GHE");
+    EnhancedGHE::factory(state, "GHE");
 
     ASSERT_EQ(1u, enhancedGHE.size());
 
@@ -572,7 +572,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Min_Shankspace)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    EnhancedGHE::factory("GHE");
+    EnhancedGHE::factory(state, "GHE");
 
     ASSERT_EQ(1u, enhancedGHE.size());
 
@@ -707,7 +707,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Good_Init_With_Max_Shankspace)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    EnhancedGHE::factory("GHE");
+    EnhancedGHE::factory(state, "GHE");
 
     ASSERT_EQ(1u, enhancedGHE.size());
 
@@ -807,7 +807,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Props_Name_Response_Factor)
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
-    ASSERT_ANY_THROW(EnhancedGHE::factory("GHE"));
+    ASSERT_ANY_THROW(EnhancedGHE::factory(state, "GHE"));
 }
 
 TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Props_Name_Array)
@@ -835,7 +835,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Props_Name_Array)
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
-    ASSERT_ANY_THROW(EnhancedGHE::factory("GHE"));
+    ASSERT_ANY_THROW(EnhancedGHE::factory(state, "GHE"));
 }
 
 TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Props_Name_Borehole)
@@ -862,7 +862,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Props_Name_Borehole)
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
-    ASSERT_ANY_THROW(EnhancedGHE::factory("GHE"));
+    ASSERT_ANY_THROW(EnhancedGHE::factory(state, "GHE"));
 }
 
 TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_EWT_g_function_Name)
@@ -929,7 +929,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_EWT_g_function_Name)
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
-    ASSERT_ANY_THROW(EnhancedGHE::factory("GHE"));
+    ASSERT_ANY_THROW(EnhancedGHE::factory(state, "GHE"));
 }
 
 TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_BWT_g_function_Name)
@@ -996,7 +996,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_BWT_g_function_Name)
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
-    ASSERT_ANY_THROW(EnhancedGHE::factory("GHE"));
+    ASSERT_ANY_THROW(EnhancedGHE::factory(state, "GHE"));
 }
 
 TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Num_Array)
@@ -1047,7 +1047,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Num_Array)
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
-    ASSERT_ANY_THROW(EnhancedGHE::factory("GHE"));
+    ASSERT_ANY_THROW(EnhancedGHE::factory(state, "GHE"));
 }
 
 TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Num_BH)
@@ -1119,7 +1119,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Bad_Num_BH)
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
-    ASSERT_ANY_THROW(EnhancedGHE::factory("GHE"));
+    ASSERT_ANY_THROW(EnhancedGHE::factory(state, "GHE"));
 }
 
 TEST_F(EnergyPlusFixture, GHE_Enhanced_Fluid_Worker_Props)
@@ -1517,7 +1517,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_long_timestep_g_functions)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    EnhancedGHE::factory("GHE");
+    EnhancedGHE::factory(state, "GHE");
 
     ASSERT_EQ(1u, enhancedGHE.size());
 
@@ -1556,7 +1556,7 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_long_timestep_g_functions)
 
     PlantLocation loc(0, 0, 0, 0);
 
-    tstGHE.onInitLoopEquip(loc);
+    tstGHE.onInitLoopEquip(state, loc);
 
     Real64 const tol = 1E-2;
 
