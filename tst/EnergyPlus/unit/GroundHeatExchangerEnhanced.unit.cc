@@ -1560,6 +1560,15 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_long_timestep_g_functions)
 
     Real64 const tol = 1E-2;
 
-    EXPECT_NEAR(tstGHE.gLTS[0], 2.53, tol);
-    EXPECT_NEAR(tstGHE.gLTS[0], 2.53, tol);
+    EXPECT_NEAR(tstGHE.gLTS[0], 2.54, tol);
+    EXPECT_NEAR(tstGHE.gLTS[1], 2.79, tol);
+    EXPECT_NEAR(tstGHE.gLTS[2], 3.03, tol);
+    EXPECT_NEAR(tstGHE.gLTS[3], 3.28, tol);
+    EXPECT_NEAR(tstGHE.gLTS[4], 3.53, tol);
+    EXPECT_NEAR(tstGHE.gLTS[5], 3.81, tol);
+    EXPECT_NEAR(tstGHE.gLTS[6], 4.14, tol);
+    EXPECT_NEAR(tstGHE.gLTS[7], 4.58, tol);
+    EXPECT_NEAR(tstGHE.gLTS[8], 5.13, tol);
+    EXPECT_NEAR(tstGHE.gLTS[9], 5.79, tol);
+    EXPECT_NEAR(tstGHE.gLTS[10], 6.53, tol);
 }
