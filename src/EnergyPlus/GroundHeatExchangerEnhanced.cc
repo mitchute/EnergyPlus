@@ -1428,7 +1428,7 @@ namespace GroundHeatExchangerEnhanced {
         Real64 const alphaSoil = this->kSoil / this->rhoCpSoil;
         Real64 const t_s = pow_2(this->length) / (9.0 * alphaSoil);
 
-        Real64 const time_step = 120;
+        Real64 const time_step = 500;
         Real64 const time_max_for_short_timestep = exp(lntts_max_for_short_timestep) * t_s;
         Real64 total_time = 0;
 
