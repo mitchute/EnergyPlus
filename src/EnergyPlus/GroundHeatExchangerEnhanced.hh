@@ -62,36 +62,56 @@ namespace EnergyPlus {
 
 namespace GroundHeatExchangerEnhanced {
 
-struct FluidWorker
-{
-    // Members
-    std::string fluidName;
-    int loopNum;
-    int fluidIdx;
-
-    // Default constructor
-    FluidWorker() : loopNum(0), fluidIdx(0)
+    struct PointLoc
     {
-    }
+        Real64 x;
+        Real64 y;
+        Real64 z;
 
-    // Copy constructor
-    FluidWorker(const FluidWorker &r) {
-        fluidName = r.fluidName;
-        loopNum = r.loopNum;
-        fluidIdx = r.fluidIdx;
-    }
+        // Default constructor
+        PointLoc(): x(0.0), y(0.0), z(0.0)
+        {
+        }
 
-    // Default destructor
-    ~FluidWorker() = default;
+        // Copy constructor
+        PointLoc(const PointLoc &r) {
+            x = r.x; y = r.y; z = r.z;
+        }
 
-    // Member methods
-    void initialize(int _loopNum);
-    Real64 getCp(Real64 const &temperature, const std::string &routineName);
-    Real64 getCond(Real64 const &temperature, const std::string &routineName);
-    Real64 getVisc(Real64 const &temperature, const std::string &routineName);
-    Real64 getRho(Real64 const &temperature, const std::string &routineName);
-    Real64 getPrandtl(Real64 const &temperature, const std::string &routineName);
-};
+        // Default destructor
+        ~PointLoc() = default;
+    };
+
+    struct FluidWorker
+    {
+        // Members
+        std::string fluidName;
+        int loopNum;
+        int fluidIdx;
+
+        // Default constructor
+        FluidWorker() : loopNum(0), fluidIdx(0)
+        {
+        }
+
+        // Copy constructor
+        FluidWorker(const FluidWorker &r) {
+            fluidName = r.fluidName;
+            loopNum = r.loopNum;
+            fluidIdx = r.fluidIdx;
+        }
+
+        // Default destructor
+        ~FluidWorker() = default;
+
+        // Member methods
+        void initialize(int _loopNum);
+        Real64 getCp(Real64 const &temperature, const std::string &routineName);
+        Real64 getCond(Real64 const &temperature, const std::string &routineName);
+        Real64 getVisc(Real64 const &temperature, const std::string &routineName);
+        Real64 getRho(Real64 const &temperature, const std::string &routineName);
+        Real64 getPrandtl(Real64 const &temperature, const std::string &routineName);
+    };
 
     struct Pipe
     {
@@ -189,10 +209,16 @@ struct FluidWorker
         Real64 c0;
         std::vector<Real64> gSTS;
         std::vector<Real64> lnttsSTS;
+        Real64 dl_i;
+        Real64 dl_j;
+        Real64 dl_ii;
+        std::vector<PointLoc> pointLocations_i;
+        std::vector<PointLoc> pointLocations_j;
+        std::vector<PointLoc> pointLocations_ii;
 
         // default constructor
         GHEBorehole() : xLoc(0.0), yLoc(0.0), theta1(0.0), theta2(0.0), theta3(0.0), sigma(0.0),
-                        kSoil(0.0), rhoCpSoil(0.0), c0(0.0)
+                        kSoil(0.0), rhoCpSoil(0.0), c0(0.0), dl_i(0.0), dl_j(0.0), dl_ii(0.0)
         {
         }
 
@@ -201,8 +227,9 @@ struct FluidWorker
                     Real64 const &_kGrout, Real64 const &_kPipe, Real64 const &_pipeOuterDia, Real64 const &_pipeWallThickness)
         {
             xLoc = 0.0; yLoc = 0.0; theta1 = 0.0; theta2 = 0.0; theta3 = 0.0; sigma = 0.0; kSoil = _kSoil;
-            rhoCpSoil = _rhoCpSoil; diameter = _diameter; shankSpace = _shankSpace; kGrout = _kGrout;
-            pipe.k = _kPipe; c0 = 0.0; pipe.outerDia = _pipeOuterDia; pipe.wallThickness = _pipeWallThickness;
+            rhoCpSoil = _rhoCpSoil; diameter = _diameter; shankSpace = _shankSpace;
+            kGrout = _kGrout; pipe.k = _kPipe; c0 = 0.0; pipe.outerDia = _pipeOuterDia;
+            pipe.wallThickness = _pipeWallThickness; dl_i = 0.0; dl_j = 0.0; dl_ii = 0.0;
             this->initialize(_kSoil, _rhoCpSoil);
         }
 
@@ -211,7 +238,7 @@ struct FluidWorker
         {
             name = r.name; xLoc = r.xLoc; yLoc = r.yLoc; theta1 = r.theta1; theta2 = r.theta2;
             theta3 = r.theta3; sigma = r.sigma; kSoil = r.kSoil; rhoCpSoil = r.rhoCpSoil;
-            c0 = r.c0;
+            c0 = r.c0; dl_i = r.dl_i; dl_j = r.dl_j; dl_ii = r.dl_ii;
         };
 
         // default destructor
@@ -276,6 +303,7 @@ struct FluidWorker
         int numBH;
         Real64 kSoil;
         Real64 rhoCpSoil;
+        Real64 alphaSoil;
         std::shared_ptr<BaseGroundTempsModel> gtm;
         Real64 aveBHWallTemp;
         Real64 heatRateToSoil;
@@ -295,10 +323,13 @@ struct FluidWorker
         int branchNum;
         int compNum;
         FluidWorker fluid;
+        std::vector<Real64> gLTS;
+        std::vector<Real64> lnttsLTS;
 
         // default constructor
-        EnhancedGHE() : oneTimeInit(true), inletNode(0), outletNode(0), designVolFlow(0.0), numBH(0), kSoil(0.0), rhoCpSoil(0.0), aveBHWallTemp(0.0),
-                        heatRateToSoil(0.0), inletTemp(0.0), outletTemp(0.0), massFlowRate(0.0), aveFluidTemp(0.0), farFieldGroundTemp(0.0),
+        EnhancedGHE() : oneTimeInit(true), inletNode(0), outletNode(0), designVolFlow(0.0), numBH(0),
+                        kSoil(0.0), rhoCpSoil(0.0), alphaSoil(0.0), aveBHWallTemp(0.0), heatRateToSoil(0.0),
+                        inletTemp(0.0), outletTemp(0.0), massFlowRate(0.0), aveFluidTemp(0.0), farFieldGroundTemp(0.0),
                         gFuncEFTExist(false), gFuncBWTExist(false), loopNum(0), loopSideNum(0), branchNum(0), compNum(0)
         {
         }
@@ -313,12 +344,18 @@ struct FluidWorker
         void onInitLoopEquip(const PlantLocation &calledFromLocation) override;
         void generateEFTgFunc();
         void generateBWTgFunc();
+        void calcLongTimeStepGFunctions();
+        Real64 calcResponse(std::vector<Real64> const &dists, Real64 const &currTime) const;
+        static std::vector<Real64> distances(PointLoc const &point_i, PointLoc const &point_j);
+        Real64 integral(const PointLoc &point_i, const GHEBorehole &bh_j, Real64 const &currTime) const;
+        Real64 doubleIntegral(const GHEBorehole &bh_i, const GHEBorehole &bh_j, Real64 const &currTime) const;
     };
 
     void clear_state();
     void getGHEInput();
     Real64 smoothingFunc(Real64 const &x, Real64 const &a, Real64 const &b);
     std::vector<Real64> solveTDM(std::vector<Real64> a, std::vector<Real64> b, std::vector<Real64> c, std::vector<Real64> d);
+    inline bool isEven(unsigned const &x);
 
     extern std::vector<EnhancedGHE> enhancedGHE;
 

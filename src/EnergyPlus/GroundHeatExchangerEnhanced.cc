@@ -52,15 +52,15 @@
 // JSON Headers
 
 // EnergyPlus Headers
+#include "GroundHeatExchangerEnhanced.hh"
 #include <EnergyPlus/BranchNodeConnections.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataIPShortCuts.hh>
-#include <EnergyPlus/Plant/DataPlant.hh>
 #include <EnergyPlus/FluidProperties.hh>
-#include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
 #include <EnergyPlus/InputProcessing/InputProcessor.hh>
 #include <EnergyPlus/NodeInputManager.hh>
 #include <EnergyPlus/OutputProcessor.hh>
+#include <EnergyPlus/Plant/DataPlant.hh>
 #include <EnergyPlus/PlantUtilities.hh>
 #include <EnergyPlus/UtilityRoutines.hh>
 
@@ -129,6 +129,8 @@ namespace GroundHeatExchangerEnhanced {
 
         return d;
     }
+
+    inline bool isEven(unsigned const &x) {return !(x % 2);}
 
     PlantComponent *EnhancedGHE::factory(std::string const &objectName)
     {
@@ -509,6 +511,7 @@ namespace GroundHeatExchangerEnhanced {
             // Soil
             newGHE.kSoil = DataIPShortCuts::rNumericArgs(3);
             newGHE.rhoCpSoil = DataIPShortCuts::rNumericArgs(4);
+            newGHE.alphaSoil = newGHE.kSoil / newGHE.rhoCpSoil;
 
             // gb values - Exiting fluid temperature response factors
             if (!DataIPShortCuts::lAlphaFieldBlanks(6)) {
@@ -657,18 +660,18 @@ namespace GroundHeatExchangerEnhanced {
             this->fluid.initialize(this->loopNum);
 
             // create an "average" borehole
-            this->aveBH;
-            for (auto &bh : this->boreholes) {
-                this->aveBH.depth += bh.depth;
-                this->aveBH.length += bh.length;
-                this->aveBH.diameter += bh.diameter;
-                this->aveBH.kGrout += bh.kGrout;
-                this->aveBH.rhoCpGrout += bh.rhoCpGrout;
-                this->aveBH.shankSpace += bh.shankSpace;
-                this->aveBH.pipe.k += bh.pipe.k;
-                this->aveBH.pipe.rhoCp += bh.pipe.rhoCp;
-                this->aveBH.pipe.outerDia += bh.pipe.outerDia;
-                this->aveBH.pipe.wallThickness += bh.pipe.wallThickness;
+            for (auto &bh : this->boreholes)
+            {
+                this->aveBH.depth += bh.depth / this->numBH;
+                this->aveBH.length += bh.length / this->numBH;
+                this->aveBH.diameter += bh.diameter / this->numBH;
+                this->aveBH.kGrout += bh.kGrout / this->numBH;
+                this->aveBH.rhoCpGrout += bh.rhoCpGrout / this->numBH;
+                this->aveBH.shankSpace += bh.shankSpace / this->numBH;
+                this->aveBH.pipe.k += bh.pipe.k / this->numBH;
+                this->aveBH.pipe.rhoCp += bh.pipe.rhoCp / this->numBH;
+                this->aveBH.pipe.outerDia += bh.pipe.outerDia / this->numBH;
+                this->aveBH.pipe.wallThickness += bh.pipe.wallThickness / this->numBH;
             }
 
             // setup borehole
@@ -683,6 +686,13 @@ namespace GroundHeatExchangerEnhanced {
 
             // check for BWT g-functions
             if (!this->gFuncBWTExist) {
+
+                // setup boreholes
+                for (auto &bh: this->boreholes) {
+                    bh.initialize(this->kSoil, this->rhoCpSoil);
+                    bh.pipe.fluid = this->fluid;
+                }
+
             	this->generateBWTgFunc();
             	this->gFuncBWTExist = true;
             }
@@ -700,15 +710,189 @@ namespace GroundHeatExchangerEnhanced {
     {
         std::string const routineName = "EnhancedGHE::generateBWTgFunc";
 
+        // short timestep borehole wall g-functions
         Real64 volFlowPerBH = this->designVolFlow / this->numBH;
         Real64 temperature = 20.0;
         Real64 rho = this->fluid.getRho(temperature, routineName);
         Real64 mdot = volFlowPerBH * rho;
         this->aveBH.calcShortTimestepGFunctions(mdot, temperature);
+
+        // long timestep borehole wall g-functions
+        this->calcLongTimeStepGFunctions();
+
     }
 
     void EnhancedGHE::simulate(const PlantLocation &EP_UNUSED(calledFromLocation), bool EP_UNUSED(FirstHVACIteration), Real64 &EP_UNUSED(CurLoad), bool EP_UNUSED(RunFlag))
     {
+    }
+
+    void EnhancedGHE::calcLongTimeStepGFunctions()
+    {
+        int const numDaysInYear(365);
+
+        // Minimum simulation time for which finite line source method is applicable
+        Real64 const lntts_min_for_long_timestep = -8.5;
+
+        Real64 const t_s = pow_2(this->aveBH.length) / (9 * this->alphaSoil);
+        Real64 const lnttsStepSize = 0.5;
+
+        // only setup g-functions for the max possible number of sim years
+        Real64 const maxSimYears = DataEnvironment::MaxNumberSimYears;
+
+        this->lnttsLTS.push_back(lntts_min_for_long_timestep);
+        std::vector<Real64> time(1, std::exp(lntts_min_for_long_timestep) * t_s);
+
+        // Setup Ln(t/ts) values
+        while (true) {
+            Real64 maxPossibleSimTime = exp(this->lnttsLTS.back()) * t_s;
+            if (maxPossibleSimTime < maxSimYears * numDaysInYear * DataGlobals::HoursInDay * DataGlobals::SecInHour) {
+                this->lnttsLTS.push_back(this->lnttsLTS.back() + lnttsStepSize);
+                time.push_back(std::exp(this->lnttsLTS.back()) * t_s);
+            } else {
+                break;
+            }
+        }
+
+        this->gLTS = std::vector<Real64> (this->lnttsLTS.size(), 0.0);
+
+        Real64 totalTubeLength = 0;
+        for (const auto& bh : this->boreholes) {
+            totalTubeLength += bh.length;
+        }
+
+        DisplayString("Initializing GroundHeatExchanger:System: " + name);
+
+        // Calculate the g-functions
+        for (size_t lntts_index = 0; lntts_index != this->lnttsLTS.size(); ++lntts_index) {
+            for (auto &bh_i : this->boreholes) {
+                Real64 sum_T_ji = 0;
+                for (auto &bh_j : this->boreholes) {
+                    sum_T_ji += doubleIntegral(bh_i, bh_j, time[lntts_index]);
+                }
+                this->gLTS[lntts_index] += sum_T_ji;
+            }
+            this->gLTS[lntts_index] /= (2 * totalTubeLength);
+
+            // std::stringstream ss;
+            // ss << std::fixed << std::setprecision(1) << float(lntts_index) / myRespFactors->LNTTS.size() * 100;
+
+            // DisplayString("...progress: " + ss.str() + "%");
+        }
+    }
+
+    Real64 EnhancedGHE::calcResponse(std::vector<Real64> const &dists, Real64 const &currTime) const
+    {
+        Real64 pointToPointResponse = erfc(dists[0] / (2 * sqrt(this->alphaSoil * currTime))) / dists[0];
+        Real64 pointToReflectedResponse = erfc(dists[1] / (2 * sqrt(this->alphaSoil * currTime))) / dists[1];
+
+        return pointToPointResponse - pointToReflectedResponse;
+    }
+
+    std::vector<Real64> EnhancedGHE::distances(PointLoc const &point_i, PointLoc const &point_j)
+    {
+        std::vector<Real64> sumVals;
+
+        // Calculate the distance between points
+        sumVals.push_back(pow_2(point_i.x - point_j.x));
+        sumVals.push_back(pow_2(point_i.y - point_j.y));
+        sumVals.push_back(pow_2(point_i.z - point_j.z));
+
+        Real64 sumTot = 0;
+        std::vector<Real64> retVals;
+        std::for_each(sumVals.begin(), sumVals.end(), [&](Real64 n) { sumTot += n; });
+        retVals.push_back(std::sqrt(sumTot));
+
+        // Calculate distance to mirror point
+        sumVals.pop_back();
+        sumVals.push_back(pow_2(point_i.z - (-point_j.z)));
+
+        sumTot = 0;
+        std::for_each(sumVals.begin(), sumVals.end(), [&](Real64 n) { sumTot += n; });
+        retVals.push_back(std::sqrt(sumTot));
+
+        return retVals;
+    }
+
+    Real64 EnhancedGHE::integral(const PointLoc &point_i, const GHEBorehole &bh_j, Real64 const &currTime) const
+    {
+        // This code could be optimized in a number of ways.
+        // The first, most simple way would be to precompute the distances from point i to point j,
+        // then store them for reuse. The second, more intensive method would be to break the calcResponse
+        // calls out into four different parts. The first point, last point, odd points, and even points.
+        // Then multiply the odd/even points by their respective coefficient for the Simpson's method.
+        // After that, all points are summed together and divided by 3.
+
+        Real64 sum_f = 0;
+        unsigned index = 0;
+        unsigned lastIndex_j = bh_j.pointLocations_j.size() - 1;
+        for (auto &point_j : bh_j.pointLocations_j) {
+            std::vector<Real64> dists = distances(point_i, point_j);
+            Real64 const f = this->calcResponse(dists, currTime);
+
+            // Integrate using Simpson's
+            if (index == 0 || index == lastIndex_j) {
+                sum_f += f;
+            } else if (isEven(index)) {
+                sum_f += 2 * f;
+            } else {
+                sum_f += 4 * f;
+            }
+
+            ++index;
+        }
+
+        return (bh_j.dl_j / 3.0) * sum_f;
+    }
+
+    Real64 EnhancedGHE::doubleIntegral(const GHEBorehole &bh_i, const GHEBorehole &bh_j, Real64 const &currTime) const
+    {
+        // Similar optimizations as discussed above could happen here
+        if (&bh_i == &bh_j) {
+
+            Real64 sum_f = 0;
+            unsigned index = 0;
+            unsigned lastIndex = bh_i.pointLocations_ii.size() - 1;
+            for (auto &thisPoint : bh_i.pointLocations_ii) {
+
+                Real64 f = this->integral(thisPoint, bh_j, currTime);
+
+                // Integrate using Simpson's
+                if (index == 0 || index == lastIndex) {
+                    sum_f += f;
+                } else if (isEven(index)) {
+                    sum_f += 2 * f;
+                } else {
+                    sum_f += 4 * f;
+                }
+
+                ++index;
+            }
+
+            return (bh_i.dl_ii / 3.0) * sum_f;
+
+        } else {
+
+            Real64 sum_f = 0;
+            unsigned index = 0;
+            unsigned const lastIndex = bh_i.pointLocations_i.size() - 1;
+            for (auto &thisPoint : bh_i.pointLocations_i) {
+
+                Real64 f = integral(thisPoint, bh_j, currTime);
+
+                // Integrate using Simpson's
+                if (index == 0 || index == lastIndex) {
+                    sum_f += f;
+                } else if (isEven(index)) {
+                    sum_f += 2 * f;
+                } else {
+                    sum_f += 4 * f;
+                }
+
+                ++index;
+            }
+
+            return (bh_i.dl_i / 3.0) * sum_f;
+        }
     }
 
     void FluidWorker::initialize(int _loopNum)
@@ -903,15 +1087,57 @@ namespace GroundHeatExchangerEnhanced {
 
     void GHEBorehole::initialize(Real64 const &_kSoil, Real64 const &_rhoCpSoil)
     {
+        // setup pipe
         this->pipe.initialize();
+
+        // soil props
         this->kSoil = _kSoil;
         this->rhoCpSoil = _rhoCpSoil;
+
+        // bh resistance
         this->c0 = 2.0 * DataGlobals::Pi * this->kSoil;
         this->radius = this->diameter / 2.0;
         this->theta1 = this->shankSpace / (2 * this->radius);
         this->theta2 = this->radius / this->pipe.outerRadius;
         this->theta3 = 1 / (2 * this->theta1 * this->theta2);
         this->sigma = (this->kGrout - this->kSoil) / (this->kGrout + this->kSoil);
+
+        // point to point setup for g-functions
+
+        // Using Simpson's rule the number of points (n+1) must be odd, therefore an even number of panels is required
+        // Starting from i = 0 to i <= NumPanels produces an odd number of points
+        int constexpr numPanels_i = 50;
+        int constexpr numPanels_ii = 50;
+        int constexpr numPanels_j = 560;
+
+        this->dl_i = this->length / numPanels_i;
+        for (int i = 0; i <= numPanels_i; ++i) {
+            PointLoc newPoint;
+            newPoint.x = this->xLoc;
+            newPoint.y = this->yLoc;
+            newPoint.z = this->depth + (i * this->dl_i);
+            this->pointLocations_i.push_back(newPoint);
+        }
+
+        this->dl_ii = this->length / numPanels_ii;
+        for (int i = 0; i <= numPanels_ii; ++i) {
+            PointLoc newPoint;
+            // For case when bh is being compared to itself, shift points by 1 radius in the horizontal plane
+            newPoint.x = this->xLoc + (this->diameter / 2.0) / sqrt(2.0);
+            newPoint.y = this->yLoc + (this->diameter / 2.0) / (-sqrt(2.0));
+            newPoint.z = this->depth + (i * this->dl_ii);
+            this->pointLocations_ii.push_back(newPoint);
+        }
+
+        this->dl_j = this->length / numPanels_j;
+        for (int i = 0; i <= numPanels_j; ++i) {
+            PointLoc newPoint;
+            newPoint.x = this->xLoc;
+            newPoint.y = this->yLoc;
+            newPoint.z = this->depth + (i * this->dl_j);
+            this->pointLocations_j.push_back(newPoint);
+        }
+
     }
 
     Real64 GHEBorehole::calcTotIntResistWorker(Real64 const &beta)

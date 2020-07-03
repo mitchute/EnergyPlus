@@ -52,7 +52,9 @@
 
 // EnergyPlus Headers
 #include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
+#include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/Plant/DataPlant.hh>
+#include <EnergyPlus/DataSizing.hh>
 #include <EnergyPlus/GroundTemperatureModeling/GroundTemperatureModelManager.hh>
 
 // Testing Headers
@@ -1464,4 +1466,100 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_Borehole_short_timestep_g_functions)
 
     EXPECT_NEAR(tst.gSTS.back(), 2.28844, tol);
     EXPECT_NEAR(tst.lnttsSTS.back(), -8.99972, tol);
+}
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_long_timestep_g_functions)
+{
+    std::string const idf_objects = delimited_string({
+        "GroundHeatExchanger:System,",
+        "  GHE,  !- Name",
+        "  GHE Inlet Node,          !- Inlet Node Name",
+        "  GHE Outlet Node,         !- Outlet Node Name",
+        "  0.00330000,              !- Design Flow Rate {m3/s}",
+        "  4,                       !- Number of Boreholes",
+        "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
+        "  GHE Ground Temps,        !- Undisturbed Ground Temperature Model Name",
+        "  2.423,                   !- Ground Thermal Conductivity {W/m-K}",
+        "  2.343E+06,               !- Ground Thermal Heat Capacity {J/m3-K}",
+        "  ,                        !- GHE:ResponseFactors EFT Object Name",
+        "  ,                        !- GHE:ResponseFactors BWT Object Name",
+        "  GHE-Array;               !- GHT:Vertical:Array Object Name",
+        "",
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  GHE Props,  !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  100.0,                   !- Borehole Length {m}",
+        "  0.109982,                !- Borehole Diameter {m}",
+        "  0.744,                   !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.389,                   !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.77E+06,                !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  0.0267,                  !- Pipe Outer Diameter {m}",
+        "  0.00243,                 !- Pipe Thickness {m}",
+        "  0.04556;                 !- U-Tube Distance {m}",
+        "",
+        "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
+        "  GHE Ground Temps,  !- Name",
+        "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
+        "  920,                     !- Soil Density {kg/m3}",
+        "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
+        "  13.375,                  !- Average Soil Surface Temperature {C}",
+        "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
+        "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
+        "",
+        "GroundHeatExchanger:Vertical:Array,",
+        "  GHE-Array,               !- Name",
+        "  GHE Props,  !- GHE:Vertical:Properties Object Name",
+        "  2,                       !- Number of Boreholes in X-Direction",
+        "  2,                       !- Number of Boreholes in Y-Direction",
+        "  5;                       !- Borehole Spacing {m}",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+
+    EnhancedGHE::factory("GHE");
+
+    ASSERT_EQ(1u, enhancedGHE.size());
+
+    auto &tstGHE(enhancedGHE[0]);
+
+    DataEnvironment::MaxNumberSimYears = 1;
+    DataPlant::TotNumLoops = 1;
+    DataPlant::PlantLoop.allocate(1);
+    auto &loop(DataPlant::PlantLoop(1));
+    loop.LoopSide.allocate(2);
+    auto &loopside(DataPlant::PlantLoop(1).LoopSide(1));
+    loopside.TotalBranches = 1;
+    loopside.Branch.allocate(1);
+    auto &loopsidebranch(DataPlant::PlantLoop(1).LoopSide(1).Branch(1));
+    loopsidebranch.TotalComponents = 1;
+    loopsidebranch.Comp.allocate(1);
+
+    DataPlant::PlantLoop(1).Name = "ChilledWaterLoop";
+    DataPlant::PlantLoop(1).FluidIndex = 1;
+    DataPlant::PlantLoop(1).PlantSizNum = 1;
+    DataPlant::PlantLoop(1).FluidName = "WATER";
+    DataPlant::PlantLoop(1).LoopSide(1).Branch(1).Comp(1).Name = tstGHE.name;
+    DataPlant::PlantLoop(1).LoopSide(1).Branch(1).Comp(1).TypeOf_Num = DataPlant::TypeOf_GrndHtExchgSystem;
+    DataPlant::PlantLoop(1).LoopSide(1).Branch(1).Comp(1).NodeNumIn = tstGHE.inletNode;
+    DataPlant::PlantLoop(1).LoopSide(1).Branch(1).Comp(1).NodeNumOut = tstGHE.outletNode;
+
+    DataSizing::PlantSizData.allocate(1);
+    DataSizing::PlantSizData(1).DesVolFlowRate = 0.0033;
+    DataSizing::PlantSizData(1).DeltaT = 5.0;
+
+    DataPlant::PlantFirstSizesOkayToFinalize = true;
+    DataPlant::PlantFirstSizesOkayToReport = true;
+    DataPlant::PlantFinalSizesOkayToReport = true;
+
+    tstGHE.gFuncEFTExist = true;
+
+    PlantLocation loc(0, 0, 0, 0);
+
+    tstGHE.onInitLoopEquip(loc);
+
+    Real64 const tol = 1E-2;
+
+    EXPECT_NEAR(tstGHE.gLTS[0], 2.53, tol);
+    EXPECT_NEAR(tstGHE.gLTS[0], 2.53, tol);
 }
