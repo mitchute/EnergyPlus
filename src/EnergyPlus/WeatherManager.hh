@@ -61,7 +61,10 @@
 #include <EnergyPlus/EnergyPlus.hh>
 
 namespace EnergyPlus {
+    // Forward declarations
+    struct EnergyPlusData;
     class OutputFiles;
+
 namespace WeatherManager {
 
     // Using/Aliasing
@@ -686,10 +689,7 @@ namespace WeatherManager {
 
     void ResetEnvironmentCounter();
 
-    bool GetNextEnvironment(OutputFiles &outputFiles,
-                            bool &Available,  // true if there is another environment, false if the end
-                            bool &ErrorsFound // will be set to true if severe errors are found in inputs
-    );
+    bool GetNextEnvironment(EnergyPlusData &state, bool &Available, bool &ErrorsFound);
 
     void AddDesignSetToEnvironmentStruct(
         int const HVACSizingIterCount // Counter for number of times HVAC Sizing Simulation of Design Period set is being rerun
@@ -737,7 +737,8 @@ namespace WeatherManager {
                            bool const BackSpaceAfterRead // True if weather file is to be backspaced after read
     );
 
-    void ReadEPlusWeatherForDay(int const DayToRead,          // =1 when starting out, otherwise signifies next day
+    void ReadEPlusWeatherForDay(OutputFiles &outputFiles,
+                                int const DayToRead,          // =1 when starting out, otherwise signifies next day
                                 int const Environ,            // Environment being simulated
                                 bool const BackSpaceAfterRead // True if weather file is to be backspaced after read
     );
@@ -828,7 +829,8 @@ namespace WeatherManager {
 
     void OpenWeatherFile(bool &ErrorsFound);
 
-    void OpenEPlusWeatherFile(bool &ErrorsFound,       // Will be set to true if errors found
+    void OpenEPlusWeatherFile(OutputFiles &outputFiles,
+                              bool &ErrorsFound,       // Will be set to true if errors found
                               bool const ProcessHeader // Set to true when headers should be processed (rather than just read)
     );
 
@@ -845,7 +847,7 @@ namespace WeatherManager {
     void ReportWeatherAndTimeInformation(OutputFiles &outputFiles,
                                          bool &PrintEnvrnStamp); // Set to true when the environment header should be printed
 
-    void ReadUserWeatherInput(OutputFiles &outputFiles);
+    void ReadUserWeatherInput(EnergyPlusData &state);
 
     void GetRunPeriodData(int &TotRunPers, // Total number of Run Periods requested
                           bool &ErrorsFound);
@@ -865,7 +867,7 @@ namespace WeatherManager {
 
     void GetWeatherProperties(bool &ErrorsFound);
 
-    void GetGroundTemps(bool &ErrorsFound);
+    void GetGroundTemps(EnergyPlusData &state, bool &ErrorsFound);
 
     void GetGroundReflectances(OutputFiles &outputFiles, bool &ErrorsFound);
 

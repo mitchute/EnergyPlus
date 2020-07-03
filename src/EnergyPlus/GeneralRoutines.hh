@@ -56,8 +56,16 @@
 #include <EnergyPlus/EnergyPlus.hh>
 
 namespace EnergyPlus {
+    // Forward declarations
+    struct EnergyPlusData;
+    class OutputFiles;
 
-void ControlCompOutput(std::string const &CompName,               // the component Name
+    // Forward declarations
+    struct EnergyPlusData;
+    struct ZonePlenumData;
+    class OutputFiles;
+
+void ControlCompOutput(EnergyPlusData &state, std::string const &CompName,               // the component Name
                        std::string const &CompType,               // Type of component
                        int &CompNum,                              // Index of component in component array
                        bool const FirstHVACIteration,             // flag for 1st HVAV iteration in the time step
@@ -144,11 +152,11 @@ void CalcBasinHeaterPower(Real64 const Capacity,     // Basin heater capacity pe
                           Real64 &Power              // Basin heater power (W)
 );
 
-void TestAirPathIntegrity(bool &ErrFound);
+void TestAirPathIntegrity(EnergyPlusData &state, OutputFiles &outputFiles, bool &ErrFound);
 
-void TestSupplyAirPathIntegrity(bool &ErrFound);
+void TestSupplyAirPathIntegrity(EnergyPlusData &state, OutputFiles &outputFiles, bool &ErrFound);
 
-void TestReturnAirPathIntegrity(bool &ErrFound, Array2S_int ValRetAPaths);
+void TestReturnAirPathIntegrity(EnergyPlusData &state, OutputFiles &outputFiles, bool &ErrFound, Array2S_int ValRetAPaths);
 
 } // namespace EnergyPlus
 

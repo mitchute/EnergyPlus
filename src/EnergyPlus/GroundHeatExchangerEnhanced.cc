@@ -56,6 +56,7 @@
 #include <EnergyPlus/BranchNodeConnections.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataIPShortCuts.hh>
+#include <EnergyPlus/Data/EnergyPlusData.hh>
 #include <EnergyPlus/FluidProperties.hh>
 #include <EnergyPlus/InputProcessing/InputProcessor.hh>
 #include <EnergyPlus/NodeInputManager.hh>
@@ -132,10 +133,10 @@ namespace GroundHeatExchangerEnhanced {
 
     inline bool isEven(unsigned const &x) {return !(x % 2);}
 
-    PlantComponent *EnhancedGHE::factory(std::string const &objectName)
+    PlantComponent *EnhancedGHE::factory(EnergyPlusData &state, std::string const &objectName)
     {
         if (getInput) {
-            getGHEInput();
+            getGHEInput(state);
             getInput = false;
         }
 
@@ -149,7 +150,7 @@ namespace GroundHeatExchangerEnhanced {
         return nullptr; // LCOV_EXCL_LINE
     }
 
-    void getGHEInput()
+    void getGHEInput(EnergyPlusData &state)
     {
         // module object names
         std::string const propsModObjName = "GroundHeatExchanger:Vertical:Properties";
@@ -623,7 +624,7 @@ namespace GroundHeatExchangerEnhanced {
 
             // Initialize ground temperature model and get pointer reference
             // Do this last because it calls getObjectItem
-            newGHE.gtm = GroundTemperatureManager::GetGroundTempModelAndInit(DataIPShortCuts::cAlphaArgs(4), DataIPShortCuts::cAlphaArgs(5));
+            newGHE.gtm = GroundTemperatureManager::GetGroundTempModelAndInit(state, DataIPShortCuts::cAlphaArgs(4), DataIPShortCuts::cAlphaArgs(5));
 
             // Save object
             enhancedGHE.push_back(newGHE);
@@ -642,14 +643,14 @@ namespace GroundHeatExchangerEnhanced {
         SetupOutputVariable("Ground Heat Exchanger Farfield Ground Temperature",OutputProcessor::Unit::C, this->farFieldGroundTemp,"System","Average", this->name);
     }
 
-    void EnhancedGHE::onInitLoopEquip(const PlantLocation &EP_UNUSED(calledFromLocation))
+    void EnhancedGHE::onInitLoopEquip(EnergyPlusData &state, const PlantLocation &EP_UNUSED(calledFromLocation))
     {
         if (this->oneTimeInit) {
             this->setupOutputVars();
 
             // populate location on the plant loop
             bool errorsFound = false;
-            PlantUtilities::ScanPlantLoopsForObject(this->name, DataPlant::TypeOf_GrndHtExchgSystem, this->loopNum, this->loopSideNum, this->branchNum, this->compNum, errorsFound, _, _, _, _, _);
+            PlantUtilities::ScanPlantLoopsForObject(state.dataBranchInputManager, this->name, DataPlant::TypeOf_GrndHtExchgSystem, this->loopNum, this->loopSideNum, this->branchNum, this->compNum, errorsFound, _, _, _, _, _);
 
             // error if not found
             if (errorsFound) {
@@ -722,7 +723,7 @@ namespace GroundHeatExchangerEnhanced {
 
     }
 
-    void EnhancedGHE::simulate(const PlantLocation &EP_UNUSED(calledFromLocation), bool EP_UNUSED(FirstHVACIteration), Real64 &EP_UNUSED(CurLoad), bool EP_UNUSED(RunFlag))
+    void EnhancedGHE::simulate(EnergyPlusData &state, const PlantLocation &EP_UNUSED(calledFromLocation), bool EP_UNUSED(FirstHVACIteration), Real64 &EP_UNUSED(CurLoad), bool EP_UNUSED(RunFlag))
     {
     }
 

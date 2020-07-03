@@ -60,6 +60,10 @@
 
 namespace EnergyPlus {
 
+// Forward declarations
+struct BranchInputManagerData;
+struct EnergyPlusData;
+
 namespace GroundHeatExchangerEnhanced {
 
     struct PointLoc
@@ -338,10 +342,10 @@ namespace GroundHeatExchangerEnhanced {
         ~EnhancedGHE() override = default;
 
         // member methods
-        static PlantComponent *factory(std::string const &objectName);
+        static PlantComponent *factory(EnergyPlusData &state, std::string const &objectName);
         void setupOutputVars();
-        void simulate(const PlantLocation &calledFromLocation, bool FirstHVACIteration, Real64 &CurLoad, bool RunFlag) override;
-        void onInitLoopEquip(const PlantLocation &calledFromLocation) override;
+        void simulate(EnergyPlusData &state, const PlantLocation &calledFromLocation, bool FirstHVACIteration, Real64 &CurLoad, bool RunFlag) override;
+        void onInitLoopEquip(EnergyPlusData &state, const PlantLocation &calledFromLocation) override;
         void generateEFTgFunc();
         void generateBWTgFunc();
         void calcLongTimeStepGFunctions();
@@ -352,7 +356,7 @@ namespace GroundHeatExchangerEnhanced {
     };
 
     void clear_state();
-    void getGHEInput();
+    void getGHEInput(EnergyPlusData &state);
     Real64 smoothingFunc(Real64 const &x, Real64 const &a, Real64 const &b);
     std::vector<Real64> solveTDM(std::vector<Real64> a, std::vector<Real64> b, std::vector<Real64> c, std::vector<Real64> d);
     inline bool isEven(unsigned const &x);

@@ -51,11 +51,12 @@
 #include <gtest/gtest.h>
 
 // EnergyPlus Headers
+#include <EnergyPlus/Construction.hh>
 #include <EnergyPlus/DataHeatBalance.hh>
 #include <EnergyPlus/DataSurfaces.hh>
 #include <EnergyPlus/DataViewFactorInformation.hh>
-#include <EnergyPlus/GlobalNames.hh>
 #include <EnergyPlus/HeatBalanceManager.hh>
+#include <EnergyPlus/Material.hh>
 #include <EnergyPlus/InputProcessing/InputProcessor.hh>
 #include <EnergyPlus/OutputFiles.hh>
 #include <EnergyPlus/SurfaceGeometry.hh>
@@ -68,7 +69,6 @@ using namespace EnergyPlus::DataSurfaces;
 using namespace EnergyPlus::DataHeatBalance;
 using namespace EnergyPlus::SurfaceGeometry;
 using namespace EnergyPlus::HeatBalanceManager;
-// using namespace ObjexxFCL;
 
 TEST_F(EnergyPlusFixture, BaseSurfaceRectangularTest)
 {
@@ -109,7 +109,7 @@ TEST_F(EnergyPlusFixture, BaseSurfaceRectangularTest)
     Surface(ThisSurf).Vertex(4).y = 0.0;
     Surface(ThisSurf).Vertex(4).z = 2.0;
 
-    ProcessSurfaceVertices(ThisSurf, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, ThisSurf, ErrorsFound);
     EXPECT_FALSE(ErrorsFound);
     EXPECT_EQ(SurfaceShape::Rectangle, Surface(ThisSurf).Shape);
 
@@ -136,7 +136,7 @@ TEST_F(EnergyPlusFixture, BaseSurfaceRectangularTest)
     Surface(ThisSurf).Vertex(4).y = 0.0;
     Surface(ThisSurf).Vertex(4).z = 2.0;
 
-    ProcessSurfaceVertices(ThisSurf, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, ThisSurf, ErrorsFound);
     EXPECT_FALSE(ErrorsFound);
     EXPECT_EQ(SurfaceShape::Quadrilateral, Surface(ThisSurf).Shape);
 
@@ -163,7 +163,7 @@ TEST_F(EnergyPlusFixture, BaseSurfaceRectangularTest)
     Surface(ThisSurf).Vertex(4).y = 0.0;
     Surface(ThisSurf).Vertex(4).z = 2.0;
 
-    ProcessSurfaceVertices(ThisSurf, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, ThisSurf, ErrorsFound);
     EXPECT_FALSE(ErrorsFound);
     EXPECT_EQ(SurfaceShape::Quadrilateral, Surface(ThisSurf).Shape);
 
@@ -186,7 +186,7 @@ TEST_F(EnergyPlusFixture, BaseSurfaceRectangularTest)
     Surface(ThisSurf).Vertex(3).y = 0.0;
     Surface(ThisSurf).Vertex(3).z = 2.0;
 
-    ProcessSurfaceVertices(ThisSurf, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, ThisSurf, ErrorsFound);
     EXPECT_FALSE(ErrorsFound);
     EXPECT_EQ(SurfaceShape::Triangle, Surface(ThisSurf).Shape);
 
@@ -217,7 +217,7 @@ TEST_F(EnergyPlusFixture, BaseSurfaceRectangularTest)
     Surface(ThisSurf).Vertex(5).y = 0.0;
     Surface(ThisSurf).Vertex(5).z = 3.0;
 
-    ProcessSurfaceVertices(ThisSurf, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, ThisSurf, ErrorsFound);
     EXPECT_FALSE(ErrorsFound);
     EXPECT_EQ(SurfaceShape::Polygonal, Surface(ThisSurf).Shape);
 }
@@ -467,10 +467,10 @@ TEST_F(EnergyPlusFixture, DataSurfaces_SurfaceShape)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetProjectControlData(OutputFiles::getSingleton(), ErrorsFound); // read project control data
+    GetProjectControlData(state.outputFiles, ErrorsFound); // read project control data
     EXPECT_FALSE(ErrorsFound);          // expect no errors
 
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound); // read material data
+    GetMaterialData(state.outputFiles, ErrorsFound); // read material data
     EXPECT_FALSE(ErrorsFound);    // expect no errors
 
     GetConstructData(ErrorsFound); // read construction data
@@ -487,7 +487,7 @@ TEST_F(EnergyPlusFixture, DataSurfaces_SurfaceShape)
     CosBldgRelNorth = 1.0;
     SinBldgRelNorth = 0.0;
 
-    GetSurfaceData(OutputFiles::getSingleton(), ErrorsFound); // setup zone geometry and get zone data
+    GetSurfaceData(state.dataZoneTempPredictorCorrector, state.outputFiles, ErrorsFound); // setup zone geometry and get zone data
     EXPECT_FALSE(ErrorsFound);   // expect no errors
 
     // compare_err_stream( "" ); // just for debugging
@@ -499,52 +499,52 @@ TEST_F(EnergyPlusFixture, DataSurfaces_SurfaceShape)
 
     //	enum surfaceShape:Triangle = 1
     //	Surface( 11 ).Name = "Surface 1 - Triangle"
-    ProcessSurfaceVertices(11, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 11, ErrorsFound);
     EXPECT_EQ(SurfaceShape::Triangle, Surface(11).Shape);
 
     //	enum surfaceShape:Quadrilateral = 2
     //	Surface( 12 ).Name = "Surface 2 - Quadrilateral"
-    ProcessSurfaceVertices(12, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 12, ErrorsFound);
     EXPECT_EQ(SurfaceShape::Quadrilateral, Surface(12).Shape);
 
     //	enum surfaceShape:Rectangle = 3
     //	Surface( 7 ).Name = "Surface 3 - Rectangle"
-    ProcessSurfaceVertices(7, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 7, ErrorsFound);
     EXPECT_EQ(SurfaceShape::Rectangle, Surface(7).Shape);
 
     //	enum surfaceShape:RectangularDoorWindow = 4
     //	Surface( 8 ).Name = "Surface 4 - RectangularDoorWindow"
-    ProcessSurfaceVertices(8, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 8, ErrorsFound);
     EXPECT_EQ(SurfaceShape::RectangularDoorWindow, Surface(8).Shape);
 
     //	enum surfaceShape:RectangularOverhang = 5
     //	Surface( 1 ).Name = "Surface 5 - RectangularOverhang"
-    ProcessSurfaceVertices(1, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 1, ErrorsFound);
     EXPECT_NE(SurfaceShape::RectangularOverhang, Surface(1).Shape); // fins and overhangs will not get set to the proper surface shape.
 
     //	enum surfaceShape:RectangularLeftFin = 6
     //	Surface( 3 ).Name = "Surface 6 - RectangularLeftFin"
-    ProcessSurfaceVertices(3, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 3, ErrorsFound);
     EXPECT_NE(SurfaceShape::RectangularLeftFin, Surface(3).Shape); // fins and overhangs will not get set to the proper surface shape.
 
     //	enum surfaceShape:RectangularRightFin = 7
     //	Surface( 5 ).Name = "Surface 7 - RectangularRightFin"
-    ProcessSurfaceVertices(5, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 5, ErrorsFound);
     EXPECT_NE(SurfaceShape::RectangularRightFin, Surface(5).Shape); // fins and overhangs will not get set to the proper surface shape.
 
     //	enum surfaceShape:TriangularWindow = 8
     //	Surface( 9 ).Name = "Surface 8 - TriangularWindow"
-    ProcessSurfaceVertices(9, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 9, ErrorsFound);
     EXPECT_EQ(SurfaceShape::TriangularWindow, Surface(9).Shape);
 
     //	enum surfaceShape:TriangularDoor = 9
     //	Surface( 10 ).Name = "Surface 9 - TriangularDoor"
-    ProcessSurfaceVertices(10, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 10, ErrorsFound);
     EXPECT_EQ(SurfaceShape::TriangularDoor, Surface(10).Shape);
 
     //	enum surfaceShape:Polygonal = 10
     //	Surface( 13 ).Name = "Surface 10 - Polygonal"
-    ProcessSurfaceVertices(13, ErrorsFound);
+    ProcessSurfaceVertices(state.outputFiles, 13, ErrorsFound);
     EXPECT_EQ(SurfaceShape::Polygonal, Surface(13).Shape);
 }
 
@@ -681,11 +681,11 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_MakeMirrorSurface)
     ASSERT_TRUE(process_idf(idf_objects));
 
     bool FoundError = false;
-    GetMaterialData(OutputFiles::getSingleton(), FoundError);
+    GetMaterialData(state.outputFiles, FoundError);
     GetConstructData(FoundError);
     GetZoneData(FoundError); // Read Zone data from input file
     DataHeatBalance::AnyCTF = true;
-    SetupZoneGeometry(OutputFiles::getSingleton(), FoundError); // this calls GetSurfaceData()
+    SetupZoneGeometry(state, FoundError); // this calls GetSurfaceData()
 
     EXPECT_FALSE(FoundError);
 
@@ -914,13 +914,13 @@ TEST_F(EnergyPlusFixture, MakeEquivalentRectangle)
 
     // Prepare data for the test
     ASSERT_TRUE(process_idf(idf_objects));
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound); // read material data
+    GetMaterialData(state.outputFiles, ErrorsFound); // read material data
     EXPECT_FALSE(ErrorsFound);
     GetConstructData(ErrorsFound); // read construction data
     EXPECT_FALSE(ErrorsFound);
     GetZoneData(ErrorsFound); // read zone data
     EXPECT_FALSE(ErrorsFound);
-    GetProjectControlData(OutputFiles::getSingleton(), ErrorsFound); // read project control data
+    GetProjectControlData(state.outputFiles, ErrorsFound); // read project control data
     EXPECT_FALSE(ErrorsFound);
     CosZoneRelNorth.allocate(1);
     SinZoneRelNorth.allocate(1);
@@ -928,7 +928,7 @@ TEST_F(EnergyPlusFixture, MakeEquivalentRectangle)
     SinZoneRelNorth(1) = std::sin(-Zone(1).RelNorth * DataGlobals::DegToRadians);
     CosBldgRelNorth = 1.0;
     SinBldgRelNorth = 0.0;
-    GetSurfaceData(OutputFiles::getSingleton(), ErrorsFound); // setup zone geometry and get zone data
+    GetSurfaceData(state.dataZoneTempPredictorCorrector, state.outputFiles, ErrorsFound); // setup zone geometry and get zone data
     EXPECT_FALSE(ErrorsFound);   // expect no errors
 
     // Run the test
@@ -2579,7 +2579,7 @@ TEST_F(EnergyPlusFixture, CalculateZoneVolume_SimpleBox_test)
     Surface(6).Vertex(3) = Vector(10., 0., 3.);
     Surface(6).Vertex(4) = Vector(10., 8., 3.);
 
-    CalculateZoneVolume(enteredCeilingHeight);
+    CalculateZoneVolume(state.outputFiles, enteredCeilingHeight);
     EXPECT_EQ(240., Zone(1).Volume);
 }
 
@@ -2645,7 +2645,7 @@ TEST_F(EnergyPlusFixture, CalculateZoneVolume_BoxOneWallMissing_test)
     Zone(1).FloorArea = 80.;
     Zone(1).CeilingHeight = 3.;
 
-    CalculateZoneVolume(enteredCeilingHeight);
+    CalculateZoneVolume(state.outputFiles, enteredCeilingHeight);
     EXPECT_EQ(240., Zone(1).Volume);
 }
 
@@ -2711,7 +2711,7 @@ TEST_F(EnergyPlusFixture, CalculateZoneVolume_BoxNoCeiling_test)
     Zone(1).FloorArea = 80.;
     Zone(1).CeilingHeight = 3.;
 
-    CalculateZoneVolume(enteredCeilingHeight);
+    CalculateZoneVolume(state.outputFiles, enteredCeilingHeight);
     EXPECT_EQ(240., Zone(1).Volume);
 }
 
@@ -2777,7 +2777,7 @@ TEST_F(EnergyPlusFixture, CalculateZoneVolume_BoxNoFloor_test)
     Zone(1).CeilingArea = 80.;
     Zone(1).CeilingHeight = 3.;
 
-    CalculateZoneVolume(enteredCeilingHeight);
+    CalculateZoneVolume(state.outputFiles, enteredCeilingHeight);
     EXPECT_EQ(240., Zone(1).Volume);
 }
 
@@ -2838,7 +2838,7 @@ TEST_F(EnergyPlusFixture, CalculateZoneVolume_BoxNoCeilingFloor_test)
     Surface(4).Vertex(3) = Vector(10., 8., 0.);
     Surface(4).Vertex(4) = Vector(10., 8., 3.);
 
-    CalculateZoneVolume(enteredCeilingHeight);
+    CalculateZoneVolume(state.outputFiles, enteredCeilingHeight);
     EXPECT_EQ(240., Zone(1).Volume);
 }
 
@@ -3019,7 +3019,7 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_VertexNumberMismatchTest)
     Array1D_int const BaseSurfIDs(3, {1, 2, 3});
     int NeedToAddSurfaces;
 
-    GetGeometryParameters(OutputFiles::getSingleton(), ErrorsFound);
+    GetGeometryParameters(state.outputFiles, ErrorsFound);
     CosZoneRelNorth.allocate(2);
     SinZoneRelNorth.allocate(2);
 
@@ -3028,7 +3028,7 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_VertexNumberMismatchTest)
     SinBldgRelNorth = 0.0;
     CosBldgRelNorth = 1.0;
 
-    GetHTSurfaceData(OutputFiles::getSingleton(), ErrorsFound, SurfNum, TotHTSurfs, 0, 0, 0, BaseSurfCls, BaseSurfIDs, NeedToAddSurfaces);
+    GetHTSurfaceData(state.outputFiles, ErrorsFound, SurfNum, TotHTSurfs, 0, 0, 0, BaseSurfCls, BaseSurfIDs, NeedToAddSurfaces);
 
     EXPECT_EQ(2, SurfNum);
     std::string const error_string =
@@ -3193,8 +3193,8 @@ TEST_F(EnergyPlusFixture, InitialAssociateWindowShadingControlFenestration_test)
     WindowShadingControl(3).FenestrationName(1) = "Fene-08";
     WindowShadingControl(3).FenestrationName(2) = "Fene-09";
 
-    Construct.allocate(1);
-    Construct(1).WindowTypeEQL = false;
+    dataConstruction.Construct.allocate(1);
+    dataConstruction.Construct(1).WindowTypeEQL = false;
 
     SurfaceTmp.allocate(9);
 
@@ -3575,10 +3575,10 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_HeatTransferAlgorithmTest)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetProjectControlData(OutputFiles::getSingleton(), ErrorsFound); // read project control data
+    GetProjectControlData(state.outputFiles, ErrorsFound); // read project control data
     EXPECT_FALSE(ErrorsFound);          // expect no errors
 
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound); // read material data
+    GetMaterialData(state.outputFiles, ErrorsFound); // read material data
     EXPECT_FALSE(ErrorsFound);    // expect no errors
 
     GetConstructData(ErrorsFound); // read construction data
@@ -3597,7 +3597,7 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_HeatTransferAlgorithmTest)
     CosBldgRelNorth = 1.0;
     SinBldgRelNorth = 0.0;
 
-    GetSurfaceData(OutputFiles::getSingleton(), ErrorsFound); // setup zone geometry and get zone data
+    GetSurfaceData(state.dataZoneTempPredictorCorrector, state.outputFiles, ErrorsFound); // setup zone geometry and get zone data
     EXPECT_FALSE(ErrorsFound);   // expect no errors
 
     int surfNum = UtilityRoutines::FindItemInList("DATATELCOM_CEILING_1_0_0", DataSurfaces::Surface);
@@ -3691,7 +3691,7 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_SurfaceReferencesNonExistingSurface)
     ASSERT_TRUE(process_idf(idf_objects));
 
     // Read Material and Construction, and expect no errors
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound);
+    GetMaterialData(state.outputFiles, ErrorsFound);
     EXPECT_FALSE(ErrorsFound);
     GetConstructData(ErrorsFound);
     EXPECT_FALSE(ErrorsFound);
@@ -3707,7 +3707,7 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_SurfaceReferencesNonExistingSurface)
     Array1D_int const BaseSurfIDs(3, {1, 2, 3});
     int NeedToAddSurfaces;
 
-    GetGeometryParameters(OutputFiles::getSingleton(), ErrorsFound);
+    GetGeometryParameters(state.outputFiles, ErrorsFound);
     CosZoneRelNorth.allocate(1);
     SinZoneRelNorth.allocate(1);
 
@@ -3716,7 +3716,7 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_SurfaceReferencesNonExistingSurface)
     SinBldgRelNorth = 0.0;
     CosBldgRelNorth = 1.0;
 
-    GetHTSurfaceData(OutputFiles::getSingleton(), ErrorsFound, SurfNum, TotHTSurfs, 0, 0, 0, BaseSurfCls, BaseSurfIDs, NeedToAddSurfaces);
+    GetHTSurfaceData(state.outputFiles, ErrorsFound, SurfNum, TotHTSurfs, 0, 0, 0, BaseSurfCls, BaseSurfIDs, NeedToAddSurfaces);
 
     // We expect one surface, but an error since Surface B cannot be located
     EXPECT_EQ(1, SurfNum);
@@ -4046,7 +4046,7 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_InternalMassSurfacesCount)
     ASSERT_TRUE(process_idf(idf_objects));
 
     // Read Materials
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound);
+    GetMaterialData(state.outputFiles, ErrorsFound);
     EXPECT_FALSE(ErrorsFound);
     // Construction
     GetConstructData(ErrorsFound);
@@ -4384,7 +4384,7 @@ TEST_F(EnergyPlusFixture, SurfaceGeometry_CreateInternalMassSurfaces)
     ASSERT_TRUE(process_idf(idf_objects));
 
     // Read Materials
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound);
+    GetMaterialData(state.outputFiles, ErrorsFound);
     EXPECT_FALSE(ErrorsFound);
     // Construction
     GetConstructData(ErrorsFound);
@@ -4450,7 +4450,7 @@ TEST_F(EnergyPlusFixture, WorldCoord_with_RelativeRectSurfCoord_test1)
     });
 
     ASSERT_TRUE(process_idf(idf_objects));
-    
+
     bool ErrorsFound(false);
 
     DataGlobals::NumOfZones = 1;
@@ -4460,7 +4460,7 @@ TEST_F(EnergyPlusFixture, WorldCoord_with_RelativeRectSurfCoord_test1)
     Zone(1).OriginY = 0;
     Zone(1).OriginZ = 0;
 
-    GetGeometryParameters(OutputFiles::getSingleton(), ErrorsFound);
+    GetGeometryParameters(state.outputFiles, ErrorsFound);
     EXPECT_FALSE(has_err_output(true));
 }
 
@@ -4490,7 +4490,7 @@ TEST_F(EnergyPlusFixture, WorldCoord_with_RelativeRectSurfCoord_test2)
     Zone(1).OriginY = 0;
     Zone(1).OriginZ = 0;
 
-    GetGeometryParameters(OutputFiles::getSingleton(), ErrorsFound);
+    GetGeometryParameters(state.outputFiles, ErrorsFound);
     EXPECT_FALSE(has_err_output(true));
 }
 
@@ -4499,7 +4499,7 @@ TEST_F(EnergyPlusFixture, WorldCoord_with_RelativeRectSurfCoord_test3)
     // Case 3) World coordinate system & Relative Rect. surf, coordinate system & Non-zero zone origin
 
     std::string const idf_objects = delimited_string({
-     
+
         "GlobalGeometryRules,",
         "    UpperLeftCorner,         !- Starting Vertex Position",
         "    CounterClockWise,        !- Vertex Entry Direction",
@@ -4520,9 +4520,9 @@ TEST_F(EnergyPlusFixture, WorldCoord_with_RelativeRectSurfCoord_test3)
     Zone(1).OriginY = 6;
     Zone(1).OriginZ = 0;
 
-    GetGeometryParameters(OutputFiles::getSingleton(), ErrorsFound);
+    GetGeometryParameters(state.outputFiles, ErrorsFound);
     EXPECT_TRUE(has_err_output(false));
-    
+
     std::string error_string = delimited_string({
         "   ** Warning ** GlobalGeometryRules: Potential mismatch of coordinate specifications. Note that the rectangular surfaces are relying on the default SurfaceGeometry for 'Relative to zone' coordinate.",
         "   **   ~~~   ** Coordinate System=\"WORLD\"; while ",
@@ -4555,7 +4555,7 @@ TEST_F(EnergyPlusFixture, WorldCoord_with_RelativeRectSurfCoord_test4)
     Zone(1).OriginY = 6;
     Zone(1).OriginZ = 0;
 
-    GetGeometryParameters(OutputFiles::getSingleton(), ErrorsFound);
+    GetGeometryParameters(state.outputFiles, ErrorsFound);
     EXPECT_TRUE(has_err_output(false));
 
     std::string error_string = delimited_string({
@@ -4569,152 +4569,152 @@ TEST_F(EnergyPlusFixture, WorldCoord_with_RelativeRectSurfCoord_test4)
 TEST_F(EnergyPlusFixture, SurfaceGeometry_CheckForReversedLayers)
 {
     bool RevLayerDiffs;
-    Construct.allocate(6);
-    Material.allocate(7);
-    
+    dataConstruction.Construct.allocate(6);
+    dataMaterial.Material.allocate(7);
+
     // Case 1a: Constructs with regular materials are a reverse of each other--material layers match in reverse (should get a "false" answer)
-    Construct(1).TotLayers = 3;
-    Construct(1).LayerPoint(1) = 1;
-    Construct(1).LayerPoint(2) = 2;
-    Construct(1).LayerPoint(3) = 3;
-    Construct(2).TotLayers = 3;
-    Construct(2).LayerPoint(1) = 3;
-    Construct(2).LayerPoint(2) = 2;
-    Construct(2).LayerPoint(3) = 1;
+    dataConstruction.Construct(1).TotLayers = 3;
+    dataConstruction.Construct(1).LayerPoint(1) = 1;
+    dataConstruction.Construct(1).LayerPoint(2) = 2;
+    dataConstruction.Construct(1).LayerPoint(3) = 3;
+    dataConstruction.Construct(2).TotLayers = 3;
+    dataConstruction.Construct(2).LayerPoint(1) = 3;
+    dataConstruction.Construct(2).LayerPoint(2) = 2;
+    dataConstruction.Construct(2).LayerPoint(3) = 1;
     RevLayerDiffs = true;
     // ExpectResult = false;
     CheckForReversedLayers(RevLayerDiffs, 1, 2, 3);
     EXPECT_FALSE(RevLayerDiffs);
 
     // Case 1a: Constructs with regular materials are not reverse of each other--material layers do not match in reverse (should get a "true" answer)
-    Construct(2).LayerPoint(1) = 1;
-    Construct(2).LayerPoint(3) = 3;
-    Material(1).Group = RegularMaterial;
-    Material(2).Group = RegularMaterial;
-    Material(3).Group = RegularMaterial;
+    dataConstruction.Construct(2).LayerPoint(1) = 1;
+    dataConstruction.Construct(2).LayerPoint(3) = 3;
+    dataMaterial.Material(1).Group = RegularMaterial;
+    dataMaterial.Material(2).Group = RegularMaterial;
+    dataMaterial.Material(3).Group = RegularMaterial;
     RevLayerDiffs = false;
     // ExpectResult = true;
     CheckForReversedLayers(RevLayerDiffs, 1, 2, 3);
     EXPECT_TRUE(RevLayerDiffs);
 
     // Case 2a: Constructs are reverse of each other using WindowGlass, front/back properties properly switched (should get a "false" answer)
-    Construct(3).TotLayers = 3;
-    Construct(3).LayerPoint(1) = 4;
-    Construct(3).LayerPoint(2) = 2;
-    Construct(3).LayerPoint(3) = 5;
-    Construct(4).TotLayers = 3;
-    Construct(4).LayerPoint(1) = 4;
-    Construct(4).LayerPoint(2) = 2;
-    Construct(4).LayerPoint(3) = 5;
-    Material(4).Group = WindowGlass;
-    Material(4).Thickness = 0.15;
-    Material(4).ReflectSolBeamFront = 0.35;
-    Material(4).ReflectSolBeamBack = 0.25;
-    Material(4).TransVis = 0.45;
-    Material(4).ReflectVisBeamFront = 0.34;
-    Material(4).ReflectVisBeamBack = 0.24;
-    Material(4).TransThermal = 0.44;
-    Material(4).AbsorpThermalFront = 0.33;
-    Material(4).AbsorpThermalBack = 0.23;
-    Material(4).Conductivity = 0.43;
-    Material(4).GlassTransDirtFactor = 0.67;
-    Material(4).SolarDiffusing = true;
-    Material(4).YoungModulus = 0.89;
-    Material(4).PoissonsRatio = 1.11;
-    Material(5).Group = WindowGlass;
-    Material(5).Thickness = 0.15;
-    Material(5).ReflectSolBeamFront = 0.25;
-    Material(5).ReflectSolBeamBack = 0.35;
-    Material(5).TransVis = 0.45;
-    Material(5).ReflectVisBeamFront = 0.24;
-    Material(5).ReflectVisBeamBack = 0.34;
-    Material(5).TransThermal = 0.44;
-    Material(5).AbsorpThermalFront = 0.23;
-    Material(5).AbsorpThermalBack = 0.33;
-    Material(5).Conductivity = 0.43;
-    Material(5).GlassTransDirtFactor = 0.67;
-    Material(5).SolarDiffusing = true;
-    Material(5).YoungModulus = 0.89;
-    Material(5).PoissonsRatio = 1.11;
+    dataConstruction.Construct(3).TotLayers = 3;
+    dataConstruction.Construct(3).LayerPoint(1) = 4;
+    dataConstruction.Construct(3).LayerPoint(2) = 2;
+    dataConstruction.Construct(3).LayerPoint(3) = 5;
+    dataConstruction.Construct(4).TotLayers = 3;
+    dataConstruction.Construct(4).LayerPoint(1) = 4;
+    dataConstruction.Construct(4).LayerPoint(2) = 2;
+    dataConstruction.Construct(4).LayerPoint(3) = 5;
+    dataMaterial.Material(4).Group = WindowGlass;
+    dataMaterial.Material(4).Thickness = 0.15;
+    dataMaterial.Material(4).ReflectSolBeamFront = 0.35;
+    dataMaterial.Material(4).ReflectSolBeamBack = 0.25;
+    dataMaterial.Material(4).TransVis = 0.45;
+    dataMaterial.Material(4).ReflectVisBeamFront = 0.34;
+    dataMaterial.Material(4).ReflectVisBeamBack = 0.24;
+    dataMaterial.Material(4).TransThermal = 0.44;
+    dataMaterial.Material(4).AbsorpThermalFront = 0.33;
+    dataMaterial.Material(4).AbsorpThermalBack = 0.23;
+    dataMaterial.Material(4).Conductivity = 0.43;
+    dataMaterial.Material(4).GlassTransDirtFactor = 0.67;
+    dataMaterial.Material(4).SolarDiffusing = true;
+    dataMaterial.Material(4).YoungModulus = 0.89;
+    dataMaterial.Material(4).PoissonsRatio = 1.11;
+    dataMaterial.Material(5).Group = WindowGlass;
+    dataMaterial.Material(5).Thickness = 0.15;
+    dataMaterial.Material(5).ReflectSolBeamFront = 0.25;
+    dataMaterial.Material(5).ReflectSolBeamBack = 0.35;
+    dataMaterial.Material(5).TransVis = 0.45;
+    dataMaterial.Material(5).ReflectVisBeamFront = 0.24;
+    dataMaterial.Material(5).ReflectVisBeamBack = 0.34;
+    dataMaterial.Material(5).TransThermal = 0.44;
+    dataMaterial.Material(5).AbsorpThermalFront = 0.23;
+    dataMaterial.Material(5).AbsorpThermalBack = 0.33;
+    dataMaterial.Material(5).Conductivity = 0.43;
+    dataMaterial.Material(5).GlassTransDirtFactor = 0.67;
+    dataMaterial.Material(5).SolarDiffusing = true;
+    dataMaterial.Material(5).YoungModulus = 0.89;
+    dataMaterial.Material(5).PoissonsRatio = 1.11;
     RevLayerDiffs = true;
     // ExpectResult = false;
     CheckForReversedLayers(RevLayerDiffs, 3, 4, 3);
     EXPECT_FALSE(RevLayerDiffs);
 
     // Case 2b: Constructs are reverse of each other using WindowGlass, front/back properties NOT properly switched (should get a "true" answer)
-    Material(5).ReflectVisBeamFront = 0.34; // correct would be 0.24
-    Material(5).ReflectVisBeamBack = 0.24;  // correct would be 0.34
+    dataMaterial.Material(5).ReflectVisBeamFront = 0.34; // correct would be 0.24
+    dataMaterial.Material(5).ReflectVisBeamBack = 0.24;  // correct would be 0.34
     RevLayerDiffs = false;
     // ExpectResult = true;
     CheckForReversedLayers(RevLayerDiffs, 3, 4, 3);
     EXPECT_TRUE(RevLayerDiffs);
 
     // Case 3a: Single layer constructs using Equivalent Glass, front/back properties properly switched (should get a "false" answer)
-    Construct(5).TotLayers = 1;
-    Construct(5).LayerPoint(1) = 6;
-    Construct(6).TotLayers = 1;
-    Construct(6).LayerPoint(1) = 7;
-    Material(6).Group = GlassEquivalentLayer;
-    Material(6).TausFrontBeamBeam = 0.39;
-    Material(6).TausBackBeamBeam = 0.29;
-    Material(6).ReflFrontBeamBeam = 0.38;
-    Material(6).ReflBackBeamBeam = 0.28;
-    Material(6).TausFrontBeamBeamVis = 0.37;
-    Material(6).TausBackBeamBeamVis = 0.27;
-    Material(6).ReflFrontBeamBeamVis = 0.36;
-    Material(6).ReflBackBeamBeamVis = 0.26;
-    Material(6).TausFrontBeamDiff = 0.35;
-    Material(6).TausBackBeamDiff = 0.25;
-    Material(6).ReflFrontBeamDiff = 0.34;
-    Material(6).ReflBackBeamDiff = 0.24;
-    Material(6).TausFrontBeamDiffVis = 0.33;
-    Material(6).TausBackBeamDiffVis = 0.23;
-    Material(6).ReflFrontBeamDiffVis = 0.32;
-    Material(6).ReflBackBeamDiffVis = 0.22;
-    Material(6).TausDiffDiff = 0.456;
-    Material(6).ReflFrontDiffDiff = 0.31;
-    Material(6).ReflBackDiffDiff = 0.21;
-    Material(6).TausDiffDiffVis = 0.345;
-    Material(6).ReflFrontDiffDiffVis = 0.30;
-    Material(6).ReflBackDiffDiffVis = 0.20;
-    Material(6).TausThermal = 0.234;
-    Material(6).EmissThermalFront = 0.888;
-    Material(6).EmissThermalBack = 0.777;
-    Material(6).Resistance = 1.234;
-    Material(7).Group = GlassEquivalentLayer;
-    Material(7).TausFrontBeamBeam = 0.29;
-    Material(7).TausBackBeamBeam = 0.39;
-    Material(7).ReflFrontBeamBeam = 0.28;
-    Material(7).ReflBackBeamBeam = 0.38;
-    Material(7).TausFrontBeamBeamVis = 0.27;
-    Material(7).TausBackBeamBeamVis = 0.37;
-    Material(7).ReflFrontBeamBeamVis = 0.26;
-    Material(7).ReflBackBeamBeamVis = 0.36;
-    Material(7).TausFrontBeamDiff = 0.25;
-    Material(7).TausBackBeamDiff = 0.35;
-    Material(7).ReflFrontBeamDiff = 0.24;
-    Material(7).ReflBackBeamDiff = 0.34;
-    Material(7).TausFrontBeamDiffVis = 0.23;
-    Material(7).TausBackBeamDiffVis = 0.33;
-    Material(7).ReflFrontBeamDiffVis = 0.22;
-    Material(7).ReflBackBeamDiffVis = 0.32;
-    Material(7).TausDiffDiff = 0.456;
-    Material(7).ReflFrontDiffDiff = 0.21;
-    Material(7).ReflBackDiffDiff = 0.31;
-    Material(7).TausDiffDiffVis = 0.345;
-    Material(7).ReflFrontDiffDiffVis = 0.20;
-    Material(7).ReflBackDiffDiffVis = 0.30;
-    Material(7).TausThermal = 0.234;
-    Material(7).EmissThermalFront = 0.777;
-    Material(7).EmissThermalBack = 0.888;
-    Material(7).Resistance = 1.234;
+    dataConstruction.Construct(5).TotLayers = 1;
+    dataConstruction.Construct(5).LayerPoint(1) = 6;
+    dataConstruction.Construct(6).TotLayers = 1;
+    dataConstruction.Construct(6).LayerPoint(1) = 7;
+    dataMaterial.Material(6).Group = GlassEquivalentLayer;
+    dataMaterial.Material(6).TausFrontBeamBeam = 0.39;
+    dataMaterial.Material(6).TausBackBeamBeam = 0.29;
+    dataMaterial.Material(6).ReflFrontBeamBeam = 0.38;
+    dataMaterial.Material(6).ReflBackBeamBeam = 0.28;
+    dataMaterial.Material(6).TausFrontBeamBeamVis = 0.37;
+    dataMaterial.Material(6).TausBackBeamBeamVis = 0.27;
+    dataMaterial.Material(6).ReflFrontBeamBeamVis = 0.36;
+    dataMaterial.Material(6).ReflBackBeamBeamVis = 0.26;
+    dataMaterial.Material(6).TausFrontBeamDiff = 0.35;
+    dataMaterial.Material(6).TausBackBeamDiff = 0.25;
+    dataMaterial.Material(6).ReflFrontBeamDiff = 0.34;
+    dataMaterial.Material(6).ReflBackBeamDiff = 0.24;
+    dataMaterial.Material(6).TausFrontBeamDiffVis = 0.33;
+    dataMaterial.Material(6).TausBackBeamDiffVis = 0.23;
+    dataMaterial.Material(6).ReflFrontBeamDiffVis = 0.32;
+    dataMaterial.Material(6).ReflBackBeamDiffVis = 0.22;
+    dataMaterial.Material(6).TausDiffDiff = 0.456;
+    dataMaterial.Material(6).ReflFrontDiffDiff = 0.31;
+    dataMaterial.Material(6).ReflBackDiffDiff = 0.21;
+    dataMaterial.Material(6).TausDiffDiffVis = 0.345;
+    dataMaterial.Material(6).ReflFrontDiffDiffVis = 0.30;
+    dataMaterial.Material(6).ReflBackDiffDiffVis = 0.20;
+    dataMaterial.Material(6).TausThermal = 0.234;
+    dataMaterial.Material(6).EmissThermalFront = 0.888;
+    dataMaterial.Material(6).EmissThermalBack = 0.777;
+    dataMaterial.Material(6).Resistance = 1.234;
+    dataMaterial.Material(7).Group = GlassEquivalentLayer;
+    dataMaterial.Material(7).TausFrontBeamBeam = 0.29;
+    dataMaterial.Material(7).TausBackBeamBeam = 0.39;
+    dataMaterial.Material(7).ReflFrontBeamBeam = 0.28;
+    dataMaterial.Material(7).ReflBackBeamBeam = 0.38;
+    dataMaterial.Material(7).TausFrontBeamBeamVis = 0.27;
+    dataMaterial.Material(7).TausBackBeamBeamVis = 0.37;
+    dataMaterial.Material(7).ReflFrontBeamBeamVis = 0.26;
+    dataMaterial.Material(7).ReflBackBeamBeamVis = 0.36;
+    dataMaterial.Material(7).TausFrontBeamDiff = 0.25;
+    dataMaterial.Material(7).TausBackBeamDiff = 0.35;
+    dataMaterial.Material(7).ReflFrontBeamDiff = 0.24;
+    dataMaterial.Material(7).ReflBackBeamDiff = 0.34;
+    dataMaterial.Material(7).TausFrontBeamDiffVis = 0.23;
+    dataMaterial.Material(7).TausBackBeamDiffVis = 0.33;
+    dataMaterial.Material(7).ReflFrontBeamDiffVis = 0.22;
+    dataMaterial.Material(7).ReflBackBeamDiffVis = 0.32;
+    dataMaterial.Material(7).TausDiffDiff = 0.456;
+    dataMaterial.Material(7).ReflFrontDiffDiff = 0.21;
+    dataMaterial.Material(7).ReflBackDiffDiff = 0.31;
+    dataMaterial.Material(7).TausDiffDiffVis = 0.345;
+    dataMaterial.Material(7).ReflFrontDiffDiffVis = 0.20;
+    dataMaterial.Material(7).ReflBackDiffDiffVis = 0.30;
+    dataMaterial.Material(7).TausThermal = 0.234;
+    dataMaterial.Material(7).EmissThermalFront = 0.777;
+    dataMaterial.Material(7).EmissThermalBack = 0.888;
+    dataMaterial.Material(7).Resistance = 1.234;
     RevLayerDiffs = true;
     // ExpectResult = false;
     CheckForReversedLayers(RevLayerDiffs, 5, 6, 1);
     EXPECT_FALSE(RevLayerDiffs);
 
     // Case 3a: Single layer constructs using Equivalent Glass, front/back properties NOT properly switched (should get a "true" answer)
-    Material(7).EmissThermalFront = 0.888;
+    dataMaterial.Material(7).EmissThermalFront = 0.888;
     RevLayerDiffs = false;
     // ExpectResult = true;
     CheckForReversedLayers(RevLayerDiffs, 5, 6, 1);
@@ -4816,7 +4816,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresNoAirBoundari
     ASSERT_TRUE(process_idf(idf_objects));
     bool ErrorsFound = false;
 
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound); // read material data
+    GetMaterialData(state.outputFiles, ErrorsFound); // read material data
     EXPECT_FALSE(ErrorsFound);    // expect no errors
 
     GetConstructData(ErrorsFound); // read construction data
@@ -4825,7 +4825,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresNoAirBoundari
     GetZoneData(ErrorsFound);  // read zone data
     EXPECT_FALSE(ErrorsFound); // expect no errors
 
-    SetupZoneGeometry(OutputFiles::getSingleton(), ErrorsFound);
+    SetupZoneGeometry(state, ErrorsFound);
     // SetupZoneGeometry calls SurfaceGeometry::GetSurfaceData
     // SetupZoneGeometry calls SurfaceGeometry::SetupSolarEnclosuresAndAirBoundaries
     // SetupZoneGeometry calls SurfaceGeometry::SetupRadiantEnclosuresAndAirBoundaries
@@ -4954,7 +4954,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresWithAirBounda
     ASSERT_TRUE(process_idf(idf_objects));
     bool ErrorsFound = false;
 
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound); // read material data
+    GetMaterialData(state.outputFiles, ErrorsFound); // read material data
     EXPECT_FALSE(ErrorsFound);    // expect no errors
 
     GetConstructData(ErrorsFound); // read construction data
@@ -4963,7 +4963,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresWithAirBounda
     GetZoneData(ErrorsFound);  // read zone data
     EXPECT_FALSE(ErrorsFound); // expect no errors
 
-    SetupZoneGeometry(OutputFiles::getSingleton(), ErrorsFound);
+    SetupZoneGeometry(state, ErrorsFound);
     // SetupZoneGeometry calls SurfaceGeometry::GetSurfaceData
     // SetupZoneGeometry calls SurfaceGeometry::SetupSolarEnclosuresAndAirBoundaries
     // SetupZoneGeometry calls SurfaceGeometry::SetupRadiantEnclosuresAndAirBoundaries
@@ -5095,7 +5095,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresWithAirBounda
     ASSERT_TRUE(process_idf(idf_objects));
     bool ErrorsFound = false;
 
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound); // read material data
+    GetMaterialData(state.outputFiles, ErrorsFound); // read material data
     EXPECT_FALSE(ErrorsFound);    // expect no errors
 
     GetConstructData(ErrorsFound); // read construction data
@@ -5104,7 +5104,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresWithAirBounda
     GetZoneData(ErrorsFound);  // read zone data
     EXPECT_FALSE(ErrorsFound); // expect no errors
 
-    SetupZoneGeometry(OutputFiles::getSingleton(), ErrorsFound);
+    SetupZoneGeometry(state, ErrorsFound);
     // SetupZoneGeometry calls SurfaceGeometry::GetSurfaceData
     // SetupZoneGeometry calls SurfaceGeometry::SetupSolarEnclosuresAndAirBoundaries
     // SetupZoneGeometry calls SurfaceGeometry::SetupRadiantEnclosuresAndAirBoundaries
@@ -5113,7 +5113,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresWithAirBounda
     ErrorsFound = false;
 
     //std::string const error_string = delimited_string({
-    //"   ** Severe  ** AlignInputViewFactors: ZoneProperty:UserViewFactors:bySurfaceName=\"Zone 6\" did not find a matching radiant or solar enclosure name."
+    //"   ** Severe  ** AlignInputViewFactors: ZoneProperty:UserViewFactors:BySurfaceName=\"Zone 6\" did not find a matching radiant or solar enclosure name."
     //    });
     //EXPECT_TRUE(compare_err_stream(error_string, true));
 
@@ -5343,7 +5343,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresWithAirBounda
     ASSERT_TRUE(process_idf(idf_objects));
     bool ErrorsFound = false;
 
-    GetMaterialData(OutputFiles::getSingleton(), ErrorsFound); // read material data
+    GetMaterialData(state.outputFiles, ErrorsFound); // read material data
     EXPECT_FALSE(ErrorsFound);    // expect no errors
 
     GetConstructData(ErrorsFound); // read construction data
@@ -5352,7 +5352,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresWithAirBounda
     GetZoneData(ErrorsFound);  // read zone data
     EXPECT_FALSE(ErrorsFound); // expect no errors
 
-    SetupZoneGeometry(OutputFiles::getSingleton(), ErrorsFound);
+    SetupZoneGeometry(state, ErrorsFound);
     // SetupZoneGeometry calls SurfaceGeometry::GetSurfaceData
     // SetupZoneGeometry calls SurfaceGeometry::SetupSolarEnclosuresAndAirBoundaries
     // SetupZoneGeometry calls SurfaceGeometry::SetupRadiantEnclosuresAndAirBoundaries
@@ -5361,7 +5361,7 @@ TEST_F(EnergyPlusFixture, HeatBalanceIntRadExchange_SetupEnclosuresWithAirBounda
     // For this test case, there are air boundaries
     // Between Zones 1 and 2
     // None between Zones 2 and 3
-    // Between Zones 3 and 4 
+    // Between Zones 3 and 4
     // Between Zones 4 and 5
     // Between Zones 1 and 5
     // This should trigger the enclosure merging and all five zones should share a radiant and solar enclosure

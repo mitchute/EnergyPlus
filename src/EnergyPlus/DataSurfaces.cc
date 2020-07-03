@@ -45,7 +45,15 @@
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+// C++ Headers
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <limits>
+#include <tuple>
+
 // EnergyPlus Headers
+#include <EnergyPlus/Construction.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataHeatBalFanSys.hh>
 #include <EnergyPlus/DataHeatBalance.hh>
@@ -55,13 +63,6 @@
 #include <EnergyPlus/Psychrometrics.hh>
 #include <EnergyPlus/UtilityRoutines.hh>
 #include <EnergyPlus/WindowManager.hh>
-
-// C++ Headers
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#include <limits>
-#include <tuple>
 
 namespace EnergyPlus {
 
@@ -120,7 +121,7 @@ namespace DataSurfaces {
     int const GroundFCfactorMethod(-5);
     int const KivaFoundation(-6);
 
-    Array1D_string const cExtBoundCondition({-5, 0}, {"FCGround", "OSCM", "OSC", "OSC", "Ground", "ExternalEnvironment"});
+    Array1D_string const cExtBoundCondition({-6, 0}, {"KivaFoundation", "FCGround", "OSCM", "OSC", "OSC", "Ground", "ExternalEnvironment"});
 
     // Parameters to indicate the first "corner" of a surface
     // Currently, these are used only during input of surfaces
@@ -897,7 +898,7 @@ namespace DataSurfaces {
         // PURPOSE OF THIS SUBROUTINE:
         // Returns total number of layer for current surface
 
-        auto &construction(Construct(Construction));
+        auto &construction(dataConstruction.Construct(Construction));
         return construction.TotLayers;
     }
 

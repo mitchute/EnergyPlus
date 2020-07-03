@@ -39,7 +39,7 @@
 !        above the econo limit temperature.
 !        The third design day is very hot and all cooling is by the DX unit.
 
-  Version,9.3;
+  Version,9.4;
 
   Building,
     NONE,                    !- Name
@@ -59,7 +59,9 @@
 
   HeatBalanceAlgorithm,ConductionTransferFunction;
 
-  Output:DebuggingData,0,0;
+  Output:DebuggingData,
+    No,                      !- Report Debugging Data
+    No;                      !- Report During Warmup
 
   Site:Location,
     Chanute AFB IL,          !- Name

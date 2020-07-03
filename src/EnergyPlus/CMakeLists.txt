@@ -9,7 +9,6 @@ configure_file( DataStringGlobals.in.cc "${CMAKE_CURRENT_BINARY_DIR}/DataStringG
 configure_file( ConfiguredFunctions.in.cc "${CMAKE_CURRENT_BINARY_DIR}/ConfiguredFunctions.cc" )
 file( WRITE "${CMAKE_CURRENT_BINARY_DIR}/EmbeddedEpJSONSchema.cc" "Will be filled in later by GenerateEmbeddedEpJSONSchema" )
 
-option( LINK_WITH_PYTHON "Build package" OFF )
 if(LINK_WITH_PYTHON)
   add_definitions("-DLINK_WITH_PYTHON=1")
 else()
@@ -64,12 +63,12 @@ SET( SRC
   Coils/CoilCoolingDXCurveFitSpeed.hh
   CondenserLoopTowers.cc
   CondenserLoopTowers.hh
-  ConductionTransferFunctionCalc.cc
-  ConductionTransferFunctionCalc.hh
   ConfiguredFunctions.hh
   "${CMAKE_CURRENT_BINARY_DIR}/ConfiguredFunctions.cc"
   ConvectionCoefficients.cc
   ConvectionCoefficients.hh
+  Construction.cc
+  Construction.hh
   CoolTower.cc
   CoolTower.hh
   CostEstimateManager.cc
@@ -84,6 +83,8 @@ SET( SRC
   DXCoils.hh
   DXFEarClipping.cc
   DXFEarClipping.hh
+  Data/BaseData.hh
+  Data/EnergyPlusData.hh
   DataAirLoop.cc
   DataAirLoop.hh
   DataAirSystems.cc
@@ -361,6 +362,8 @@ SET( SRC
   InternalHeatGains.hh
   LowTempRadiantSystem.cc
   LowTempRadiantSystem.hh
+  Material.cc
+  Material.hh
   MatrixDataManager.cc
   MatrixDataManager.hh
   MicroCHPElectricGenerator.cc
@@ -571,6 +574,8 @@ SET( SRC
   TARCOGParams.hh
   TarcogShading.cc
   TarcogShading.hh
+  TempSolveRoot.cc
+  TempSolveRoot.hh
   ThermalChimney.cc
   ThermalChimney.hh
   ThermalComfort.cc
@@ -729,9 +734,6 @@ endif()
 if (WIN32)
   target_link_libraries( energypluslib Shlwapi )
 endif()
-if(LINK_WITH_PYTHON)
-  target_link_libraries( energypluslib ${PYTHON_LIBRARIES} )
-endif()
 
 # second we will create the shared library that is actually packaged with EnergyPlus
 SET( API_HEADERS
@@ -746,8 +748,7 @@ SET( API_CORE_SRC
   api/func.cc
   api/runtime.cc
   api/datatransfer.cc
-  api/EnergyPlusPgm.cc
-)
+  api/EnergyPlusPgm.cc)
 
 if(APPLE OR UNIX)
   add_library( energyplusapi SHARED CommandLineInterface.hh CommandLineInterface.cc ${API_CORE_SRC} ${API_HEADERS})
@@ -767,6 +768,22 @@ install( TARGETS energyplusapi
   ARCHIVE DESTINATION ./
 )
 
+# we will build the intermediate wrapper DLL that hard links to Python DLL here
+if(LINK_WITH_PYTHON)
+  add_library( pythonwrapper SHARED
+          PythonLibWrapper.cc
+          PythonLibWrapper.hh
+          )
+  target_link_libraries( pythonwrapper ${PYTHON_LIBRARIES} )
+  add_dependencies( energyplusapi pythonwrapper)
+  install( TARGETS pythonwrapper
+          RUNTIME DESTINATION ./
+          LIBRARY DESTINATION ./
+          ARCHIVE DESTINATION ./
+          )
+endif()
+
+# now the actual E+ executable
 if (APPLE OR UNIX)
   add_executable( energyplus main.cc )
 else()  # windows
@@ -779,11 +796,11 @@ set_target_properties(energyplusapi PROPERTIES VERSION ${ENERGYPLUS_VERSION})
 
 # bring in the Python API layer right next to the executable
 add_custom_command(
-        TARGET energyplus
+        TARGET energyplusapi
         POST_BUILD
         COMMAND ${CMAKE_COMMAND}
         -DREPO_ROOT=${PROJECT_SOURCE_DIR}
-        -DEXECUTABLE_PATH=$<TARGET_FILE:energyplus>
+        -DEXECUTABLE_PATH=$<TARGET_FILE:energyplusapi>
         -DCMAKE_VERSION_MAJOR="${CMAKE_VERSION_MAJOR}"
         -DCMAKE_VERSION_MINOR="${CMAKE_VERSION_MINOR}"
         -DCMAKE_VERSION_PATCH="${CMAKE_VERSION_PATCH}"
@@ -802,11 +819,11 @@ if(LINK_WITH_PYTHON)
     # Windows is being ugly and linking against the Python DLL but not running unless it's close by
     # Force it here.
     add_custom_command(
-        TARGET energyplus
+        TARGET energyplusapi
         POST_BUILD
         COMMAND ${CMAKE_COMMAND}
           -DRESOLVED_PYTHON_LIB=${RESOLVED_PYTHON_LIBRARY}
-          -DEXECUTABLE_PATH=$<TARGET_FILE:energyplus>
+          -DEXECUTABLE_PATH=$<TARGET_FILE:energyplusapi>
           -P ${PROJECT_SOURCE_DIR}/cmake/PythonGetLibAndLinkUp.cmake
     )
   endif()
@@ -832,9 +849,9 @@ if(LINK_WITH_PYTHON)
   endif()
   # along with the python standard lib
   add_custom_command(
-          TARGET energyplus
-          POST_BUILD
-          COMMAND ${PYTHON_EXECUTABLE} "${PROJECT_SOURCE_DIR}/cmake/PythonCopyStandardLib.py" "$<TARGET_FILE:energyplus>" "python_standard_lib"
+          TARGET energyplusapi
+          POST_BUILD  # TODO: I don't think we want to quote the generator expression here
+          COMMAND ${PYTHON_EXECUTABLE} "${PROJECT_SOURCE_DIR}/cmake/PythonCopyStandardLib.py" "$<TARGET_FILE:energyplusapi>" "python_standard_lib"
   )
 endif()
 
@@ -842,6 +859,7 @@ if(BUILD_PACKAGE)
   # if we are building package, we need to drop in some API/Plugin stuff
   if(LINK_WITH_PYTHON)
     # we'll want to grab the standard lib for python plugins
+    # TODO: I don't think we want to quote the generator expression
     install(DIRECTORY "$<TARGET_FILE_DIR:energyplus>/python_standard_lib/"
             DESTINATION "./python_standard_lib")
   endif()
@@ -851,6 +869,7 @@ if(BUILD_PACKAGE)
             DESTINATION "./include/EnergyPlus/api")
   endforeach()
   # we'll want to always grab the python API wrapper
+  # TODO: I don't think we want to quote the generator expression
   install(DIRECTORY "$<TARGET_FILE_DIR:energyplus>/pyenergyplus/"
           DESTINATION "./pyenergyplus")
 endif()
