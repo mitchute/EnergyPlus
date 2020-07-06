@@ -352,6 +352,9 @@ namespace GroundHeatExchangerEnhanced {
         static std::vector<Real64> distances(PointLoc const &point_i, PointLoc const &point_j);
         Real64 integral(const PointLoc &point_i, const GHEBorehole &bh_j, Real64 const &currTime) const;
         Real64 doubleIntegral(const GHEBorehole &bh_i, const GHEBorehole &bh_j, Real64 const &currTime) const;
+        void mergeLTSandSTSgFunctions();
+        Real64 getBWTgFunc(Real64 const &lntts);
+        Real64 getEFTgFunc(Real64 const &lntts);
     };
 
     void getGHEInput(EnergyPlusData &state);

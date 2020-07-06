@@ -1572,3 +1572,75 @@ TEST_F(EnergyPlusFixture, GHE_Enhanced_long_timestep_g_functions)
     EXPECT_NEAR(tstGHE.gLTS[9], 5.79, tol);
     EXPECT_NEAR(tstGHE.gLTS[10], 6.53, tol);
 }
+
+TEST_F(EnergyPlusFixture, GHE_Enhanced_merge_bwt_g_functions)
+{
+    std::string const idf_objects = delimited_string({
+        "GroundHeatExchanger:System,",
+        "  GHE,  !- Name",
+        "  GHE Inlet Node,          !- Inlet Node Name",
+        "  GHE Outlet Node,         !- Outlet Node Name",
+        "  0.00330000,              !- Design Flow Rate {m3/s}",
+        "  4,                       !- Number of Boreholes",
+        "  Site:GroundTemperature:Undisturbed:KusudaAchenbach,  !- Undisturbed Ground Temperature Model Type",
+        "  GHE Ground Temps,        !- Undisturbed Ground Temperature Model Name",
+        "  2.423,                   !- Ground Thermal Conductivity {W/m-K}",
+        "  2.343E+06,               !- Ground Thermal Heat Capacity {J/m3-K}",
+        "  ,                        !- GHE:ResponseFactors EFT Object Name",
+        "  ,                        !- GHE:ResponseFactors BWT Object Name",
+        "  GHE-Array;               !- GHT:Vertical:Array Object Name",
+        "",
+        "GroundHeatExchanger:Vertical:Properties,",
+        "  GHE Props,  !- Name",
+        "  1,                       !- Depth of Top of Borehole {m}",
+        "  100.0,                   !- Borehole Length {m}",
+        "  0.109982,                !- Borehole Diameter {m}",
+        "  0.744,                   !- Grout Thermal Conductivity {W/m-K}",
+        "  3.90E+06,                !- Grout Thermal Heat Capacity {J/m3-K}",
+        "  0.389,                   !- Pipe Thermal Conductivity {W/m-K}",
+        "  1.77E+06,                !- Pipe Thermal Heat Capacity {J/m3-K}",
+        "  0.0267,                  !- Pipe Outer Diameter {m}",
+        "  0.00243,                 !- Pipe Thickness {m}",
+        "  0.04556;                 !- U-Tube Distance {m}",
+        "",
+        "Site:GroundTemperature:Undisturbed:KusudaAchenbach,",
+        "  GHE Ground Temps,  !- Name",
+        "  0.692626E+00,            !- Soil Thermal Conductivity {W/m-K}",
+        "  920,                     !- Soil Density {kg/m3}",
+        "  2551.09,                 !- Soil Specific Heat {J/kg-K}",
+        "  13.375,                  !- Average Soil Surface Temperature {C}",
+        "  3.2,                     !- Average Amplitude of Surface Temperature {deltaC}",
+        "  8;                       !- Phase Shift of Minimum Surface Temperature {days}",
+        "",
+        "GroundHeatExchanger:Vertical:Array,",
+        "  GHE-Array,               !- Name",
+        "  GHE Props,  !- GHE:Vertical:Properties Object Name",
+        "  2,                       !- Number of Boreholes in X-Direction",
+        "  2,                       !- Number of Boreholes in Y-Direction",
+        "  5;                       !- Borehole Spacing {m}",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+
+    EnhancedGHE::factory(state, "GHE");
+
+    ASSERT_EQ(1u, state.dataGroundHeatExchangerEnhanced.enhancedGHE.size());
+
+    auto &tstGHE(state.dataGroundHeatExchangerEnhanced.enhancedGHE[0]);
+
+    tstGHE.aveBH.gSTS = std::vector<Real64>{1, 2, 3, 4, 5};
+    tstGHE.aveBH.lnttsSTS = std::vector<Real64>{1, 2, 3, 4, 5};
+    tstGHE.gLTS = std::vector<Real64>{6, 7, 8, 9, 10};
+    tstGHE.lnttsLTS = std::vector<Real64>{6, 7, 8, 9, 10};
+
+    tstGHE.mergeLTSandSTSgFunctions();
+
+    Real64 tol = 1E-3;
+
+    EXPECT_NEAR(tstGHE.getBWTgFunc(-1.0), -1.0, tol);
+    EXPECT_NEAR(tstGHE.getBWTgFunc(1.0), 1.0, tol);
+    EXPECT_NEAR(tstGHE.getBWTgFunc(2.5), 2.5, tol);
+    EXPECT_NEAR(tstGHE.getBWTgFunc(8.0), 8.0, tol);
+    EXPECT_NEAR(tstGHE.getBWTgFunc(9.5), 9.5, tol);
+    EXPECT_NEAR(tstGHE.getBWTgFunc(11.0), 11.0, tol);
+}

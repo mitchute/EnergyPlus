@@ -705,6 +705,8 @@ namespace GroundHeatExchangerEnhanced {
         // long timestep borehole wall g-functions
         this->calcLongTimeStepGFunctions();
 
+        // combine LTS and STS g-functions
+        this->mergeLTSandSTSgFunctions();
     }
 
     void EnhancedGHE::simulate(EnergyPlusData &EP_UNUSED(state), const PlantLocation &EP_UNUSED(calledFromLocation), bool EP_UNUSED(FirstHVACIteration), Real64 &EP_UNUSED(CurLoad), bool EP_UNUSED(RunFlag))
@@ -1518,6 +1520,39 @@ namespace GroundHeatExchangerEnhanced {
             // g.push_back(this->c0 * ((Cells[0].temperature - initial_temperature) / heat_flux - bhResistance));
 
         } // end timestep loop
+    }
+
+    void EnhancedGHE::mergeLTSandSTSgFunctions()
+    {
+        // concatenate STS and LTS g-functions
+        std::vector<std::vector<Real64>> lntts = {{}};
+        std::vector<std::vector<Real64>> g = {{}};
+
+        g.front().reserve(this->aveBH.gSTS.size() + this->gLTS.size());
+        g.front().insert(g.front().end(), this->aveBH.gSTS.begin(), this->aveBH.gSTS.end());
+        g.front().insert(g.front().end(), this->gLTS.begin(), this->gLTS.end());
+
+        lntts.front().reserve(this->aveBH.lnttsSTS.size() + this->lnttsLTS.size());
+        lntts.front().insert(lntts.front().end(), this->aveBH.lnttsSTS.begin(), this->aveBH.lnttsSTS.end());
+        lntts.front().insert(lntts.front().end(), this->lnttsLTS.begin(), this->lnttsLTS.end());
+
+        // setup table/interpolator object
+        Btwxt::GriddedData gFnGridData(lntts, g);
+        gFnGridData.set_axis_interp_method(0, Btwxt::Method::LINEAR);
+        gFnGridData.set_axis_extrap_method(0, Btwxt::Method::LINEAR);
+        this->gFuncBWT.g = Btwxt::RegularGridInterpolator(gFnGridData);
+    }
+
+    Real64 EnhancedGHE::getBWTgFunc(const Real64 &lntts)
+    {
+        std::vector<Real64> results = this->gFuncBWT.g.get_values_at_target(std::vector<Real64>{lntts});
+        return results[0];
+    }
+
+    Real64 EnhancedGHE::getEFTgFunc(const Real64 &lntts)
+    {
+        std::vector<Real64> results = this->gFuncEFT.g.get_values_at_target(std::vector<Real64>{lntts});
+        return results[0];
     }
 
 } // namespace GroundHeatExchangerEnhanced
