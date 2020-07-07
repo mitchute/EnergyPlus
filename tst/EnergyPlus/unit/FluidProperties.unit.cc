@@ -212,7 +212,7 @@ TEST_F(EnergyPlusFixture, FluidProperties_GetEnthalpyGlycol)
     pgFile << ",0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9\n";
     egFile << ",0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9\n";
 
-    std::vector<Real64> temps {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+    std::vector<Real64> temps {0, 5, 10 , 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95};
     std::map<int, std::string> pgNames{{0, "PG10"}, {1, "PG20"}, {2, "PG30"}, {3, "PG40"}, {4, "PG50"}, {5, "PG60"}, {6, "PG70"}, {7, "PG80"}, {8, "P90"}};
     std::map<int, std::string> egNames{{9, "EG10"}, {10, "EG20"}, {11, "EG30"}, {12, "EG40"}, {13, "EG50"}, {14, "EG60"}, {15, "EG70"}, {16, "EG80"}, {17, "EG90"}};
 
@@ -221,7 +221,7 @@ TEST_F(EnergyPlusFixture, FluidProperties_GetEnthalpyGlycol)
         pgFile << t << ",";
         for (auto &it : pgNames) {
             int idx = it.first;
-            pgFile << GetEnthalpyGlycol(it.second, t, idx, "UnitTest");
+            pgFile << GetSpecificHeatGlycol(it.second, t, idx, "UnitTest");
             if (idx < 8) {
                 pgFile << ",";
             }
@@ -234,7 +234,7 @@ TEST_F(EnergyPlusFixture, FluidProperties_GetEnthalpyGlycol)
         egFile << t << ",";
         for (auto &it : egNames) {
             int idx = it.first;
-            egFile << GetEnthalpyGlycol(it.second, t, idx, "UnitTest");
+            egFile << GetSpecificHeatGlycol(it.second, t, idx, "UnitTest");
             if (idx < 17) {
                 egFile << ",";
             }
