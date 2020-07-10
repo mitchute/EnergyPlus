@@ -65,6 +65,7 @@ using namespace EnergyPlus::FluidProperties;
 
 std::ofstream static pgFile("PG.csv", std::ofstream::out);
 std::ofstream static egFile("EG.csv", std::ofstream::out);
+std::ofstream static waterFile("Water.csv", std::ofstream::out);
 
 TEST_F(EnergyPlusFixture, FluidProperties_GetDensityGlycol)
 {
@@ -204,6 +205,12 @@ TEST_F(EnergyPlusFixture, FluidProperties_GetEnthalpyGlycol)
             "  ,                !- User Defined Glycol Name",
             "  0.9;             !- Glycol Concentration",
             "",
+            "FluidProperties:GlycolConcentration,",
+            "  Water,           !- Name",
+            "  PropyleneGlycol, !- Glycol Type",
+            "  ,                !- User Defined Glycol Name",
+            "  0.0;             !- Glycol Concentration",
+            "",
         });
 
     ASSERT_TRUE(process_idf(idf_objects));
@@ -211,34 +218,61 @@ TEST_F(EnergyPlusFixture, FluidProperties_GetEnthalpyGlycol)
 
     pgFile << ",0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9\n";
     egFile << ",0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9\n";
+    waterFile << ",Water\n";
 
     std::vector<Real64> temps {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-    std::map<int, std::string> pgNames{{0, "PG10"}, {1, "PG20"}, {2, "PG30"}, {3, "PG40"}, {4, "PG50"}, {5, "PG60"}, {6, "PG70"}, {7, "PG80"}, {8, "P90"}};
-    std::map<int, std::string> egNames{{9, "EG10"}, {10, "EG20"}, {11, "EG30"}, {12, "EG40"}, {13, "EG50"}, {14, "EG60"}, {15, "EG70"}, {16, "EG80"}, {17, "EG90"}};
 
     // PG
+    int pg10Idx = -1;
+    int pg20Idx = -1;
+    int pg30Idx = -1;
+    int pg40Idx = -1;
+    int pg50Idx = -1;
+    int pg60Idx = -1;
+    int pg70Idx = -1;
+    int pg80Idx = -1;
+    int pg90Idx = -1;
+
     for (auto &t : temps) {
         pgFile << t << ",";
-        for (auto &it : pgNames) {
-            int idx = it.first;
-            pgFile << GetSpecificHeatGlycol(it.second, t, idx, "UnitTest");
-            if (idx < 8) {
-                pgFile << ",";
-            }
-        }
-        pgFile << "\n";
+        pgFile << GetSpecificHeatGlycol("PG10", t, pg10Idx, "UnitTest")  << ",";
+        pgFile << GetSpecificHeatGlycol("PG20", t, pg20Idx, "UnitTest")  << ",";
+        pgFile << GetSpecificHeatGlycol("PG30", t, pg30Idx, "UnitTest")  << ",";
+        pgFile << GetSpecificHeatGlycol("PG40", t, pg40Idx, "UnitTest")  << ",";
+        pgFile << GetSpecificHeatGlycol("PG50", t, pg50Idx, "UnitTest")  << ",";
+        pgFile << GetSpecificHeatGlycol("PG60", t, pg60Idx, "UnitTest")  << ",";
+        pgFile << GetSpecificHeatGlycol("PG70", t, pg70Idx, "UnitTest")  << ",";
+        pgFile << GetSpecificHeatGlycol("PG80", t, pg80Idx, "UnitTest")  << ",";
+        pgFile << GetSpecificHeatGlycol("PG90", t, pg90Idx, "UnitTest")  << "\n";
     }
 
     // EG
+    int eg10Idx = -1;
+    int eg20Idx = -1;
+    int eg30Idx = -1;
+    int eg40Idx = -1;
+    int eg50Idx = -1;
+    int eg60Idx = -1;
+    int eg70Idx = -1;
+    int eg80Idx = -1;
+    int eg90Idx = -1;
+
     for (auto &t : temps) {
         egFile << t << ",";
-        for (auto &it : egNames) {
-            int idx = it.first;
-            egFile << GetSpecificHeatGlycol(it.second, t, idx, "UnitTest");
-            if (idx < 17) {
-                egFile << ",";
-            }
-        }
-        egFile << "\n";
+        egFile << GetSpecificHeatGlycol("EG10", t, eg10Idx, "UnitTest")  << ",";
+        egFile << GetSpecificHeatGlycol("EG20", t, eg20Idx, "UnitTest")  << ",";
+        egFile << GetSpecificHeatGlycol("EG30", t, eg30Idx, "UnitTest")  << ",";
+        egFile << GetSpecificHeatGlycol("EG40", t, eg40Idx, "UnitTest")  << ",";
+        egFile << GetSpecificHeatGlycol("EG50", t, eg50Idx, "UnitTest")  << ",";
+        egFile << GetSpecificHeatGlycol("EG60", t, eg60Idx, "UnitTest")  << ",";
+        egFile << GetSpecificHeatGlycol("EG70", t, eg70Idx, "UnitTest")  << ",";
+        egFile << GetSpecificHeatGlycol("EG80", t, eg80Idx, "UnitTest")  << ",";
+        egFile << GetSpecificHeatGlycol("EG90", t, eg90Idx, "UnitTest")  << "\n";
+    }
+
+    // Water
+    int idx = -1;
+    for (auto &t : temps) {
+        waterFile << t << "," << GetSpecificHeatGlycol("WATER", t, idx, "UnitTest") << "\n";
     }
 }
