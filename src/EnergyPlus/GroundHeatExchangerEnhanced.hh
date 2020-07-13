@@ -357,6 +357,24 @@ namespace GroundHeatExchangerEnhanced {
         Real64 getEFTgFunc(Real64 const &lntts);
     };
 
+    struct SubHourLoadAggregation
+    {
+        bool firstTimeThrough;
+        Real64 prevTime;
+        std::vector<Real64> energy;
+        std::vector<Real64> dts;
+
+        // Default constructor
+        SubHourLoadAggregation() : firstTimeThrough(true), prevTime(0.0), energy{}, dts{3600}
+        {
+        }
+
+        // Defauld destructor
+        ~SubHourLoadAggregation() = default;
+
+        Real64 aggregate(Real64 &time, Real64 &energy, bool const FirstHVACIteration);
+    };
+
     void getGHEInput(EnergyPlusData &state);
     Real64 smoothingFunc(Real64 const &x, Real64 const &a, Real64 const &b);
     std::vector<Real64> solveTDM(std::vector<Real64> a, std::vector<Real64> b, std::vector<Real64> c, std::vector<Real64> d);
@@ -364,17 +382,17 @@ namespace GroundHeatExchangerEnhanced {
 
 } // namespace GroundHeatExchangerEnhanced
 
-struct GroundHeatExchangerEnhancedData : BaseGlobalStruct
-{
-    bool getInput = true;
-    std::vector<GroundHeatExchangerEnhanced::EnhancedGHE> enhancedGHE;
-
-    void clear_state() override
+    struct GroundHeatExchangerEnhancedData : BaseGlobalStruct
     {
-        getInput = true;
-        enhancedGHE.clear();
-    }
-};
+        bool getInput = true;
+        std::vector<GroundHeatExchangerEnhanced::EnhancedGHE> enhancedGHE;
+
+        void clear_state() override
+        {
+            getInput = true;
+            enhancedGHE.clear();
+        }
+    };
 
 } // namespace EnergyPlus
 

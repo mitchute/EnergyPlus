@@ -45,11 +45,15 @@
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+// C++ Headers
+#include <algorithm>
+
 // EnergyPlus Headers
 #include <EnergyPlus/BranchNodeConnections.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataIPShortCuts.hh>
 #include <EnergyPlus/Data/EnergyPlusData.hh>
+#include <EnergyPlus/DataHVACGlobals.hh>
 #include <EnergyPlus/FluidProperties.hh>
 #include <EnergyPlus/InputProcessing/InputProcessor.hh>
 #include <EnergyPlus/GroundHeatExchangerEnhanced.hh>
@@ -1553,6 +1557,34 @@ namespace GroundHeatExchangerEnhanced {
     {
         std::vector<Real64> results = this->gFuncEFT.g.get_values_at_target(std::vector<Real64>{lntts});
         return results[0];
+    }
+
+    Real64 SubHourLoadAggregation::aggregate(Real64 &time, Real64 &energy, bool const FirstHVACIteration)
+    {
+        // check if we are in very first call for this zone time step
+        if (FirstHVACIteration && !DataHVACGlobals::ShortenTimeStepSys && this->firstTimeThrough) {
+            this->firstTimeThrough = false;
+
+            // append current energy value and timestep
+            this->energy.emplace_back(energy);
+            this->dts.emplace_back(time - this->prevTime);
+
+            // upper and lower bin edges referenced from current time
+            // also, FFR dt_u = time referenced backwards from current time
+            std::vector<Real64> energyCopy = this->energy;
+            std::reverse(energyCopy.start(), energyCopy.back());
+            std::vector<Real64> dt_u(energyCopy.size());
+            std::partial_sum(dt_u.start(), dt_u.end(), cumSum.start());
+            std::reverse(dt_u.start(), dt_u.end());
+
+
+            // save time from this iteration
+            this->prevTime = time;
+
+        } else if (!FirstHVACIteration) {
+            // For the rest of the system time steps ...
+            this->firstTimeThrough = true;
+        }
     }
 
 } // namespace GroundHeatExchangerEnhanced
