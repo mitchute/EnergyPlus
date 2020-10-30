@@ -1,9 +1,6 @@
 name: Mac Build
 
-on:
-  push:
-    tags:
-      - '*'
+on: [push]
 
 env:
   FC: /usr/local/bin/gfortran-9
