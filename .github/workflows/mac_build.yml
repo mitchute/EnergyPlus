@@ -27,9 +27,9 @@ jobs:
       - name: Configure CMake
         shell: bash
         working-directory: ${{runner.workspace}}/EnergyPlus/build
-        run: cmake -DCMAKE_BUILD_TYPE=Release -DLINK_WITH_PYTHON=ON -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 ..
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DLINK_WITH_PYTHON=ON -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 ..
 
       - name: Build Package
         working-directory: ${{runner.workspace}}/EnergyPlus/build
         shell: bash
-        run: cmake --build . --target package -j 2
+        run: cmake --build . --target all -j 2
