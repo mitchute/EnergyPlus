@@ -1,0 +1,38 @@
+name: Mac Build
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  FC: /usr/local/bin/gfortran-9
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  mac_release:
+    runs-on: macos-10.15
+
+    steps:
+      - uses: actions/checkout@v2
+      #
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip
+
+      - name: Create Build Directory
+        run: cmake -E make_directory ${{runner.workspace}}/EnergyPlus/build
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: ${{runner.workspace}}/EnergyPlus/build
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DLINK_WITH_PYTHON=ON -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 ..
+
+      - name: Build Package
+        working-directory: ${{runner.workspace}}/EnergyPlus/build
+        shell: bash
+        run: cmake --build . --target package -j 2
