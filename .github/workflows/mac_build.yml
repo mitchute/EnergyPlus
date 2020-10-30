@@ -33,3 +33,13 @@ jobs:
         working-directory: ${{runner.workspace}}/EnergyPlus/build
         shell: bash
         run: cmake --build . --target all -j 2
+
+      - name: Run Kiva 1
+        working-directory: ${{runner.workspace}}/EnergyPlus/build/Products
+        shell: bash
+        run : ./energyplus ../../testfiles/ZoneCoupledKivaConvection.idf
+
+      - name: Run Kiva 2
+        working-directory: ${{runner.workspace}}/EnergyPlus/build/Products
+        shell: bash
+        run : ./energyplus ../../testfiles/ZoneCoupledKivaConvection.idf
