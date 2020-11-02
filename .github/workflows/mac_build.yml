@@ -27,7 +27,7 @@ jobs:
       - name: Configure CMake
         shell: bash
         working-directory: ${{runner.workspace}}/EnergyPlus/build
-        run: cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DLINK_WITH_PYTHON=ON -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 ..
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DLINK_WITH_PYTHON=ON -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 ..
 
       - name: Build Package
         working-directory: ${{runner.workspace}}/EnergyPlus/build
@@ -37,9 +37,13 @@ jobs:
       - name: Run Kiva 1
         working-directory: ${{runner.workspace}}/EnergyPlus/build/Products
         shell: bash
-        run : ./energyplus ../../testfiles/ZoneCoupledKivaConvection.idf
+        run : |
+          ./energyplus -w ../../weather/USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw ../../testfiles/ZoneCoupledKivaConvection.idf
+          cat eplusout.err
 
       - name: Run Kiva 2
         working-directory: ${{runner.workspace}}/EnergyPlus/build/Products
         shell: bash
-        run : ./energyplus ../../testfiles/ZoneCoupledKivaConvection.idf
+        run : |
+          ./energyplus -w ../../weather/USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw ../../testfiles/ZoneCoupledKivaConvectionAdaptiveSmallOffice.idf
+          cat eplusout.err
