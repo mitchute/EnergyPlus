@@ -56,7 +56,6 @@
 
 // EnergyPlus Headers
 #include <EnergyPlus/Data/BaseData.hh>
-#include <EnergyPlus/DataGlobals.hh>
 #include <EnergyPlus/EnergyPlus.hh>
 #include <EnergyPlus/GroundTemperatureModeling/BaseGroundTemperatureModel.hh>
 #include <EnergyPlus/Plant/Enums.hh>
@@ -214,10 +213,10 @@ namespace GroundHeatExchangers {
     struct GLHEBase : PlantComponent // LCOV_EXCL_LINE
     {
         // Destructor
-        virtual ~GLHEBase() = default;
+        ~GLHEBase() override = default;
 
         // Members
-        bool available;   // need an array of logicals--load identifiers of available equipment
+        bool available;   // need an array of logical--load identifiers of available equipment
         bool on;          // simulate the machine at it's operating part load ratio
         std::string name; // user identifier
         PlantLocation plantLoc;
@@ -232,7 +231,7 @@ namespace GroundHeatExchangers {
         Real64 tempGround;            // The far field temperature of the ground [degC]
         Array1D<Real64> QnMonthlyAgg; // Monthly aggregated normalized heat extraction/rejection rate [W/m]
         Array1D<Real64> QnHr;         // Hourly aggregated normalized heat extraction/rejection rate [W/m]
-        Array1D<Real64> QnSubHr; // Contains the sub-hourly heat extraction/rejection rate normalized by the total active length of bore holes [W/m]
+        Array1D<Real64> QnSubHr; // Contains the sub-hourly heat extraction/rejection rate normalized by the total active length of boreholes [W/m]
         int prevHour;
         int AGG;               // Minimum Hourly History required
         int SubAGG;            // Minimum sub-hourly History
@@ -250,7 +249,7 @@ namespace GroundHeatExchangers {
         Real64 totalTubeLength;                            // The total length of pipe. NumBoreholes * BoreholeDepth OR Pi * Dcoil * NumCoils
         Real64 timeSS;                                     // Steady state time
         Real64 timeSSFactor;                               // Steady state time factor for calculation
-        GroundTemp::BaseGroundTempsModel *groundTempModel; // non-owning pointer
+        GroundTemp::BaseGroundTempsModel *groundTempModel{}; // non-owning pointer
 
         // some statics pulled out into member variables
         bool firstTime;
@@ -272,7 +271,7 @@ namespace GroundHeatExchangers {
 
         virtual void calcGFunctions(EnergyPlusData &state) = 0;
 
-        void calcAggregateLoad(EnergyPlusData &state);
+        void calcAggregateLoad(const EnergyPlusData &state);
 
         void updateGHX(EnergyPlusData &state);
 
@@ -354,21 +353,21 @@ namespace GroundHeatExchangers {
 
         static std::vector<Real64> distances(MyCartesian const &point_i, MyCartesian const &point_j);
 
-        Real64 calcResponse(std::vector<Real64> const &dists, Real64 currTime);
+        [[nodiscard]] Real64 calcResponse(std::vector<Real64> const &dists, Real64 currTime) const;
 
-        Real64 integral(MyCartesian const &point_i, std::shared_ptr<GLHEVertSingle> const &bh_j, Real64 currTime);
+        [[nodiscard]] Real64 integral(MyCartesian const &point_i, std::shared_ptr<GLHEVertSingle> const &bh_j, Real64 currTime) const;
 
-        Real64 doubleIntegral(std::shared_ptr<GLHEVertSingle> const &bh_i, std::shared_ptr<GLHEVertSingle> const &bh_j, Real64 currTime);
+        [[nodiscard]] Real64 doubleIntegral(std::shared_ptr<GLHEVertSingle> const &bh_i, std::shared_ptr<GLHEVertSingle> const &bh_j, Real64 currTime) const;
 
         void calcShortTimestepGFunctions(EnergyPlusData &state);
 
-        void calcLongTimestepGFunctions(EnergyPlusData &state);
+        void calcLongTimestepGFunctions(EnergyPlusData &state) const;
 
         void calcGFunctions(EnergyPlusData &state) override;
 
-        void calcUniformHeatFluxGFunctions(EnergyPlusData &state);
+        void calcUniformHeatFluxGFunctions(EnergyPlusData &state) const;
 
-        void calcUniformBHWallTempGFunctions(EnergyPlusData &state);
+        void calcUniformBHWallTempGFunctions(const EnergyPlusData &state) const;
 
         Real64 calcHXResistance(EnergyPlusData &state) override;
 
@@ -382,7 +381,7 @@ namespace GroundHeatExchangers {
 
         void readCacheFileAndCompareWithThisGLHECache(EnergyPlusData &state) override;
 
-        void writeGLHECacheToFile(EnergyPlusData &state) const;
+        void writeGLHECacheToFile(const EnergyPlusData &state) const;
 
         Real64 calcBHAverageResistance(EnergyPlusData &state);
 
@@ -390,7 +389,7 @@ namespace GroundHeatExchangers {
 
         Real64 calcBHGroutResistance(EnergyPlusData &state);
 
-        Real64 calcPipeConductionResistance();
+        [[nodiscard]] Real64 calcPipeConductionResistance() const;
 
         Real64 calcPipeConvectionResistance(EnergyPlusData &state);
 
@@ -398,7 +397,7 @@ namespace GroundHeatExchangers {
 
         Real64 calcPipeResistance(EnergyPlusData &state);
 
-        void combineShortAndLongTimestepGFunctions();
+        void combineShortAndLongTimestepGFunctions() const;
 
         void initEnvironment(EnergyPlusData &state, [[maybe_unused]] Real64 CurTime) override;
 
@@ -406,7 +405,7 @@ namespace GroundHeatExchangers {
 
         void oneTimeInit_new(EnergyPlusData &state) override;
 
-        void setupTimeVectors();
+        void setupTimeVectors() const;
     };
 
     struct GLHESlinky : GLHEBase // LCOV_EXCL_LINE
@@ -426,12 +425,12 @@ namespace GroundHeatExchangers {
         int numTrenches;      // Number of parallel trenches [m]
         Real64 trenchSpacing; // Spacing between parallel trenches [m]
         int numCoils;         // Number of coils
-        int monthOfMinSurfTemp;
+        int monthOfMinSurfTemp{};
         Real64 maxSimYears;
-        Real64 minSurfTemp;
+        Real64 minSurfTemp{};
         Array1D<Real64> X0;
         Array1D<Real64> Y0;
-        Real64 Z0;
+        Real64 Z0{};
 
         GLHESlinky()
             : verticalConfig(false), coilDiameter(0.0), coilPitch(0.0), coilDepth(0.0), trenchDepth(0.0), trenchLength(0.0), numTrenches(0),
@@ -482,7 +481,7 @@ namespace GroundHeatExchangers {
                                                                                   std::shared_ptr<GLHEVertArray> const &arrayObjectPtr);
 
     std::shared_ptr<GLHEResponseFactors>
-    BuildAndGetResponseFactorsObjectFromSingleBHs(EnergyPlusData &state, std::vector<std::shared_ptr<GLHEVertSingle>> const &singleBHsForRFVect);
+    BuildAndGetResponseFactorsObjectFromSingleBHs(const EnergyPlusData &state, std::vector<std::shared_ptr<GLHEVertSingle>> const &singleBHsForRFVect);
 
     void SetupBHPointsForResponseFactorsObject(const std::shared_ptr<GLHEResponseFactors> &thisRF);
 

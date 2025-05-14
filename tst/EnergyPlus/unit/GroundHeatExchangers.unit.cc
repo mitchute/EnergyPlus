@@ -58,7 +58,6 @@
 #include <EnergyPlus/HeatBalanceManager.hh>
 #include <EnergyPlus/Plant/DataPlant.hh>
 #include <EnergyPlus/Plant/PlantManager.hh>
-#include <EnergyPlus/ScheduleManager.hh>
 #include <EnergyPlus/SizingManager.hh>
 
 // Testing Headers
@@ -77,8 +76,6 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_Interpolate)
 {
     // Initialization
     GLHESlinky thisGLHE;
-    Real64 thisLNTTS;
-    Real64 thisGFunc;
 
     int NPairs = 2;
 
@@ -93,8 +90,8 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_Interpolate)
     thisGLHE.myRespFactors->GFNC[1] = 5.0;
 
     // Case when extrapolating beyond lower bound
-    thisLNTTS = -1.0;
-    thisGFunc = thisGLHE.interpGFunc(thisLNTTS);
+    Real64 thisLNTTS = -1.0;
+    Real64 thisGFunc = thisGLHE.interpGFunc(thisLNTTS);
     EXPECT_DOUBLE_EQ(-1.0, thisGFunc);
 
     // Case when extrapolating beyond upper bound
@@ -113,12 +110,10 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_Slinky_GetGFunc)
 
     // Initialization
     GLHESlinky thisGLHE;
-    Real64 thisGFunc;
-    Real64 time;
 
     int NPairs = 2;
 
-    std::shared_ptr<GLHEResponseFactors> thisRF(new GLHEResponseFactors);
+    const std::shared_ptr<GLHEResponseFactors> thisRF(new GLHEResponseFactors);
     thisGLHE.myRespFactors = thisRF;
 
     thisGLHE.myRespFactors->GFNC = std::vector<Real64>(NPairs);
@@ -128,9 +123,9 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_Slinky_GetGFunc)
     thisGLHE.myRespFactors->GFNC[0] = 0.0;
     thisGLHE.myRespFactors->GFNC[1] = 5.0;
 
-    time = std::pow(10.0, 2.5);
+    Real64 time = std::pow(10.0, 2.5);
 
-    thisGFunc = thisGLHE.getGFunc(time);
+    Real64 thisGFunc = thisGLHE.getGFunc(time);
 
     EXPECT_EQ(2.5, thisGFunc);
 }
@@ -140,12 +135,10 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_GetGFunc)
 
     // Initialization
     GLHEVert thisGLHE;
-    Real64 thisGFunc;
-    Real64 time;
 
     int NPairs = 2;
 
-    std::shared_ptr<GLHEResponseFactors> thisRF(new GLHEResponseFactors);
+    const std::shared_ptr<GLHEResponseFactors> thisRF(new GLHEResponseFactors);
     thisGLHE.myRespFactors = thisRF;
 
     thisGLHE.myRespFactors->GFNC = std::vector<Real64>(NPairs);
@@ -155,14 +148,14 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_GetGFunc)
     thisGLHE.myRespFactors->GFNC[0] = 0.0;
     thisGLHE.myRespFactors->GFNC[1] = 5.0;
 
-    time = std::pow(2.7182818284590452353602874, 2.5);
+    Real64 time = std::pow(2.7182818284590452353602874, 2.5);
 
     thisGLHE.bhLength = 1.0;
     thisGLHE.bhRadius = 1.0;
 
     // Situation when correction is not applied
     thisGLHE.myRespFactors->gRefRatio = 1.0;
-    thisGFunc = thisGLHE.getGFunc(time);
+    Real64 thisGFunc = thisGLHE.getGFunc(time);
     EXPECT_DOUBLE_EQ(2.5, thisGFunc);
 
     // Situation when correction is applied
@@ -1910,12 +1903,10 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_friction_factor)
 
     auto &thisGLHE(state->dataGroundHeatExchanger->verticalGLHE[0]);
 
-    Real64 reynoldsNum;
-
     Real64 constexpr tolerance = 0.000001;
 
     // laminar tests
-    reynoldsNum = 100;
+    Real64 reynoldsNum = 100;
     EXPECT_NEAR(thisGLHE.frictionFactor(reynoldsNum), 64.0 / reynoldsNum, tolerance);
 
     reynoldsNum = 1000;
