@@ -124,7 +124,7 @@ static constexpr std::array<std::string_view, 2> GFuncCalcMethodsStrs = {"UHFCAL
 GLHESlinky::GLHESlinky(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j)
 {
     // Check for duplicates
-    for (auto &existingObj : state.dataGroundHeatExchanger->singleBoreholesVector) {
+    for (const auto &existingObj : state.dataGroundHeatExchanger->singleBoreholesVector) {
         if (objName == existingObj->name) {
             ShowFatalError(state, format("Invalid input for {} object: Duplicate name found: {}", this->moduleName, existingObj->name));
         }
@@ -134,8 +134,8 @@ GLHESlinky::GLHESlinky(EnergyPlusData &state, std::string const &objName, nlohma
 
     this->name = objName;
 
-    std::string inletNodeName = Util::makeUPPER(j["inlet_node_name"].get<std::string>());
-    std::string outletNodeName = Util::makeUPPER(j["outlet_node_name"].get<std::string>());
+    const std::string inletNodeName = Util::makeUPPER(j["inlet_node_name"].get<std::string>());
+    const std::string outletNodeName = Util::makeUPPER(j["outlet_node_name"].get<std::string>());
 
     // get inlet node num
     this->inletNodeNum = NodeInputManager::GetOnlySingleNode(state,
@@ -246,7 +246,7 @@ GLHESlinky::GLHESlinky(EnergyPlusData &state, std::string const &objName, nlohma
     }
 
     // Initialize ground temperature model and get pointer reference
-    GroundTemp::ModelType gtmType = static_cast<GroundTemp::ModelType>(
+    const auto gtmType = static_cast<GroundTemp::ModelType>(
         getEnumValue(GroundTemp::modelTypeNamesUC, Util::makeUPPER(j["undisturbed_ground_temperature_model_type"].get<std::string>())));
     assert(gtmType != GroundTemp::ModelType::Invalid);
 
@@ -264,7 +264,7 @@ GLHESlinky::GLHESlinky(EnergyPlusData &state, std::string const &objName, nlohma
 GLHEVert::GLHEVert(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j)
 {
     // Check for duplicates
-    for (auto &existingObj : state.dataGroundHeatExchanger->singleBoreholesVector) {
+    for (const auto &existingObj : state.dataGroundHeatExchanger->singleBoreholesVector) {
         if (objName == existingObj->name) {
             ShowFatalError(state, format("Invalid input for {} object: Duplicate name found: {}", this->moduleName, existingObj->name));
         }
@@ -544,11 +544,11 @@ GLHEVertProps::GLHEVertProps(EnergyPlusData &state, std::string const &objName, 
 std::shared_ptr<GLHEVertProps> GetVertProps(EnergyPlusData &state, std::string const &objectName)
 {
     // Check if this instance of this model has already been retrieved
-    auto thisObj = std::find_if(state.dataGroundHeatExchanger->vertPropsVector.begin(),
-                                state.dataGroundHeatExchanger->vertPropsVector.end(),
-                                [&objectName](const std::shared_ptr<GLHEVertProps> &myObj) {
-                                    return myObj->name == objectName;
-                                });
+    const auto thisObj = std::find_if(state.dataGroundHeatExchanger->vertPropsVector.begin(),
+                                      state.dataGroundHeatExchanger->vertPropsVector.end(),
+                                      [&objectName](const std::shared_ptr<GLHEVertProps> &myObj) {
+                                          return myObj->name == objectName;
+                                      });
     if (thisObj != state.dataGroundHeatExchanger->vertPropsVector.end()) return *thisObj;
 
     ShowSevereError(state, fmt::format("Object=GroundHeatExchanger:Vertical:Properties, Name={} - not found.", objectName));
@@ -563,11 +563,11 @@ std::shared_ptr<GLHEVertProps> GetVertProps(EnergyPlusData &state, std::string c
 std::shared_ptr<GLHEVertSingle> GetSingleBH(EnergyPlusData &state, std::string const &objectName)
 {
     // Check if this instance of this model has already been retrieved
-    auto thisObj = std::find_if(state.dataGroundHeatExchanger->singleBoreholesVector.begin(),
-                                state.dataGroundHeatExchanger->singleBoreholesVector.end(),
-                                [&objectName](const std::shared_ptr<GLHEVertSingle> &myObj) {
-                                    return myObj->name == objectName;
-                                });
+    const auto thisObj = std::find_if(state.dataGroundHeatExchanger->singleBoreholesVector.begin(),
+                                      state.dataGroundHeatExchanger->singleBoreholesVector.end(),
+                                      [&objectName](const std::shared_ptr<GLHEVertSingle> &myObj) {
+                                          return myObj->name == objectName;
+                                      });
     if (thisObj != state.dataGroundHeatExchanger->singleBoreholesVector.end()) return *thisObj;
 
     ShowSevereError(state, fmt::format("Object=GroundHeatExchanger:Vertical:Single, Name={} - not found.", objectName));
@@ -582,11 +582,11 @@ std::shared_ptr<GLHEVertSingle> GetSingleBH(EnergyPlusData &state, std::string c
 std::shared_ptr<GLHEVertArray> GetVertArray(EnergyPlusData &state, std::string const &objectName)
 {
     // Check if this instance of this model has already been retrieved
-    auto thisObj = std::find_if(state.dataGroundHeatExchanger->vertArraysVector.begin(),
-                                state.dataGroundHeatExchanger->vertArraysVector.end(),
-                                [&objectName](const std::shared_ptr<GLHEVertArray> &myObj) {
-                                    return myObj->name == objectName;
-                                });
+    const auto thisObj = std::find_if(state.dataGroundHeatExchanger->vertArraysVector.begin(),
+                                      state.dataGroundHeatExchanger->vertArraysVector.end(),
+                                      [&objectName](const std::shared_ptr<GLHEVertArray> &myObj) {
+                                          return myObj->name == objectName;
+                                      });
     if (thisObj != state.dataGroundHeatExchanger->vertArraysVector.end()) return *thisObj;
 
     ShowSevereError(state, fmt::format("Object=GroundHeatExchanger:Vertical:Array, Name={} - not found.", objectName));
@@ -601,11 +601,11 @@ std::shared_ptr<GLHEVertArray> GetVertArray(EnergyPlusData &state, std::string c
 std::shared_ptr<GLHEResponseFactors> GetResponseFactor(EnergyPlusData &state, std::string const &objectName)
 {
     // Check if this instance of this model has already been retrieved
-    auto thisObj = std::find_if(state.dataGroundHeatExchanger->responseFactorsVector.begin(),
-                                state.dataGroundHeatExchanger->responseFactorsVector.end(),
-                                [&objectName](const std::shared_ptr<GLHEResponseFactors> &myObj) {
-                                    return myObj->name == objectName;
-                                });
+    const auto thisObj = std::find_if(state.dataGroundHeatExchanger->responseFactorsVector.begin(),
+                                      state.dataGroundHeatExchanger->responseFactorsVector.end(),
+                                      [&objectName](const std::shared_ptr<GLHEResponseFactors> &myObj) {
+                                          return myObj->name == objectName;
+                                      });
     if (thisObj != state.dataGroundHeatExchanger->responseFactorsVector.end()) return *thisObj;
 
     ShowSevereError(state, fmt::format("Object=GroundHeatExchanger:ResponseFactors, Name={} - not found.", objectName));
@@ -807,18 +807,18 @@ GLHEBase *GLHEBase::factory(EnergyPlusData &state, DataPlant::PlantEquipmentType
         state.dataGroundHeatExchanger->GetInput = false;
     }
     if (objectType == DataPlant::PlantEquipmentType::GrndHtExchgSystem) {
-        auto thisObj = std::find_if(state.dataGroundHeatExchanger->verticalGLHE.begin(),
-                                    state.dataGroundHeatExchanger->verticalGLHE.end(),
-                                    [&objectName](const GLHEBase &myObj) {
-                                        return myObj.name == objectName;
-                                    });
+        const auto thisObj = std::find_if(state.dataGroundHeatExchanger->verticalGLHE.begin(),
+                                          state.dataGroundHeatExchanger->verticalGLHE.end(),
+                                          [&objectName](const GLHEBase &myObj) {
+                                              return myObj.name == objectName;
+                                          });
         if (thisObj != state.dataGroundHeatExchanger->verticalGLHE.end()) return &(*thisObj);
     } else if (objectType == DataPlant::PlantEquipmentType::GrndHtExchgSlinky) {
-        auto thisObj = std::find_if(state.dataGroundHeatExchanger->slinkyGLHE.begin(),
-                                    state.dataGroundHeatExchanger->slinkyGLHE.end(),
-                                    [&objectName](const GLHEBase &myObj) {
-                                        return myObj.name == objectName;
-                                    });
+        const auto thisObj = std::find_if(state.dataGroundHeatExchanger->slinkyGLHE.begin(),
+                                          state.dataGroundHeatExchanger->slinkyGLHE.end(),
+                                          [&objectName](const GLHEBase &myObj) {
+                                              return myObj.name == objectName;
+                                          });
         if (thisObj != state.dataGroundHeatExchanger->slinkyGLHE.end()) return &(*thisObj);
     }
 
@@ -867,8 +867,8 @@ std::vector<Real64> GLHEVert::distances(MyCartesian const &point_i, MyCartesian 
 
 Real64 GLHEVert::calcResponse(std::vector<Real64> const &dists, Real64 const currTime) const
 {
-    Real64 pointToPointResponse = erfc(dists[0] / (2 * sqrt(this->soil.diffusivity * currTime))) / dists[0];
-    Real64 pointToReflectedResponse = erfc(dists[1] / (2 * sqrt(this->soil.diffusivity * currTime))) / dists[1];
+    Real64 const pointToPointResponse = erfc(dists[0] / (2 * sqrt(this->soil.diffusivity * currTime))) / dists[0];
+    Real64 const pointToReflectedResponse = erfc(dists[1] / (2 * sqrt(this->soil.diffusivity * currTime))) / dists[1];
 
     return pointToPointResponse - pointToReflectedResponse;
 }
@@ -936,29 +936,29 @@ Real64 GLHEVert::doubleIntegral(std::shared_ptr<GLHEVertSingle> const &bh_i, std
 
         return (bh_i->dl_ii / 3.0) * sum_f;
 
-    } else {
+    }
 
-        Real64 sum_f = 0;
-        int i = 0;
-        int const lastIndex = static_cast<int>(bh_i->pointLocations_i.size() - 1u);
-        for (auto const &thisPoint : bh_i->pointLocations_i) {
+    Real64 sum_f = 0;
+    int i = 0;
+    int const lastIndex = static_cast<int>(bh_i->pointLocations_i.size() - 1u);
+    for (auto const &thisPoint : bh_i->pointLocations_i) {
 
-            Real64 f = integral(thisPoint, bh_j, currTime);
+        Real64 const f = integral(thisPoint, bh_j, currTime);
 
-            // Integrate using Simpson's
-            if (i == 0 || i == lastIndex) {
-                sum_f += f;
-            } else if (isEven(i)) {
-                sum_f += 2 * f;
-            } else {
-                sum_f += 4 * f;
-            }
-
-            ++i;
+        // Integrate using Simpson's
+        if (i == 0 || i == lastIndex) {
+            sum_f += f;
+        } else if (isEven(i)) {
+            sum_f += 2 * f;
+        } else {
+            sum_f += 4 * f;
         }
 
-        return (bh_i->dl_i / 3.0) * sum_f;
+        ++i;
     }
+
+    return (bh_i->dl_i / 3.0) * sum_f;
+
 }
 
 //******************************************************************************
@@ -1038,7 +1038,7 @@ void GLHEVert::setupTimeVectors() const
 
     // Determine how many g-function pairs to generate based on user defined maximum simulation time
     while (true) {
-        Real64 maxPossibleSimTime = exp(tempLNTTS.back()) * t_s;
+        Real64 const maxPossibleSimTime = exp(tempLNTTS.back()) * t_s;
         if (constexpr int numDaysInYear = 365; maxPossibleSimTime < this->myRespFactors->maxSimYears * numDaysInYear * Constant::rHoursInDay *
                                                Constant::rSecsInHour) {
             constexpr Real64 lnttsStepSize = 0.5;
@@ -1350,7 +1350,7 @@ std::vector<Real64> TDMA(std::vector<Real64> const &a, std::vector<Real64> const
 {
     // from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Linear_Algebra/Tridiagonal_matrix_algorithm#C.2B.2B
 
-    int n = static_cast<int>(d.size() - 1u);
+    int const n = static_cast<int>(d.size() - 1u);
 
     c[0] /= b[0];
     d[0] /= b[0];
@@ -1525,8 +1525,8 @@ void GLHESlinky::calcGFunctions(EnergyPlusData &state)
     this->Y0.allocate(this->numTrenches);
 
     // Calculate the number of g-functions required
-    Real64 tLg_max = std::log10(this->maxSimYears * convertYearsToSeconds / ts);
-    int NPairs = static_cast<int>((tLg_max - tLg_min) / (tLg_grid) + 1);
+    Real64 const tLg_max = std::log10(this->maxSimYears * convertYearsToSeconds / ts);
+    int const NPairs = static_cast<int>((tLg_max - tLg_min) / (tLg_grid) + 1);
 
     // Allocate and setup g-function arrays
     this->myRespFactors->GFNC = std::vector<Real64>(NPairs, 0.0);
@@ -1540,8 +1540,8 @@ void GLHESlinky::calcGFunctions(EnergyPlusData &state)
     // Due to the symmetry of a slinky GHX field, we need only calculate about
     // on quarter of the rings' tube wall temperature perturbation to get the
     // mean wall temperature perturbation of the entire slinky GHX field.
-    int numLC = std::ceil(this->numCoils / 2.0);
-    int numRC = std::ceil(this->numTrenches / 2.0);
+    int const numLC = std::ceil(this->numCoils / 2.0);
+    int const numRC = std::ceil(this->numTrenches / 2.0);
 
     // Calculate coordinates (X0, Y0, Z0) of a ring's center
     for (int coil = 1; coil <= this->numCoils; ++coil) {
@@ -1562,8 +1562,8 @@ void GLHESlinky::calcGFunctions(EnergyPlusData &state)
 
     // Calculate the corresponding time of each temperature response factor
     for (int NT = 1; NT <= NPairs; ++NT) {
-        Real64 tLg = tLg_min + tLg_grid * (NT - 1);
-        Real64 t = std::pow(10, tLg) * ts;
+        Real64 const tLg = tLg_min + tLg_grid * (NT - 1);
+        Real64 const t = std::pow(10, tLg) * ts;
 
         // Set the average temperature response of the whole field to zero
         Real64 gFunc = 0;
@@ -1578,11 +1578,11 @@ void GLHESlinky::calcGFunctions(EnergyPlusData &state)
                         // Zero out val after each iteration
 
                         // Calculate the distance between ring centers
-                        Real64 disRing = distToCenter(m, n, m1, n1);
+                        Real64 const disRing = distToCenter(m, n, m1, n1);
 
                         // Save mm1 and nn1
-                        int mm1 = std::abs(m - m1);
-                        int nn1 = std::abs(n - n1);
+                        int const mm1 = std::abs(m - m1);
+                        int const nn1 = std::abs(n - n1);
 
                         // If we're calculating a ring's temperature response to itself as a ring source,
                         // then we need some extra effort in calculating the double integral
@@ -1685,25 +1685,20 @@ GLHESlinky::nearFieldResponseFunction(int const m, int const n, int const m1, in
     // Calculates the temperature response of from one near-field point to another
 
     // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-    Real64 distance1 = distance(m, n, m1, n1, eta, theta);
-    Real64 sqrtAlphaT = std::sqrt(this->soil.diffusivity * t);
+    Real64 const distance1 = distance(m, n, m1, n1, eta, theta);
+    Real64 const sqrtAlphaT = std::sqrt(this->soil.diffusivity * t);
 
     if (!verticalConfig) {
-
-        Real64 sqrtDistDepth = std::sqrt(pow_2(distance1) + 4 * pow_2(this->coilDepth));
-        Real64 errFunc1 = std::erfc(0.5 * distance1 / sqrtAlphaT);
-        Real64 errFunc2 = std::erfc(0.5 * sqrtDistDepth / sqrtAlphaT);
-
+        Real64 const sqrtDistDepth = std::sqrt(pow_2(distance1) + 4 * pow_2(this->coilDepth));
+        Real64 const errFunc1 = std::erfc(0.5 * distance1 / sqrtAlphaT);
+        Real64 const errFunc2 = std::erfc(0.5 * sqrtDistDepth / sqrtAlphaT);
         return errFunc1 / distance1 - errFunc2 / sqrtDistDepth;
-
-    } else {
-
-        Real64 distance2 = distanceToFictRing(m, n, m1, n1, eta, theta);
-        Real64 errFunc1 = std::erfc(0.5 * distance1 / sqrtAlphaT);
-        Real64 errFunc2 = std::erfc(0.5 * distance2 / sqrtAlphaT);
-
-        return errFunc1 / distance1 - errFunc2 / distance2;
     }
+    Real64 const distance2 = distanceToFictRing(m, n, m1, n1, eta, theta);
+    Real64 const errFunc1 = std::erfc(0.5 * distance1 / sqrtAlphaT);
+    Real64 const errFunc2 = std::erfc(0.5 * distance2 / sqrtAlphaT);
+    return errFunc1 / distance1 - errFunc2 / distance2;
+
 }
 
 //******************************************************************************
@@ -1718,13 +1713,11 @@ Real64 GLHESlinky::midFieldResponseFunction(int const m, int const n, int const 
     // Calculates the temperature response of from one mid-field point to another
 
     // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-    Real64 sqrtAlphaT = std::sqrt(this->soil.diffusivity * t);
-
-    Real64 distance = distToCenter(m, n, m1, n1);
-    Real64 sqrtDistDepth = std::sqrt(pow_2(distance) + 4 * pow_2(this->coilDepth));
-
-    Real64 errFunc1 = std::erfc(0.5 * distance / sqrtAlphaT);
-    Real64 errFunc2 = std::erfc(0.5 * sqrtDistDepth / sqrtAlphaT);
+    Real64 const sqrtAlphaT = std::sqrt(this->soil.diffusivity * t);
+    Real64 const distance = distToCenter(m, n, m1, n1);
+    Real64 const sqrtDistDepth = std::sqrt(pow_2(distance) + 4 * pow_2(this->coilDepth));
+    Real64 const errFunc1 = std::erfc(0.5 * distance / sqrtAlphaT);
+    Real64 const errFunc2 = std::erfc(0.5 * sqrtDistDepth / sqrtAlphaT);
 
     return 4 * pow_2(Constant::Pi) * (errFunc1 / distance - errFunc2 / sqrtDistDepth);
 }
@@ -1745,29 +1738,21 @@ Real64 GLHESlinky::distance(int const m, int const n, int const m1, int const n1
     Real64 const cos_eta = std::cos(eta);
     Real64 const sin_eta = std::sin(eta);
 
-    Real64 x = this->X0(n) + cos_theta * (this->coilDiameter / 2.0);
-    Real64 y = this->Y0(m) + sin_theta * (this->coilDiameter / 2.0);
-
-    Real64 xIn = this->X0(n1) + cos_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
-    Real64 yIn = this->Y0(m1) + sin_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
-
-    Real64 xOut = this->X0(n1) + cos_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
-    Real64 yOut = this->Y0(m1) + sin_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
+    Real64 const x = this->X0(n) + cos_theta * (this->coilDiameter / 2.0);
+    Real64 const y = this->Y0(m) + sin_theta * (this->coilDiameter / 2.0);
+    Real64 const xIn = this->X0(n1) + cos_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
+    Real64 const yIn = this->Y0(m1) + sin_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
+    Real64 const xOut = this->X0(n1) + cos_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
+    Real64 const yOut = this->Y0(m1) + sin_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
 
     if (!verticalConfig) {
-
         return 0.5 * std::sqrt(pow_2(x - xIn) + pow_2(y - yIn)) + 0.5 * std::sqrt(pow_2(x - xOut) + pow_2(y - yOut));
-
-    } else {
-
-        Real64 z = this->Z0 + sin_theta * (this->coilDiameter / 2.0);
-
-        Real64 zIn = this->Z0 + sin_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
-        Real64 zOut = this->Z0 + sin_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
-
-        return 0.5 * std::sqrt(pow_2(x - xIn) + pow_2(this->Y0(m1) - this->Y0(m)) + pow_2(z - zIn)) +
-               0.5 * std::sqrt(pow_2(x - xOut) + pow_2(this->Y0(m1) - this->Y0(m)) + pow_2(z - zOut));
     }
+    Real64 const z = this->Z0 + sin_theta * (this->coilDiameter / 2.0);
+    Real64 const zIn = this->Z0 + sin_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
+    Real64 const zOut = this->Z0 + sin_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
+    return 0.5 * std::sqrt(pow_2(x - xIn) + pow_2(this->Y0(m1) - this->Y0(m)) + pow_2(z - zIn)) +
+           0.5 * std::sqrt(pow_2(x - xOut) + pow_2(this->Y0(m1) - this->Y0(m)) + pow_2(z - zOut));
 }
 
 //******************************************************************************
@@ -1786,17 +1771,17 @@ Real64 GLHESlinky::distanceToFictRing(int const m, int const n, int const m1, in
     Real64 const sin_eta = std::sin(eta);
     Real64 const cos_eta = std::cos(eta);
 
-    Real64 x = this->X0(n) + cos_theta * (this->coilDiameter / 2.0);
+    Real64 const x = this->X0(n) + cos_theta * (this->coilDiameter / 2.0);
     // Real64 y = Y0( m ) + sin_theta * (coilDiameter / 2.0);
-    Real64 z = this->Z0 + sin_theta * (this->coilDiameter / 2.0) + 2 * this->coilDepth;
+    Real64 const z = this->Z0 + sin_theta * (this->coilDiameter / 2.0) + 2 * this->coilDepth;
 
-    Real64 xIn = this->X0(n1) + cos_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
+    Real64 const xIn = this->X0(n1) + cos_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
     // Real64 yIn = Y0( m1 ) + sin_eta * (coilDiameter / 2.0 - pipe.outRadius);
-    Real64 zIn = this->Z0 + sin_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
+    Real64 const zIn = this->Z0 + sin_eta * (this->coilDiameter / 2.0 - this->pipe.outRadius);
 
-    Real64 xOut = this->X0(n1) + cos_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
+    Real64 const xOut = this->X0(n1) + cos_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
     // Real64 yOut = Y0( m1 ) + sin_eta * (coilDiameter / 2.0 + outRadius);
-    Real64 zOut = this->Z0 + sin_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
+    Real64 const zOut = this->Z0 + sin_eta * (this->coilDiameter / 2.0 + this->pipe.outRadius);
 
     return 0.5 * std::sqrt(pow_2(x - xIn) + pow_2(this->Y0(m1) - this->Y0(m)) + pow_2(z - zIn)) +
            0.5 * std::sqrt(pow_2(x - xOut) + pow_2(this->Y0(m1) - this->Y0(m)) + pow_2(z - zOut));
@@ -1829,9 +1814,9 @@ inline bool GLHEBase::isEven(int const val)
 
     if (val % 2 == 0) {
         return true;
-    } else {
-        return false;
     }
+    return false;
+
 }
 
 //******************************************************************************
@@ -1855,7 +1840,7 @@ Real64 GLHESlinky::integral(int const m, int const n, int const m1, int const n1
     constexpr Real64 theta2 = 2 * Constant::Pi;
     std::vector<Real64> f;
 
-    Real64 h = (theta2 - theta1) / (J0 - 1);
+    Real64 const h = (theta2 - theta1) / (J0 - 1);
 
     // Calculate the function at various equally spaced x values
     for (int j = 0; j < J0; ++j) {
@@ -1899,7 +1884,7 @@ Real64 GLHESlinky::doubleIntegral(int const m, int const n, int const m1, int co
 
     // Calculates the value of the function at various equally spaced values
     for (int i = 0; i < I0; ++i) {
-        Real64 eta = eta1 + i * h;
+        Real64 const eta = eta1 + i * h;
         g.push_back(integral(m, n, m1, n1, t, eta, J0));
     }
 
@@ -1997,9 +1982,9 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
 
     this->inletTemp = state.dataLoopNodes->Node(this->inletNodeNum).Temp;
 
-    Real64 cpFluid = state.dataPlnt->PlantLoop(this->plantLoc.loopNum).glycol->getSpecificHeat(state, this->inletTemp, RoutineName);
+    Real64 const cpFluid = state.dataPlnt->PlantLoop(this->plantLoc.loopNum).glycol->getSpecificHeat(state, this->inletTemp, RoutineName);
 
-    Real64 kGroundFactor = 2.0 * Constant::Pi * this->soil.k;
+    Real64 const kGroundFactor = 2.0 * Constant::Pi * this->soil.k;
 
     // Get time constants
     getAnnualTimeConstant();
@@ -2060,9 +2045,9 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
             fluidAveTemp = this->tempGround;
             this->ToutNew = this->inletTemp;
         } else {
-            Real64 gFuncVal = getGFunc(state.dataGroundHeatExchanger->currentSimTime / (this->timeSSFactor));
+            Real64 const gFuncVal = getGFunc(state.dataGroundHeatExchanger->currentSimTime / (this->timeSSFactor));
 
-            Real64 C_1 = (this->totalTubeLength) / (2.0 * this->massFlowRate * cpFluid);
+            Real64 const C_1 = (this->totalTubeLength) / (2.0 * this->massFlowRate * cpFluid);
             tmpQnSubHourly = (this->tempGround - this->inletTemp) / (gFuncVal / (kGroundFactor) + this->HXResistance + C_1);
             fluidAveTemp = this->tempGround - tmpQnSubHourly * this->HXResistance;
             this->ToutNew = this->tempGround - tmpQnSubHourly * (gFuncVal / (kGroundFactor) + this->HXResistance - C_1);
@@ -2089,21 +2074,22 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
                         const Real64 gFuncVal =
                             getGFunc((state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(I + 1)) /
                                      (this->timeSSFactor));
-                        Real64 RQSubHr = gFuncVal / (kGroundFactor);
+                        Real64 const RQSubHr = gFuncVal / (kGroundFactor);
                         sumQnSubHourly += (this->QnSubHr(I) - this->QnHr(IndexN)) * RQSubHr;
                     } else {
-                        Real64 gFuncVal =
+                        Real64 const gFuncVal =
                             getGFunc((state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(I + 1)) /
                                      (this->timeSSFactor));
-                        Real64 RQSubHr = gFuncVal / (kGroundFactor);
+                        Real64 const RQSubHr = gFuncVal / (kGroundFactor);
                         sumQnSubHourly += this->QnSubHr(I) * RQSubHr;
                     }
                     break;
                 }
                 // prevTimeSteps(I+1) This is "I+1" because prevTimeSteps(1) = CurrentTimestep
-                Real64 gFuncVal = getGFunc((state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(I + 1)) /
-                                           (this->timeSSFactor));
-                Real64 RQSubHr = gFuncVal / (kGroundFactor);
+                Real64 const gFuncVal = getGFunc(
+                    (state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(I + 1)) /
+                    (this->timeSSFactor));
+                Real64 const RQSubHr = gFuncVal / (kGroundFactor);
                 sumQnSubHourly += (this->QnSubHr(I) - this->QnSubHr(I + 1)) * RQSubHr;
             }
 
@@ -2114,15 +2100,15 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
             int hourlyLimit = static_cast<int>(state.dataGroundHeatExchanger->currentSimTime);
             for (int I = this->SubAGG + 1; I <= hourlyLimit; ++I) {
                 if (I == hourlyLimit) {
-                    Real64 gFuncVal = getGFunc(state.dataGroundHeatExchanger->currentSimTime / (this->timeSSFactor));
-                    Real64 RQHour = gFuncVal / (kGroundFactor);
+                    Real64 const gFuncVal = getGFunc(state.dataGroundHeatExchanger->currentSimTime / (this->timeSSFactor));
+                    Real64 const RQHour = gFuncVal / (kGroundFactor);
                     sumQnHourly += this->QnHr(I) * RQHour;
                     break;
                 }
-                Real64 gFuncVal = getGFunc(
+                Real64 const gFuncVal = getGFunc(
                     (state.dataGroundHeatExchanger->currentSimTime - static_cast<int>(state.dataGroundHeatExchanger->currentSimTime) + I) /
                     (this->timeSSFactor));
-                Real64 RQHour = gFuncVal / (kGroundFactor);
+                Real64 const RQHour = gFuncVal / (kGroundFactor);
                 sumQnHourly += (this->QnHr(I) - this->QnHr(I + 1)) * RQHour;
             }
 
@@ -2130,9 +2116,9 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
             sumTotal = sumQnSubHourly + sumQnHourly;
 
             // Calculate the sub-hourly temperature due the Last Time steps Load
-            Real64 gFuncVal =
+            Real64 const gFuncVal =
                 getGFunc((state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(2)) / (this->timeSSFactor));
-            Real64 RQSubHr = gFuncVal / kGroundFactor;
+            Real64 const RQSubHr = gFuncVal / kGroundFactor;
 
             if (this->massFlowRate <= 0.0) {
                 tmpQnSubHourly = 0.0;
@@ -2140,10 +2126,10 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
                 this->ToutNew = this->inletTemp;
             } else {
                 // Dr.Sitler's Explicit set of equations to calculate the New Outlet Temperature of the U-Tube
-                Real64 C0 = RQSubHr;
-                Real64 C1 = this->tempGround - (sumTotal - this->QnSubHr(1) * RQSubHr);
-                Real64 C2 = this->totalTubeLength / (2.0 * this->massFlowRate * cpFluid);
-                Real64 C3 = this->massFlowRate * cpFluid / (this->totalTubeLength);
+                Real64 const C0 = RQSubHr;
+                Real64 const C1 = this->tempGround - (sumTotal - this->QnSubHr(1) * RQSubHr);
+                Real64 const C2 = this->totalTubeLength / (2.0 * this->massFlowRate * cpFluid);
+                Real64 const C3 = this->massFlowRate * cpFluid / (this->totalTubeLength);
                 tmpQnSubHourly = (C1 - this->inletTemp) / (this->HXResistance + C0 - C2 + (1 / C3));
                 fluidAveTemp = C1 - (C0 + this->HXResistance) * tmpQnSubHourly;
                 this->ToutNew = C1 + (C2 - C0 - this->HXResistance) * tmpQnSubHourly;
@@ -2153,7 +2139,7 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
             // Monthly Aggregation and super position
 
             // the number of months of simulation elapsed
-            int numOfMonths = static_cast<int>((state.dataGroundHeatExchanger->currentSimTime + 1) / hrsPerMonth);
+            int const numOfMonths = static_cast<int>((state.dataGroundHeatExchanger->currentSimTime + 1) / hrsPerMonth);
 
             // The Month up to which the monthly blocks are superposed
             int currentMonth;
@@ -2170,33 +2156,33 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
 
             for (int I = 1; I <= currentMonth; ++I) {
                 if (I == 1) {
-                    Real64 gFuncVal = getGFunc(state.dataGroundHeatExchanger->currentSimTime / (this->timeSSFactor));
-                    Real64 RQMonth = gFuncVal / (kGroundFactor);
+                    Real64 const gFuncVal = getGFunc(state.dataGroundHeatExchanger->currentSimTime / (this->timeSSFactor));
+                    Real64 const RQMonth = gFuncVal / (kGroundFactor);
                     sumQnMonthly += this->QnMonthlyAgg(I) * RQMonth;
                     continue;
                 }
-                Real64 gFuncVal = getGFunc((state.dataGroundHeatExchanger->currentSimTime - (I - 1) * hrsPerMonth) / (this->timeSSFactor));
-                Real64 RQMonth = gFuncVal / (kGroundFactor);
+                Real64 const gFuncVal = getGFunc((state.dataGroundHeatExchanger->currentSimTime - (I - 1) * hrsPerMonth) / (this->timeSSFactor));
+                Real64 const RQMonth = gFuncVal / (kGroundFactor);
                 sumQnMonthly += (this->QnMonthlyAgg(I) - this->QnMonthlyAgg(I - 1)) * RQMonth;
             }
 
             // Hourly Superposition
             Real64 sumQnHourly = 0.0;
-            int hourlyLimit = static_cast<int>(state.dataGroundHeatExchanger->currentSimTime - currentMonth * hrsPerMonth);
+            int const hourlyLimit = static_cast<int>(state.dataGroundHeatExchanger->currentSimTime - currentMonth * hrsPerMonth);
             for (int I = 1 + this->SubAGG; I <= hourlyLimit; ++I) {
                 if (I == hourlyLimit) {
-                    Real64 gFuncVal =
+                    Real64 const gFuncVal =
                         getGFunc(
                             (state.dataGroundHeatExchanger->currentSimTime - static_cast<int>(state.dataGroundHeatExchanger->currentSimTime) + I) /
                             (this->timeSSFactor));
-                    Real64 RQHour = gFuncVal / (kGroundFactor);
+                    Real64 const RQHour = gFuncVal / (kGroundFactor);
                     sumQnHourly += (this->QnHr(I) - this->QnMonthlyAgg(currentMonth)) * RQHour;
                     break;
                 }
-                Real64 gFuncVal = getGFunc(
+                Real64 const gFuncVal = getGFunc(
                     (state.dataGroundHeatExchanger->currentSimTime - static_cast<int>(state.dataGroundHeatExchanger->currentSimTime) + I) /
                     (this->timeSSFactor));
-                Real64 RQHour = gFuncVal / (kGroundFactor);
+                Real64 const RQHour = gFuncVal / (kGroundFactor);
                 sumQnHourly += (this->QnHr(I) - this->QnHr(I + 1)) * RQHour;
             }
 
@@ -2205,24 +2191,26 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
             Real64 sumQnSubHourly = 0.0;
             for (int I = 1; I <= subHourlyLimit; ++I) {
                 if (I == subHourlyLimit) {
-                    Real64 gFuncVal = getGFunc((state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(I + 1)) /
-                                               (this->timeSSFactor));
-                    Real64 RQSubHr = gFuncVal / (kGroundFactor);
+                    Real64 const gFuncVal = getGFunc(
+                        (state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(I + 1)) /
+                        (this->timeSSFactor));
+                    Real64 const RQSubHr = gFuncVal / (kGroundFactor);
                     sumQnSubHourly += (this->QnSubHr(I) - this->QnHr(this->SubAGG + 1)) * RQSubHr;
                     break;
                 }
-                Real64 gFuncVal = getGFunc((state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(I + 1)) /
-                                           (this->timeSSFactor));
-                Real64 RQSubHr = gFuncVal / (kGroundFactor);
+                Real64 const gFuncVal = getGFunc(
+                    (state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(I + 1)) /
+                    (this->timeSSFactor));
+                Real64 const RQSubHr = gFuncVal / (kGroundFactor);
                 sumQnSubHourly += (this->QnSubHr(I) - this->QnSubHr(I + 1)) * RQSubHr;
             }
 
             sumTotal = sumQnMonthly + sumQnHourly + sumQnSubHourly;
 
             // Calculate the sub-hourly temperature due the Last Time steps Load
-            Real64 gFuncVal =
+            const Real64 gFuncVal =
                 getGFunc((state.dataGroundHeatExchanger->currentSimTime - state.dataGroundHeatExchanger->prevTimeSteps(2)) / (this->timeSSFactor));
-            Real64 RQSubHr = gFuncVal / (kGroundFactor);
+            const Real64 RQSubHr = gFuncVal / (kGroundFactor);
 
             if (this->massFlowRate <= 0.0) {
                 tmpQnSubHourly = 0.0;
@@ -2230,10 +2218,10 @@ void GLHEBase::calcGroundHeatExchanger(EnergyPlusData &state)
                 this->ToutNew = this->inletTemp;
             } else {
                 // Explicit set of equations to calculate the New Outlet Temperature of the U-Tube
-                Real64 C0 = RQSubHr;
-                Real64 C1 = this->tempGround - (sumTotal - this->QnSubHr(1) * RQSubHr);
-                Real64 C2 = this->totalTubeLength / (2 * this->massFlowRate * cpFluid);
-                Real64 C3 = this->massFlowRate * cpFluid / (this->totalTubeLength);
+                Real64 const C0 = RQSubHr;
+                Real64 const C1 = this->tempGround - (sumTotal - this->QnSubHr(1) * RQSubHr);
+                Real64 const C2 = this->totalTubeLength / (2 * this->massFlowRate * cpFluid);
+                Real64 const C3 = this->massFlowRate * cpFluid / (this->totalTubeLength);
                 tmpQnSubHourly = (C1 - this->inletTemp) / (this->HXResistance + C0 - C2 + (1 / C3));
                 fluidAveTemp = C1 - (C0 + this->HXResistance) * tmpQnSubHourly;
                 this->ToutNew = C1 + (C2 - C0 - this->HXResistance) * tmpQnSubHourly;
@@ -2262,7 +2250,6 @@ void GLHEBase::updateGHX(EnergyPlusData &state)
 
     // SUBROUTINE ARGUMENT DEFINITIONS
     constexpr std::string_view RoutineName = "UpdateGroundHeatExchanger";
-    constexpr Real64 deltaTempLimit = 100.0; // temp limit for warnings
 
     PlantUtilities::SafeCopyPlantNode(state, this->inletNodeNum, this->outletNodeNum);
 
@@ -2272,8 +2259,9 @@ void GLHEBase::updateGHX(EnergyPlusData &state)
 
     Real64 GLHEdeltaTemp = std::abs(this->outletTemp - this->inletTemp);
 
-    if (GLHEdeltaTemp > deltaTempLimit && this->numErrorCalls < state.dataGroundHeatExchanger->numVerticalGLHEs && !state.dataGlobal->WarmupFlag) {
-        Real64 fluidDensity = state.dataPlnt->PlantLoop(this->plantLoc.loopNum).glycol->getDensity(state, this->inletTemp, RoutineName);
+    if (constexpr Real64 deltaTempLimit = 100.0; GLHEdeltaTemp > deltaTempLimit && this->numErrorCalls < state.dataGroundHeatExchanger->
+                                                 numVerticalGLHEs && !state.dataGlobal->WarmupFlag) {
+        const Real64 fluidDensity = state.dataPlnt->PlantLoop(this->plantLoc.loopNum).glycol->getDensity(state, this->inletTemp, RoutineName);
         this->designMassFlow = this->designFlow * fluidDensity;
         ShowWarningError(state, "Check GLHE design inputs & g-functions for consistency");
         ShowContinueError(state, format("For GroundHeatExchanger: {}GLHE delta Temp > 100C.", this->name));
@@ -2582,15 +2570,14 @@ Real64 GLHEVert::calcBHTotalInternalResistance(EnergyPlusData &state)
     // for Grouted Single U-tube Ground Heat Exchangers.' Applied Energy. 187:790-806.
     // Equation 26
 
-    Real64 beta = 2 * Constant::Pi * this->grout.k * calcPipeResistance(state);
-
-    Real64 final_term_1 = log(pow(1 + pow_2(this->theta_1), this->sigma) / (this->theta_3 * pow(1 - pow_2(this->theta_1), this->sigma)));
-    Real64 num_term_2 = pow_2(this->theta_3) * pow_2(1 - pow_4(this->theta_1) + 4 * this->sigma * pow_2(this->theta_1));
-    Real64 den_term_2_pt_1 = (1 + beta) / (1 - beta) * pow_2(1 - pow_4(this->theta_1));
-    Real64 den_term_2_pt_2 = pow_2(this->theta_3) * pow_2(1 - pow_4(this->theta_1));
-    Real64 den_term_2_pt_3 = 8 * this->sigma * pow_2(this->theta_1) * pow_2(this->theta_3) * (1 + pow_4(this->theta_1));
-    Real64 den_term_2 = den_term_2_pt_1 - den_term_2_pt_2 + den_term_2_pt_3;
-    Real64 final_term_2 = num_term_2 / den_term_2;
+    Real64 const beta = 2 * Constant::Pi * this->grout.k * calcPipeResistance(state);
+    Real64 const final_term_1 = log(pow(1 + pow_2(this->theta_1), this->sigma) / (this->theta_3 * pow(1 - pow_2(this->theta_1), this->sigma)));
+    Real64 const num_term_2 = pow_2(this->theta_3) * pow_2(1 - pow_4(this->theta_1) + 4 * this->sigma * pow_2(this->theta_1));
+    Real64 const den_term_2_pt_1 = (1 + beta) / (1 - beta) * pow_2(1 - pow_4(this->theta_1));
+    Real64 const den_term_2_pt_2 = pow_2(this->theta_3) * pow_2(1 - pow_4(this->theta_1));
+    Real64 const den_term_2_pt_3 = 8 * this->sigma * pow_2(this->theta_1) * pow_2(this->theta_3) * (1 + pow_4(this->theta_1));
+    Real64 const den_term_2 = den_term_2_pt_1 - den_term_2_pt_2 + den_term_2_pt_3;
+    Real64 const final_term_2 = num_term_2 / den_term_2;
 
     return (1 / (Constant::Pi * this->grout.k)) * (beta + final_term_1 - final_term_2);
 }
@@ -2647,7 +2634,7 @@ Real64 GLHEVert::calcPipeConvectionResistance(EnergyPlusData &state)
     // International Chemical Engineering 16(1976), pp. 359-368.
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    constexpr const char *RoutineName("calcPipeConvectionResistance");
+    constexpr auto RoutineName("calcPipeConvectionResistance");
 
     // Get fluid props
     this->inletTemp = state.dataLoopNodes->Node(this->inletNodeNum).Temp;
@@ -2657,16 +2644,14 @@ Real64 GLHEVert::calcPipeConvectionResistance(EnergyPlusData &state)
     Real64 const fluidViscosity = state.dataPlnt->PlantLoop(this->plantLoc.loopNum).glycol->getViscosity(state, this->inletTemp, RoutineName);
 
     // Smoothing fit limits
-    constexpr Real64 lower_limit = 2000;
-    constexpr Real64 upper_limit = 4000;
 
     Real64 const bhMassFlowRate = this->massFlowRate / this->myRespFactors->numBoreholes;
     Real64 const reynoldsNum = 4 * bhMassFlowRate / (fluidViscosity * Constant::Pi * this->pipe.innerDia);
 
     Real64 nusseltNum = 0.0;
-    if (reynoldsNum < lower_limit) {
+    if (constexpr Real64 lower_limit = 2000; reynoldsNum < lower_limit) {
         nusseltNum = 4.01; // laminar mean(4.36, 3.66)
-    } else if (reynoldsNum < upper_limit) {
+    } else if (constexpr Real64 upper_limit = 4000; reynoldsNum < upper_limit) {
         Real64 constexpr nu_low = 4.01; // laminar
         Real64 const f = frictionFactor(reynoldsNum); // turbulent
         Real64 const prandtlNum = (cpFluid * fluidViscosity) / (kFluid);
@@ -2679,7 +2664,7 @@ Real64 GLHEVert::calcPipeConvectionResistance(EnergyPlusData &state)
         nusseltNum = (f / 8) * (reynoldsNum - 1000) * prandtlNum / (1 + 12.7 * std::sqrt(f / 8) * (pow(prandtlNum, 2.0 / 3.0) - 1));
     }
 
-    Real64 h = nusseltNum * kFluid / this->pipe.innerDia;
+    const Real64 h = nusseltNum * kFluid / this->pipe.innerDia;
 
     return 1 / (h * Constant::Pi * this->pipe.innerDia);
 }
@@ -2693,21 +2678,19 @@ Real64 GLHEVert::frictionFactor(Real64 const reynoldsNum)
     // In Advances in Heat Transfer, ed. T.F. Irvine and J.P. Hartnett, Vol. 6. New York Academic Press.
 
     // limits picked to be within about 1% of actual values
-    constexpr Real64 lower_limit = 1500;
-    constexpr Real64 upper_limit = 5000;
 
-    if (reynoldsNum < lower_limit) {
+    if (constexpr Real64 lower_limit = 1500; reynoldsNum < lower_limit) {
         return 64.0 / reynoldsNum; // pure laminar flow
-    } else if (reynoldsNum < upper_limit) {
+    }
+    if (constexpr Real64 upper_limit = 5000; reynoldsNum < upper_limit) {
         // pure laminar flow
         Real64 const f_low = 64.0 / reynoldsNum;
         // pure turbulent flow
         Real64 const f_high = pow(0.79 * log(reynoldsNum) - 1.64, -2.0);
         Real64 const sf = 1 / (1 + exp(-(reynoldsNum - 3000.0) / 450.0)); // smoothing function
         return (1 - sf) * f_low + sf * f_high;
-    } else {
-        return pow(0.79 * log(reynoldsNum) - 1.64, -2.0); // pure turbulent flow
     }
+    return pow(0.79 * log(reynoldsNum) - 1.64, -2.0); // pure turbulent flow
 }
 
 //******************************************************************************
@@ -2757,7 +2740,7 @@ Real64 GLHESlinky::calcHXResistance(EnergyPlusData &state)
         Real64 nusseltNum;
         constexpr Real64 laminarNusseltNo = 4.364;
         // Re=Rho*V*D/Mu
-        Real64 reynoldsNum =
+        const Real64 reynoldsNum =
             fluidDensity * pipeInnerDia * (singleSlinkyMassFlowRate / fluidDensity / (Constant::Pi * pow_2(pipeInnerRad))) / fluidViscosity;
         Real64 prandtlNum = (cpFluid * fluidViscosity) / (kFluid);
         //   Convection Resistance
@@ -2766,13 +2749,13 @@ Real64 GLHESlinky::calcHXResistance(EnergyPlusData &state)
         } else if (reynoldsNum > 2300 && reynoldsNum <= 4000) {
             constexpr Real64 B = 350;
             constexpr Real64 A = 3150;
-            Real64 sf = 0.5 + 0.5 * std::tanh((reynoldsNum - A) / B);
-            Real64 turbulentNusseltNo = 0.023 * std::pow(reynoldsNum, 0.8) * std::pow(prandtlNum, 0.35);
+            const Real64 sf = 0.5 + 0.5 * std::tanh((reynoldsNum - A) / B);
+            const Real64 turbulentNusseltNo = 0.023 * std::pow(reynoldsNum, 0.8) * std::pow(prandtlNum, 0.35);
             nusseltNum = laminarNusseltNo * (1 - sf) + turbulentNusseltNo * sf;
         } else {
             nusseltNum = 0.023 * std::pow(reynoldsNum, 0.8) * std::pow(prandtlNum, 0.35);
         }
-        Real64 hci = nusseltNum * kFluid / pipeInnerDia;
+        const Real64 hci = nusseltNum * kFluid / pipeInnerDia;
         Rconv = 1.0 / (2.0 * Constant::Pi * pipeInnerDia * hci);
     }
 
@@ -2846,7 +2829,7 @@ Real64 GLHEVert::getGFunc(Real64 const time)
     Real64 LNTTS = std::log(time);
     Real64 gFuncVal = interpGFunc(LNTTS);
 
-    if (Real64 RATIO = this->bhRadius / this->bhLength; RATIO != this->myRespFactors->gRefRatio) {
+    if (const Real64 RATIO = this->bhRadius / this->bhLength; RATIO != this->myRespFactors->gRefRatio) {
         gFuncVal -= std::log(this->bhRadius / (this->bhLength * this->myRespFactors->gRefRatio));
     }
 
@@ -2863,20 +2846,20 @@ void GLHEVert::initGLHESimVars(EnergyPlusData &state)
     //       MODIFIED         Arun Murugappan
 
     // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-    Real64 currTime = ((state.dataGlobal->DayOfSim - 1) * 24 + (state.dataGlobal->HourOfDay - 1) +
-                       (state.dataGlobal->TimeStep - 1) * state.dataGlobal->TimeStepZone + state.dataHVACGlobal->SysTimeElapsed) *
-                      Constant::rSecsInHour;
+    const Real64 currTime = ((state.dataGlobal->DayOfSim - 1) * 24 + (state.dataGlobal->HourOfDay - 1) +
+                             (state.dataGlobal->TimeStep - 1) * state.dataGlobal->TimeStepZone + state.dataHVACGlobal->SysTimeElapsed) *
+                            Constant::rSecsInHour;
 
     if (this->myEnvrnFlag && state.dataGlobal->BeginEnvrnFlag) {
         this->initEnvironment(state, currTime);
     }
 
     // Calculate the average ground temperature over the depth of the borehole
-    Real64 minDepth = this->myRespFactors->props->bhTopDepth;
-    Real64 maxDepth = this->myRespFactors->props->bhLength + minDepth;
-    Real64 oneQuarterDepth = minDepth + (maxDepth - minDepth) * 0.25;
-    Real64 halfDepth = minDepth + (maxDepth - minDepth) * 0.5;
-    Real64 threeQuarterDepth = minDepth + (maxDepth - minDepth) * 0.75;
+    const Real64 minDepth = this->myRespFactors->props->bhTopDepth;
+    const Real64 maxDepth = this->myRespFactors->props->bhLength + minDepth;
+    const Real64 oneQuarterDepth = minDepth + (maxDepth - minDepth) * 0.25;
+    const Real64 halfDepth = minDepth + (maxDepth - minDepth) * 0.5;
+    const Real64 threeQuarterDepth = minDepth + (maxDepth - minDepth) * 0.75;
 
     this->tempGround = 0;
 
@@ -2957,9 +2940,9 @@ void GLHESlinky::initGLHESimVars(EnergyPlusData &state)
     //       DATE WRITTEN:    August, 2000
     //       MODIFIED         Arun Murugappan
 
-    Real64 CurTime = ((state.dataGlobal->DayOfSim - 1) * Constant::rHoursInDay + (state.dataGlobal->HourOfDay - 1) +
-                      (state.dataGlobal->TimeStep - 1) * state.dataGlobal->TimeStepZone + state.dataHVACGlobal->SysTimeElapsed) *
-                     Constant::rSecsInHour;
+    const Real64 CurTime = ((state.dataGlobal->DayOfSim - 1) * Constant::rHoursInDay + (state.dataGlobal->HourOfDay - 1) +
+                            (state.dataGlobal->TimeStep - 1) * state.dataGlobal->TimeStepZone + state.dataHVACGlobal->SysTimeElapsed) *
+                           Constant::rSecsInHour;
 
     // Init more variables
     if (this->myEnvrnFlag && state.dataGlobal->BeginEnvrnFlag) {
@@ -2984,7 +2967,7 @@ void GLHESlinky::initEnvironment(EnergyPlusData &state, Real64 const CurTime)
     constexpr std::string_view RoutineName = "initEnvironment";
     this->myEnvrnFlag = false;
 
-    Real64 fluidDensity = state.dataPlnt->PlantLoop(this->plantLoc.loopNum).glycol->getDensity(state, 20.0, RoutineName);
+    const Real64 fluidDensity = state.dataPlnt->PlantLoop(this->plantLoc.loopNum).glycol->getDensity(state, 20.0, RoutineName);
     this->designMassFlow = this->designFlow * fluidDensity;
     PlantUtilities::InitComponentNodes(state, 0.0, this->designMassFlow, this->inletNodeNum, this->outletNodeNum);
 
