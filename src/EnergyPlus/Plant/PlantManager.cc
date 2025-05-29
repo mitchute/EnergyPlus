@@ -986,7 +986,7 @@ void GetPlantInput(EnergyPlusData &state)
                     }
                     case PlantEquipmentType::GrndHtExchgSystem: {
                         this_comp.CurOpSchemeType = OpScheme::Uncontrolled;
-                        this_comp.compPtr = GroundHeatExchangers::GLHEBase::factory(state, PlantEquipmentType::GrndHtExchgSystem, CompNames(CompNum));
+                        this_comp.compPtr = GroundHeatExchangers::GHEBase::factory(state, PlantEquipmentType::GrndHtExchgSystem, CompNames(CompNum));
                         break;
                     }
                     case PlantEquipmentType::GrndHtExchgSurface: {
@@ -1002,7 +1002,7 @@ void GetPlantInput(EnergyPlusData &state)
                     }
                     case PlantEquipmentType::GrndHtExchgSlinky: {
                         this_comp.CurOpSchemeType = OpScheme::Uncontrolled;
-                        this_comp.compPtr = GroundHeatExchangers::GLHEBase::factory(state, PlantEquipmentType::GrndHtExchgSlinky, CompNames(CompNum));
+                        this_comp.compPtr = GroundHeatExchangers::GHEBase::factory(state, PlantEquipmentType::GrndHtExchgSlinky, CompNames(CompNum));
                         break;
                     }
                     case PlantEquipmentType::Chiller_ElectricEIR: {

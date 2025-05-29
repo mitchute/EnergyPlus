@@ -77,7 +77,7 @@ namespace DataSystemVariables {
 
     constexpr const char *DDOnlyEnvVar("DDONLY");       // Only run design days
     constexpr const char *ReverseDDEnvVar("REVERSEDD"); // Reverse DD during run
-    constexpr const char *DisableGLHECachingEnvVar("DISABLEGLHECACHING");
+    constexpr const char *DisableGHECachingEnvVar("DISABLEGHECACHING");
     constexpr const char *FullAnnualSimulation("FULLANNUALRUN"); // Generate annual run
     constexpr const char *cDeveloperFlag("DeveloperFlag");
     constexpr const char *cDisplayAllWarnings("DisplayAllWarnings");
@@ -214,8 +214,8 @@ namespace DataSystemVariables {
         get_environment_variable(ReverseDDEnvVar, cEnvValue);
         state.dataSysVars->ReverseDD = env_var_on(cEnvValue); // Yes or True
 
-        get_environment_variable(DisableGLHECachingEnvVar, cEnvValue);
-        state.dataSysVars->DisableGLHECaching = env_var_on(cEnvValue); // Yes or True
+        get_environment_variable(DisableGHECachingEnvVar, cEnvValue);
+        state.dataSysVars->DisableGHECaching = env_var_on(cEnvValue); // Yes or True
 
         get_environment_variable(FullAnnualSimulation, cEnvValue);
         state.dataSysVars->FullAnnualRun = env_var_on(cEnvValue); // Yes or True
@@ -251,7 +251,7 @@ namespace DataSystemVariables {
 
         get_environment_variable(cReportDuringWarmup, cEnvValue);
         if (!cEnvValue.empty()) state.dataSysVars->ReportDuringWarmup = env_var_on(cEnvValue);   // Yes or True
-        if (state.dataSysVars->DisableGLHECaching) state.dataSysVars->ReportDuringWarmup = true; // force to true for standard runs runs
+        if (state.dataSysVars->DisableGHECaching) state.dataSysVars->ReportDuringWarmup = true; // force to true for standard runs runs
 
         get_environment_variable(cReportDuringHVACSizingSimulation, cEnvValue);
         if (!cEnvValue.empty()) state.dataSysVars->ReportDuringHVACSizingSimulation = env_var_on(cEnvValue); // Yes or True

@@ -102,10 +102,10 @@ namespace GroundHeatExchangers {
         }
     };
 
-    struct GLHEVertProps
+    struct GHEVertProps
     {
         // Destructor
-        ~GLHEVertProps() = default;
+        ~GHEVertProps() = default;
 
         // Members
         std::string const moduleName = "GroundHeatExchanger:Vertical:Properties";
@@ -117,11 +117,11 @@ namespace GroundHeatExchangers {
         PipeProps pipe;            // Pipe properties
         Real64 bhUTubeDist;        // U-tube, shank-to-shank spacing {m}
 
-        GLHEVertProps() : bhTopDepth(0.0), bhLength(0.0), bhDiameter(0.0), bhUTubeDist(0.0)
+        GHEVertProps() : bhTopDepth(0.0), bhLength(0.0), bhDiameter(0.0), bhUTubeDist(0.0)
         {
         }
 
-        GLHEVertProps(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
+        GHEVertProps(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
     };
 
     struct MyCartesian
@@ -138,10 +138,10 @@ namespace GroundHeatExchangers {
         }
     };
 
-    struct GLHEVertSingle
+    struct GHEVertSingle
     {
         // Destructor
-        ~GLHEVertSingle() = default;
+        ~GHEVertSingle() = default;
 
         // Members
         std::string const moduleName = "GroundHeatExchanger:Vertical:Single";
@@ -151,24 +151,24 @@ namespace GroundHeatExchangers {
         Real64 dl_i;                          // Discretized bh length between points
         Real64 dl_ii;                         // Discretized bh length between points
         Real64 dl_j;                          // Discretized bh length between points
-        std::shared_ptr<GLHEVertProps> props; // Properties
+        std::shared_ptr<GHEVertProps> props; // Properties
         std::vector<MyCartesian>
             pointLocations_i; // Discretized point locations for when computing temperature response of other boreholes on this bh
         std::vector<MyCartesian> pointLocations_ii; // Discretized point locations for when computing temperature response of this bh on itself
         std::vector<MyCartesian>
             pointLocations_j; // Discretized point locations for when other bh are computing the temperature response of this bh on themselves
 
-        GLHEVertSingle() : xLoc(0.0), yLoc(0.0), dl_i(0.0), dl_ii(0.0), dl_j(0.0)
+        GHEVertSingle() : xLoc(0.0), yLoc(0.0), dl_i(0.0), dl_ii(0.0), dl_j(0.0)
         {
         }
 
-        GLHEVertSingle(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
+        GHEVertSingle(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
     };
 
-    struct GLHEVertArray
+    struct GHEVertArray
     {
         // Destructor
-        ~GLHEVertArray() = default;
+        ~GHEVertArray() = default;
 
         // Members
         std::string const moduleName = "GroundHeatExchanger:Vertical:Array";
@@ -176,19 +176,19 @@ namespace GroundHeatExchangers {
         int numBHinXDirection;                // Number of boreholes in X direction
         int numBHinYDirection;                // Number of boreholes in Y direction
         Real64 bhSpacing;                     // Borehole center-to-center spacing {m}
-        std::shared_ptr<GLHEVertProps> props; // Properties
+        std::shared_ptr<GHEVertProps> props; // Properties
 
-        GLHEVertArray() : numBHinXDirection(0), numBHinYDirection(0), bhSpacing(0.0)
+        GHEVertArray() : numBHinXDirection(0), numBHinYDirection(0), bhSpacing(0.0)
         {
         }
 
-        GLHEVertArray(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
+        GHEVertArray(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
     };
 
-    struct GLHEResponseFactors
+    struct GHEResponseFactors
     {
         // Destructor
-        ~GLHEResponseFactors() = default;
+        ~GHEResponseFactors() = default;
 
         // Members
         std::string const moduleName = "GroundHeatExchanger:ResponseFactors";
@@ -200,20 +200,20 @@ namespace GroundHeatExchangers {
         std::vector<Real64> time;                                // response time in seconds
         std::vector<Real64> LNTTS;                               // natural log of non-dimensional time Ln(t/ts)
         std::vector<Real64> GFNC;                                // g-function (non-dimensional temperature response factors)
-        std::shared_ptr<GLHEVertProps> props;                    // Properties
-        std::vector<std::shared_ptr<GLHEVertSingle>> myBorholes; // Boreholes used by this response factors object
+        std::shared_ptr<GHEVertProps> props;                    // Properties
+        std::vector<std::shared_ptr<GHEVertSingle>> myBorholes; // Boreholes used by this response factors object
 
-        GLHEResponseFactors() : numBoreholes(0), numGFuncPairs(0), gRefRatio(0.0), maxSimYears(0.0)
+        GHEResponseFactors() : numBoreholes(0), numGFuncPairs(0), gRefRatio(0.0), maxSimYears(0.0)
         {
         }
 
-        GLHEResponseFactors(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
+        GHEResponseFactors(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
     };
 
-    struct GLHEBase : PlantComponent // LCOV_EXCL_LINE
+    struct GHEBase : PlantComponent // LCOV_EXCL_LINE
     {
         // Destructor
-        ~GLHEBase() override = default;
+        ~GHEBase() override = default;
 
         // Members
         bool available;   // need an array of logical--load identifiers of available equipment
@@ -225,7 +225,7 @@ namespace GroundHeatExchangers {
         ThermophysicalProps soil;
         PipeProps pipe;
         ThermophysicalProps grout;
-        std::shared_ptr<GLHEResponseFactors> myRespFactors;
+        std::shared_ptr<GHEResponseFactors> myRespFactors;
         Real64 designFlow;            // Design volumetric flow rate [m3/s]
         Real64 designMassFlow;        // Design mass flow rate [kg/s]
         Real64 tempGround;            // The far field temperature of the ground [degC]
@@ -241,7 +241,7 @@ namespace GroundHeatExchangers {
         Real64 outletTemp;     // [degC]
         Real64 inletTemp;      // [degC]
         Real64 aveFluidTemp;   // [degC]
-        Real64 QGLHE;          // [W] heat transfer rate
+        Real64 QGHE;          // [W] heat transfer rate
         bool myEnvrnFlag;
         bool gFunctionsExist;
         Real64 lastQnSubHr;
@@ -260,9 +260,9 @@ namespace GroundHeatExchangers {
         bool triggerDesignDayReset;
         bool needToSetupOutputVars;
 
-        GLHEBase()
+        GHEBase()
             : available(false), on(false), plantLoc{}, inletNodeNum(0), outletNodeNum(0), designFlow(0.0), designMassFlow(0.0), tempGround(0.0),
-              prevHour(1), AGG(0), SubAGG(0), bhTemp(0.0), massFlowRate(0.0), outletTemp(0.0), inletTemp(0.0), aveFluidTemp(0.0), QGLHE(0.0),
+              prevHour(1), AGG(0), SubAGG(0), bhTemp(0.0), massFlowRate(0.0), outletTemp(0.0), inletTemp(0.0), aveFluidTemp(0.0), QGHE(0.0),
               myEnvrnFlag(true), gFunctionsExist(false), lastQnSubHr(0.0), HXResistance(0.0), totalTubeLength(0.0), timeSS(0.0), timeSSFactor(0.0),
               firstTime(true), numErrorCalls(0), ToutNew(19.375), PrevN(1), updateCurSimTime(true), triggerDesignDayReset(false),
               needToSetupOutputVars(true)
@@ -281,11 +281,11 @@ namespace GroundHeatExchangers {
 
         [[nodiscard]] Real64 interpGFunc(Real64) const;
 
-        void makeThisGLHECacheAndCompareWithFileCache(EnergyPlusData &state);
+        void makeThisGHECacheAndCompareWithFileCache(EnergyPlusData &state);
 
-        virtual void makeThisGLHECacheStruct() = 0;
+        virtual void makeThisGHECacheStruct() = 0;
 
-        virtual void readCacheFileAndCompareWithThisGLHECache(EnergyPlusData &state) = 0;
+        virtual void readCacheFileAndCompareWithThisGHECache(EnergyPlusData &state) = 0;
 
         void onInitLoopEquip([[maybe_unused]] EnergyPlusData &state, const PlantLocation &calledFromLocation) override;
 
@@ -295,11 +295,11 @@ namespace GroundHeatExchangers {
                       Real64 &CurLoad,
                       bool RunFlag) override;
 
-        static GLHEBase *factory(EnergyPlusData &state, DataPlant::PlantEquipmentType objectType, std::string const &objectName);
+        static GHEBase *factory(EnergyPlusData &state, DataPlant::PlantEquipmentType objectType, std::string const &objectName);
 
         virtual Real64 getGFunc(Real64) = 0;
 
-        virtual void initGLHESimVars(EnergyPlusData &state) = 0;
+        virtual void initGHESimVars(EnergyPlusData &state) = 0;
 
         virtual Real64 calcHXResistance(EnergyPlusData &state) = 0;
 
@@ -318,11 +318,11 @@ namespace GroundHeatExchangers {
         Num
     };
 
-    struct GLHEVert : GLHEBase // LCOV_EXCL_LINE
+    struct GHEVert : GHEBase // LCOV_EXCL_LINE
     {
 
         // Destructor
-        ~GLHEVert() override = default;
+        ~GHEVert() override = default;
 
         // Members
         std::string const moduleName = "GroundHeatExchanger:System";
@@ -343,21 +343,21 @@ namespace GroundHeatExchangers {
         std::vector<Real64> GFNC_shortTimestep;
         std::vector<Real64> LNTTS_shortTimestep;
 
-        GLHEVert()
+        GHEVert()
             : bhDiameter(0.0), bhRadius(0.0), bhLength(0.0), bhUTubeDist(0.0), gFuncCalcMethod(GFuncCalcMethod::Invalid), theta_1(0.0), theta_2(0.0),
               theta_3(0.0), sigma(0.0)
         {
         }
 
-        GLHEVert(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
+        GHEVert(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
 
         static std::vector<Real64> distances(MyCartesian const &point_i, MyCartesian const &point_j);
 
         [[nodiscard]] Real64 calcResponse(std::vector<Real64> const &dists, Real64 currTime) const;
 
-        [[nodiscard]] Real64 integral(MyCartesian const &point_i, std::shared_ptr<GLHEVertSingle> const &bh_j, Real64 currTime) const;
+        [[nodiscard]] Real64 integral(MyCartesian const &point_i, std::shared_ptr<GHEVertSingle> const &bh_j, Real64 currTime) const;
 
-        [[nodiscard]] Real64 doubleIntegral(std::shared_ptr<GLHEVertSingle> const &bh_i, std::shared_ptr<GLHEVertSingle> const &bh_j, Real64 currTime) const;
+        [[nodiscard]] Real64 doubleIntegral(std::shared_ptr<GHEVertSingle> const &bh_i, std::shared_ptr<GHEVertSingle> const &bh_j, Real64 currTime) const;
 
         void calcShortTimestepGFunctions(EnergyPlusData &state);
 
@@ -371,17 +371,17 @@ namespace GroundHeatExchangers {
 
         Real64 calcHXResistance(EnergyPlusData &state) override;
 
-        void initGLHESimVars(EnergyPlusData &state) override;
+        void initGHESimVars(EnergyPlusData &state) override;
 
         void getAnnualTimeConstant() override;
 
         Real64 getGFunc(Real64 time) override;
 
-        void makeThisGLHECacheStruct() override;
+        void makeThisGHECacheStruct() override;
 
-        void readCacheFileAndCompareWithThisGLHECache(EnergyPlusData &state) override;
+        void readCacheFileAndCompareWithThisGHECache(EnergyPlusData &state) override;
 
-        void writeGLHECacheToFile(const EnergyPlusData &state) const;
+        void writeGHECacheToFile(const EnergyPlusData &state) const;
 
         Real64 calcBHAverageResistance(EnergyPlusData &state);
 
@@ -408,11 +408,11 @@ namespace GroundHeatExchangers {
         void setupTimeVectors() const;
     };
 
-    struct GLHESlinky : GLHEBase // LCOV_EXCL_LINE
+    struct GHESlinky : GHEBase // LCOV_EXCL_LINE
     {
 
         // Destructor
-        ~GLHESlinky() override = default;
+        ~GHESlinky() override = default;
 
         // Members
         std::string const moduleName = "GroundHeatExchanger:Slinky";
@@ -432,19 +432,19 @@ namespace GroundHeatExchangers {
         Array1D<Real64> Y0;
         Real64 Z0{};
 
-        GLHESlinky()
+        GHESlinky()
             : verticalConfig(false), coilDiameter(0.0), coilPitch(0.0), coilDepth(0.0), trenchDepth(0.0), trenchLength(0.0), numTrenches(0),
               trenchSpacing(0.0), numCoils(0), monthOfMinSurfTemp(0), maxSimYears(0.0), minSurfTemp(0.0), Z0(0.0)
         {
         }
 
-        GLHESlinky(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
+        GHESlinky(EnergyPlusData &state, std::string const &objName, nlohmann::json const &j);
 
         Real64 calcHXResistance(EnergyPlusData &state) override;
 
         void calcGFunctions(EnergyPlusData &state) override;
 
-        void initGLHESimVars(EnergyPlusData &state) override;
+        void initGHESimVars(EnergyPlusData &state) override;
 
         void getAnnualTimeConstant() override;
 
@@ -464,9 +464,9 @@ namespace GroundHeatExchangers {
 
         Real64 getGFunc(Real64 time) override;
 
-        void makeThisGLHECacheStruct() override;
+        void makeThisGHECacheStruct() override;
 
-        void readCacheFileAndCompareWithThisGLHECache(EnergyPlusData &state) override;
+        void readCacheFileAndCompareWithThisGHECache(EnergyPlusData &state) override;
 
         void initEnvironment(EnergyPlusData &state, Real64 CurTime) override;
 
@@ -477,21 +477,21 @@ namespace GroundHeatExchangers {
 
     void GetGroundHeatExchangerInput(EnergyPlusData &state);
 
-    std::shared_ptr<GLHEResponseFactors> BuildAndGetResponseFactorObjectFromArray(EnergyPlusData &state,
-                                                                                  std::shared_ptr<GLHEVertArray> const &arrayObjectPtr);
+    std::shared_ptr<GHEResponseFactors> BuildAndGetResponseFactorObjectFromArray(EnergyPlusData &state,
+                                                                                  std::shared_ptr<GHEVertArray> const &arrayObjectPtr);
 
-    std::shared_ptr<GLHEResponseFactors>
-    BuildAndGetResponseFactorsObjectFromSingleBHs(const EnergyPlusData &state, std::vector<std::shared_ptr<GLHEVertSingle>> const &singleBHsForRFVect);
+    std::shared_ptr<GHEResponseFactors>
+    BuildAndGetResponseFactorsObjectFromSingleBHs(const EnergyPlusData &state, std::vector<std::shared_ptr<GHEVertSingle>> const &singleBHsForRFVect);
 
-    void SetupBHPointsForResponseFactorsObject(const std::shared_ptr<GLHEResponseFactors> &thisRF);
+    void SetupBHPointsForResponseFactorsObject(const std::shared_ptr<GHEResponseFactors> &thisRF);
 
-    std::shared_ptr<GLHEResponseFactors> GetResponseFactor(EnergyPlusData &state, std::string const &objectName);
+    std::shared_ptr<GHEResponseFactors> GetResponseFactor(EnergyPlusData &state, std::string const &objectName);
 
-    std::shared_ptr<GLHEVertSingle> GetSingleBH(EnergyPlusData &state, std::string const &objectName);
+    std::shared_ptr<GHEVertSingle> GetSingleBH(EnergyPlusData &state, std::string const &objectName);
 
-    std::shared_ptr<GLHEVertProps> GetVertProps(EnergyPlusData &state, std::string const &objectName);
+    std::shared_ptr<GHEVertProps> GetVertProps(EnergyPlusData &state, std::string const &objectName);
 
-    std::shared_ptr<GLHEVertArray> GetVertArray(EnergyPlusData &state, std::string const &objectName);
+    std::shared_ptr<GHEVertArray> GetVertArray(EnergyPlusData &state, std::string const &objectName);
 
     std::vector<Real64> TDMA(std::vector<Real64> const &a, std::vector<Real64> const &b, std::vector<Real64> &c, std::vector<Real64> &d);
 
@@ -500,8 +500,8 @@ namespace GroundHeatExchangers {
 struct GroundHeatExchangerData : BaseGlobalStruct
 {
 
-    int numVerticalGLHEs = 0;
-    int numSlinkyGLHEs = 0;
+    int numVerticalGHEs = 0;
+    int numSlinkyGHEs = 0;
     int numVertArray = 0;
     int numVertProps = 0;
     int numResponseFactors = 0;
@@ -519,12 +519,12 @@ struct GroundHeatExchangerData : BaseGlobalStruct
     // the maximum no of system time steps in an hour
 
     // Object Data
-    std::vector<GroundHeatExchangers::GLHEVert> verticalGLHE;
-    std::vector<GroundHeatExchangers::GLHESlinky> slinkyGLHE;
-    std::vector<std::shared_ptr<GroundHeatExchangers::GLHEVertArray>> vertArraysVector;
-    std::vector<std::shared_ptr<GroundHeatExchangers::GLHEVertProps>> vertPropsVector;
-    std::vector<std::shared_ptr<GroundHeatExchangers::GLHEResponseFactors>> responseFactorsVector;
-    std::vector<std::shared_ptr<GroundHeatExchangers::GLHEVertSingle>> singleBoreholesVector;
+    std::vector<GroundHeatExchangers::GHEVert> verticalGHE;
+    std::vector<GroundHeatExchangers::GHESlinky> slinkyGHE;
+    std::vector<std::shared_ptr<GroundHeatExchangers::GHEVertArray>> vertArraysVector;
+    std::vector<std::shared_ptr<GroundHeatExchangers::GHEVertProps>> vertPropsVector;
+    std::vector<std::shared_ptr<GroundHeatExchangers::GHEResponseFactors>> responseFactorsVector;
+    std::vector<std::shared_ptr<GroundHeatExchangers::GHEVertSingle>> singleBoreholesVector;
 
     void init_constant_state([[maybe_unused]] EnergyPlusData &state) override
     {
@@ -536,8 +536,8 @@ struct GroundHeatExchangerData : BaseGlobalStruct
 
     void clear_state() override
     {
-        this->numVerticalGLHEs = 0;
-        this->numSlinkyGLHEs = 0;
+        this->numVerticalGHEs = 0;
+        this->numSlinkyGHEs = 0;
         this->numVertArray = 0;
         this->numVertProps = 0;
         this->numResponseFactors = 0;
@@ -549,8 +549,8 @@ struct GroundHeatExchangerData : BaseGlobalStruct
         this->GetInput = true;
         this->numAutoGeneratedResponseFactors = 0;
         this->prevTimeSteps.deallocate();
-        this->verticalGLHE.clear();
-        this->slinkyGLHE.clear();
+        this->verticalGHE.clear();
+        this->slinkyGHE.clear();
         this->vertArraysVector.clear();
         this->vertPropsVector.clear();
         this->responseFactorsVector.clear();
