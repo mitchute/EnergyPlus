@@ -50878,7 +50878,7 @@ SpaceHVAC:ZoneReturnMixer,
    A6, \field Space 2 Name
        \type object-list
        \object-list SpaceNames
-   A7, \field Space 3 Return Air Node Name
+   A7, \field Space 2 Return Air Node Name
        \note Matches a SpaceHVAC:EquipmentConnections Return Air Node Name
        \type node
    A8, \field Space 3 Name
@@ -53664,6 +53664,7 @@ Coil:Cooling:DX:VariableSpeed,
         \type alpha
         \reference CoolingCoilsDXVariableSpeed
         \reference DesuperHeatingCoilSources
+        \reference AFNCoilNames
    A2,  \field Indoor Air Inlet Node Name
         \required-field
         \type node
@@ -56528,6 +56529,7 @@ Coil:Heating:DX:VariableSpeed,
         \required-field
         \type alpha
         \reference HeatingCoilsDXVariableSpeed
+        \reference AFNCoilNames
    A2,  \field Indoor Air Inlet Node Name
         \required-field
         \type node
@@ -57599,6 +57601,7 @@ Coil:Cooling:WaterToAirHeatPump:EquationFit,
         \reference-class-name validBranchEquipmentTypes
         \reference validBranchEquipmentNames
         \reference DesuperHeatingWaterOnlySources
+        \reference AFNCoilNames
    A2,  \field Water Inlet Node Name
         \required-field
         \type node
@@ -57746,6 +57749,7 @@ Coil:Cooling:WaterToAirHeatPump:VariableSpeedEquationFit,
         \reference-class-name validBranchEquipmentTypes
         \reference validBranchEquipmentNames
         \reference DesuperHeatingWaterOnlySources
+        \reference AFNCoilNames
    A2,  \field Water-to-Refrigerant HX Water Inlet Node Name
         \required-field
         \type node
@@ -58602,6 +58606,7 @@ Coil:Heating:WaterToAirHeatPump:EquationFit,
         \reference HeatingCoilsWaterToAirHP
         \reference-class-name validBranchEquipmentTypes
         \reference validBranchEquipmentNames
+        \reference AFNCoilNames
    A2,  \field Water Inlet Node Name
         \required-field
         \type node
@@ -58693,6 +58698,7 @@ Coil:Heating:WaterToAirHeatPump:VariableSpeedEquationFit,
         \reference HeatingCoilsWaterToAirVSHP
         \reference-class-name validBranchEquipmentTypes
         \reference validBranchEquipmentNames
+        \reference AFNCoilNames
    A2,  \field Water-to-Refrigerant HX Water Inlet Node Name
         \required-field
         \type node
@@ -75740,6 +75746,8 @@ HeatPump:AirToWater:FuelFired:Heating,
   \min-fields 31
   A1 , \field Name
        \required-field
+       \reference-class-name validBranchEquipmentTypes
+       \reference validBranchEquipmentNames
        \reference HeatPumpAirToWaterFuelFiredHeatingNames
        \note Name of the fuel fired absorption heat pump system system
   A2 , \field Water Inlet Node Name
@@ -75920,6 +75928,8 @@ HeatPump:AirToWater:FuelFired:Cooling,
   \min-fields 26
   A1 , \field Name
        \required-field
+       \reference-class-name validBranchEquipmentTypes
+       \reference validBranchEquipmentNames
        \reference HeatPumpAirToWaterFuelFiredCoolingNames
        \note Name of the fuel fired absorption heat pump system system
   A2 , \field Water Inlet Node Name
