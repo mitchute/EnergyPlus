@@ -544,9 +544,11 @@ GHEVertProps::GHEVertProps(EnergyPlusData &state, std::string const &objName, nl
 std::shared_ptr<GHEVertProps> GetVertProps(EnergyPlusData &state, std::string const &objectName)
 {
     // Check if this instance of this model has already been retrieved
-    auto thisObj = std::find_if(state.dataGroundHeatExchanger->vertPropsVector.begin(),
-                                state.dataGroundHeatExchanger->vertPropsVector.end(),
-                                [&objectName](const std::shared_ptr<GHEVertProps> &myObj) { return myObj->name == objectName; });
+    const auto thisObj = std::find_if(state.dataGroundHeatExchanger->vertPropsVector.begin(),
+                                      state.dataGroundHeatExchanger->vertPropsVector.end(),
+                                      [&objectName](const std::shared_ptr<GHEVertProps> &myObj) {
+                                          return myObj->name == objectName;
+                                      });
     if (thisObj != state.dataGroundHeatExchanger->vertPropsVector.end()) {
         return *thisObj;
     }
@@ -563,9 +565,11 @@ std::shared_ptr<GHEVertProps> GetVertProps(EnergyPlusData &state, std::string co
 std::shared_ptr<GHEVertSingle> GetSingleBH(EnergyPlusData &state, std::string const &objectName)
 {
     // Check if this instance of this model has already been retrieved
-    auto thisObj = std::find_if(state.dataGroundHeatExchanger->singleBoreholesVector.begin(),
-                                state.dataGroundHeatExchanger->singleBoreholesVector.end(),
-                                [&objectName](const std::shared_ptr<GHEVertSingle> &myObj) { return myObj->name == objectName; });
+    const auto thisObj = std::find_if(state.dataGroundHeatExchanger->singleBoreholesVector.begin(),
+                                      state.dataGroundHeatExchanger->singleBoreholesVector.end(),
+                                      [&objectName](const std::shared_ptr<GHEVertSingle> &myObj) {
+                                          return myObj->name == objectName;
+                                      });
     if (thisObj != state.dataGroundHeatExchanger->singleBoreholesVector.end()) {
         return *thisObj;
     }
@@ -582,9 +586,11 @@ std::shared_ptr<GHEVertSingle> GetSingleBH(EnergyPlusData &state, std::string co
 std::shared_ptr<GHEVertArray> GetVertArray(EnergyPlusData &state, std::string const &objectName)
 {
     // Check if this instance of this model has already been retrieved
-    auto thisObj = std::find_if(state.dataGroundHeatExchanger->vertArraysVector.begin(),
-                                state.dataGroundHeatExchanger->vertArraysVector.end(),
-                                [&objectName](const std::shared_ptr<GHEVertArray> &myObj) { return myObj->name == objectName; });
+    const auto thisObj = std::find_if(state.dataGroundHeatExchanger->vertArraysVector.begin(),
+                                      state.dataGroundHeatExchanger->vertArraysVector.end(),
+                                      [&objectName](const std::shared_ptr<GHEVertArray> &myObj) {
+                                          return myObj->name == objectName;
+                                      });
     if (thisObj != state.dataGroundHeatExchanger->vertArraysVector.end()) {
         return *thisObj;
     }
@@ -601,9 +607,11 @@ std::shared_ptr<GHEVertArray> GetVertArray(EnergyPlusData &state, std::string co
 std::shared_ptr<GHEResponseFactors> GetResponseFactor(EnergyPlusData &state, std::string const &objectName)
 {
     // Check if this instance of this model has already been retrieved
-    auto thisObj = std::find_if(state.dataGroundHeatExchanger->responseFactorsVector.begin(),
-                                state.dataGroundHeatExchanger->responseFactorsVector.end(),
-                                [&objectName](const std::shared_ptr<GHEResponseFactors> &myObj) { return myObj->name == objectName; });
+    const auto thisObj = std::find_if(state.dataGroundHeatExchanger->responseFactorsVector.begin(),
+                                      state.dataGroundHeatExchanger->responseFactorsVector.end(),
+                                      [&objectName](const std::shared_ptr<GHEResponseFactors> &myObj) {
+                                          return myObj->name == objectName;
+                                      });
     if (thisObj != state.dataGroundHeatExchanger->responseFactorsVector.end()) {
         return *thisObj;
     }
@@ -618,7 +626,7 @@ std::shared_ptr<GHEResponseFactors> GetResponseFactor(EnergyPlusData &state, std
 //******************************************************************************
 
 std::shared_ptr<GHEResponseFactors> BuildAndGetResponseFactorObjectFromArray(EnergyPlusData &state,
-                                                                              std::shared_ptr<GHEVertArray> const &arrayObjectPtr)
+                                                                             std::shared_ptr<GHEVertArray> const &arrayObjectPtr)
 {
     // Make new response factor object and store it for later use
     std::shared_ptr<GHEResponseFactors> thisRF(new GHEResponseFactors);
@@ -660,7 +668,7 @@ BuildAndGetResponseFactorsObjectFromSingleBHs(const EnergyPlusData &state, std::
     thisRF->name = format("Response Factor Object Auto Generated No: {}", state.dataGroundHeatExchanger->numAutoGeneratedResponseFactors + 1);
 
     // Make new props object which has the mean values of the other props objects referenced by the individual BH objects
-    std::shared_ptr<GHEVertProps> thisProps(new GHEVertProps);
+    const std::shared_ptr<GHEVertProps> thisProps(new GHEVertProps);
     thisProps->name = format("Response Factor Auto Generated Mean Props No: {}", state.dataGroundHeatExchanger->numAutoGeneratedResponseFactors + 1);
     for (auto &thisBH : singleBHsForRFVect) {
         thisProps->bhDiameter += thisBH->props->bhDiameter;
@@ -778,10 +786,10 @@ void GHEBase::onInitLoopEquip(EnergyPlusData &state, [[maybe_unused]] const Plan
 //******************************************************************************
 
 void GHEBase::simulate(EnergyPlusData &state,
-                        [[maybe_unused]] const PlantLocation &calledFromLocation,
-                        [[maybe_unused]] bool const FirstHVACIteration,
-                        [[maybe_unused]] Real64 &CurLoad,
-                        [[maybe_unused]] bool const RunFlag)
+                       [[maybe_unused]] const PlantLocation &calledFromLocation,
+                       [[maybe_unused]] bool const FirstHVACIteration,
+                       [[maybe_unused]] Real64 &CurLoad,
+                       [[maybe_unused]] bool const RunFlag)
 {
 
     if (this->needToSetupOutputVars) {
@@ -807,16 +815,20 @@ GHEBase *GHEBase::factory(EnergyPlusData &state, DataPlant::PlantEquipmentType o
         state.dataGroundHeatExchanger->GetInput = false;
     }
     if (objectType == DataPlant::PlantEquipmentType::GrndHtExchgSystem) {
-        auto thisObj = std::find_if(state.dataGroundHeatExchanger->verticalGLHE.begin(),
-                                    state.dataGroundHeatExchanger->verticalGLHE.end(),
-                                    [&objectName](const GHEBase &myObj) { return myObj.name == objectName; });
+        const auto thisObj = std::find_if(state.dataGroundHeatExchanger->verticalGHE.begin(),
+                                          state.dataGroundHeatExchanger->verticalGHE.end(),
+                                          [&objectName](const GHEBase &myObj) {
+                                              return myObj.name == objectName;
+                                          });
         if (thisObj != state.dataGroundHeatExchanger->verticalGHE.end()) {
             return &(*thisObj);
         }
     } else if (objectType == DataPlant::PlantEquipmentType::GrndHtExchgSlinky) {
-        auto thisObj = std::find_if(state.dataGroundHeatExchanger->slinkyGLHE.begin(),
-                                    state.dataGroundHeatExchanger->slinkyGLHE.end(),
-                                    [&objectName](const GHEBase &myObj) { return myObj.name == objectName; });
+        const auto thisObj = std::find_if(state.dataGroundHeatExchanger->slinkyGHE.begin(),
+                                          state.dataGroundHeatExchanger->slinkyGHE.end(),
+                                          [&objectName](const GHEBase &myObj) {
+                                              return myObj.name == objectName;
+                                          });
         if (thisObj != state.dataGroundHeatExchanger->slinkyGHE.end()) {
             return &(*thisObj);
         }

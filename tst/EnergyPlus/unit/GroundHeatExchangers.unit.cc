@@ -77,7 +77,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_Interpolate)
     // Initialization
     GHESlinky thisGLHE;
 
-    const int NPairs = 2;
+    constexpr int NPairs = 2;
 
     const std::shared_ptr<GHEResponseFactors> thisRF(new GHEResponseFactors);
     thisGLHE.myRespFactors = thisRF;
@@ -111,7 +111,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_Slinky_GetGFunc)
     // Initialization
     GHESlinky thisGLHE;
 
-    const int NPairs = 2;
+    constexpr int NPairs = 2;
 
     const std::shared_ptr<GHEResponseFactors> thisRF(new GHEResponseFactors);
     thisGLHE.myRespFactors = thisRF;
@@ -123,9 +123,9 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_Slinky_GetGFunc)
     thisGLHE.myRespFactors->GFNC[0] = 0.0;
     thisGLHE.myRespFactors->GFNC[1] = 5.0;
 
-    Real64 time = std::pow(10.0, 2.5);
+    const Real64 time = std::pow(10.0, 2.5);
 
-    Real64 thisGFunc = thisGLHE.getGFunc(time);
+    const Real64 thisGFunc = thisGLHE.getGFunc(time);
 
     EXPECT_EQ(2.5, thisGFunc);
 }
@@ -136,7 +136,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_GetGFunc)
     // Initialization
     GHEVert thisGLHE;
 
-    const int NPairs = 2;
+    constexpr int NPairs = 2;
 
     const std::shared_ptr<GHEResponseFactors> thisRF(new GHEResponseFactors);
     thisGLHE.myRespFactors = thisRF;
@@ -148,7 +148,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_GetGFunc)
     thisGLHE.myRespFactors->GFNC[0] = 0.0;
     thisGLHE.myRespFactors->GFNC[1] = 5.0;
 
-    Real64 time = std::pow(2.7182818284590452353602874, 2.5);
+    const Real64 time = std::pow(2.7182818284590452353602874, 2.5);
 
     thisGLHE.bhLength = 1.0;
     thisGLHE.bhRadius = 1.0;
@@ -253,7 +253,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_Properties_IDF_Check)
 
     EXPECT_EQ(1u, state->dataGroundHeatExchanger->vertPropsVector.size());
 
-    auto &thisProp(state->dataGroundHeatExchanger->vertPropsVector[0]);
+    const auto &thisProp(state->dataGroundHeatExchanger->vertPropsVector[0]);
 
     EXPECT_EQ("GHE-1 PROPS", thisProp->name);
     EXPECT_EQ(1, thisProp->bhTopDepth);
@@ -310,7 +310,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_Slinky_IDF_Check)
 
     EXPECT_EQ(1u, state->dataGroundHeatExchanger->slinkyGHE.size());
 
-    auto &thisGHE(state->dataGroundHeatExchanger->slinkyGHE[0]);
+    const auto &thisGHE(state->dataGroundHeatExchanger->slinkyGHE[0]);
 
     EXPECT_NEAR(thisGHE.designFlow, 0.0033, 0.000001);
     EXPECT_NEAR(thisGHE.soil.k, 1.2, 0.001);
@@ -792,8 +792,8 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_Given_Response_Factors_
     EXPECT_EQ(1u, state->dataGroundHeatExchanger->responseFactorsVector.size());
     EXPECT_EQ(1u, state->dataGroundHeatExchanger->verticalGHE.size());
 
-    auto &thisRF(state->dataGroundHeatExchanger->responseFactorsVector[0]);
-    auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
+    const auto &thisRF(state->dataGroundHeatExchanger->responseFactorsVector[0]);
+    const auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
 
     EXPECT_EQ("VERTICAL GHE 1X4 STD", thisGLHE.name);
     EXPECT_EQ(true, thisGLHE.available);
@@ -863,8 +863,8 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_Given_Array_IDF_Check)
     EXPECT_EQ(1u, state->dataGroundHeatExchanger->vertArraysVector.size());
     EXPECT_EQ(1u, state->dataGroundHeatExchanger->verticalGHE.size());
 
-    auto &thisArray(state->dataGroundHeatExchanger->vertArraysVector[0]);
-    auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
+    const auto &thisArray(state->dataGroundHeatExchanger->vertArraysVector[0]);
+    const auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
 
     EXPECT_EQ("VERTICAL GHE 1X4 STD", thisGLHE.name);
     EXPECT_EQ(true, thisGLHE.available);
@@ -961,7 +961,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_Given_Single_BHs_IDF_Ch
     EXPECT_EQ(5u, state->dataGroundHeatExchanger->singleBoreholesVector.size());
     EXPECT_EQ(1u, state->dataGroundHeatExchanger->verticalGHE.size());
 
-    auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
+    const auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
 
     EXPECT_EQ("VERTICAL GHE 1X4 STD", thisGLHE.name);
     EXPECT_EQ(true, thisGLHE.available);
@@ -1294,7 +1294,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calcGFunction_UHF)
 
     thisGLHE.calcGFunctions(*state);
 
-    Real64 constexpr tolerance = 0.1;
+    constexpr Real64 tolerance = 0.1;
 
     // Test g-function values from GLHEPro
     EXPECT_NEAR(thisGLHE.interpGFunc(-11.939864), 0.37, tolerance);
@@ -1746,7 +1746,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calcGFunction_UBHWT)
 
     thisGLHE.calcGFunctions(*state);
 
-    Real64 constexpr tolerance = 0.1;
+    constexpr Real64 tolerance = 0.1;
 
     // Test g-function values from GLHEPro
     EXPECT_NEAR(thisGLHE.interpGFunc(-11.939864), 0.37, tolerance);
@@ -1838,9 +1838,9 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calc_pipe_conduction_re
 
     GetGroundHeatExchangerInput(*state);
 
-    auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
+    const auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
 
-    Real64 constexpr tolerance = 0.00001;
+    constexpr Real64 tolerance = 0.00001;
 
     EXPECT_NEAR(thisGLHE.calcPipeConductionResistance(), 0.082204, tolerance);
 }
@@ -1901,9 +1901,9 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_friction_factor)
 
     GetGroundHeatExchangerInput(*state);
 
-    auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
+    const auto &thisGLHE(state->dataGroundHeatExchanger->verticalGHE[0]);
 
-    Real64 constexpr tolerance = 0.000001;
+    constexpr Real64 tolerance = 0.000001;
 
     // laminar tests
     Real64 reynoldsNum = 100;
@@ -2224,10 +2224,10 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calc_pipe_convection_re
     state->dataLoopNodes->Node(thisGLHE.inletNodeNum).Temp = 13.0;
     thisGLHE.designFlow = 0.000303 * 4;
 
-    Real64 rho = 999.380058; // Density at 13 C using CoolProp
+    constexpr Real64 rho = 999.380058; // Density at 13 C using CoolProp
     thisGLHE.massFlowRate = thisGLHE.designFlow * rho;
 
-    Real64 constexpr tolerance = 0.00001;
+    constexpr Real64 tolerance = 0.00001;
 
     // Turbulent
     EXPECT_NEAR(thisGLHE.calcPipeConvectionResistance(*state), 0.004453, tolerance);
@@ -2529,10 +2529,10 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calc_pipe_resistance)
     state->dataLoopNodes->Node(thisGLHE.inletNodeNum).Temp = 13.0;
     thisGLHE.designFlow = 0.000303 * 4;
 
-    Real64 rho = 999.380058; // Density at 13 C using CoolProp
+    constexpr Real64 rho = 999.380058; // Density at 13 C using CoolProp
     thisGLHE.massFlowRate = thisGLHE.designFlow * rho;
 
-    Real64 constexpr tolerance = 0.00001;
+    constexpr Real64 tolerance = 0.00001;
 
     EXPECT_NEAR(thisGLHE.calcPipeResistance(*state), 0.082204 + 0.004453, tolerance);
 }
@@ -2826,7 +2826,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calcBHGroutResistance_1
     state->dataLoopNodes->Node(thisGLHE.inletNodeNum).Temp = 20.0;
     thisGLHE.massFlowRate = 1;
 
-    Real64 constexpr tolerance = 0.00001;
+    constexpr Real64 tolerance = 0.00001;
 
     // Flow rate and pipe thickness picked to fix pipe resistance at 0.05
     EXPECT_NEAR(thisGLHE.theta_1, 0.33333, tolerance);
@@ -3124,7 +3124,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calcBHGroutResistance_2
     state->dataLoopNodes->Node(thisGLHE.inletNodeNum).Temp = 20.0;
     thisGLHE.massFlowRate = 1;
 
-    Real64 constexpr tolerance = 0.00001;
+    constexpr Real64 tolerance = 0.00001;
 
     // Flow rate and pipe thickness picked to fix pipe resistance at 0.05
     EXPECT_NEAR(thisGLHE.theta_1, 0.44444, tolerance);
@@ -3423,7 +3423,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calcBHGroutResistance_3
     state->dataLoopNodes->Node(thisGLHE.inletNodeNum).Temp = 20.0;
     thisGLHE.massFlowRate = 1;
 
-    Real64 constexpr tolerance = 0.00001;
+    constexpr Real64 tolerance = 0.00001;
 
     // Flow rate and pipe thickness picked to fix pipe resistance at 0.05
     EXPECT_NEAR(thisGLHE.theta_1, 0.37037, tolerance);
@@ -3721,7 +3721,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calcBHTotalInternalResi
     state->dataLoopNodes->Node(thisGLHE.inletNodeNum).Temp = 20.0;
     thisGLHE.massFlowRate = 1;
 
-    Real64 constexpr tolerance = 0.00001;
+    constexpr Real64 tolerance = 0.00001;
 
     // Flow rate and pipe thickness picked to fix pipe resistance at 0.05
     EXPECT_NEAR(thisGLHE.theta_1, 0.33333, tolerance);
@@ -4019,7 +4019,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calcBHTotalInternalResi
     state->dataLoopNodes->Node(thisGLHE.inletNodeNum).Temp = 20.0;
     thisGLHE.massFlowRate = 1;
 
-    Real64 constexpr tolerance = 0.00001;
+    constexpr Real64 tolerance = 0.00001;
 
     // Flow rate and pipe thickness picked to fix pipe resistance at 0.05
     EXPECT_NEAR(thisGLHE.theta_1, 0.166667, tolerance);
@@ -4318,7 +4318,7 @@ TEST_F(EnergyPlusFixture, GroundHeatExchangerTest_System_calcBHTotalInternalResi
     state->dataLoopNodes->Node(thisGLHE.inletNodeNum).Temp = 20.0;
     thisGLHE.massFlowRate = 1;
 
-    Real64 constexpr tolerance = 0.00001;
+    constexpr Real64 tolerance = 0.00001;
 
     // Flow rate and pipe thickness picked to fix pipe resistance at 0.05
     EXPECT_NEAR(thisGLHE.theta_1, 0.37037, tolerance);
