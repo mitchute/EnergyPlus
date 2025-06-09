@@ -118,7 +118,7 @@ nlohmann::json InputFile::readJSON()
     switch (ext) {
     case FileSystem::FileTypes::EpJSON:
     case FileSystem::FileTypes::JSON:
-    case FileSystem::FileTypes::GLHE:
+    case FileSystem::FileTypes::GHE:
         return nlohmann::json::parse(*is, nullptr, true, true);
     case FileSystem::FileTypes::CBOR:
         return nlohmann::json::from_cbor(*is);
@@ -412,7 +412,7 @@ void IOFiles::OutputControl::getInput(EnergyPlusData &state)
                 dfs = boolean_choice(find_input(fields, "output_dfs"));
             }
             { // "output_glhe"
-                glhe = boolean_choice(find_input(fields, "output_glhe"));
+                ghe = boolean_choice(find_input(fields, "output_glhe"));
             }
             { // "output_delightin"
                 delightin = boolean_choice(find_input(fields, "output_delightin"));

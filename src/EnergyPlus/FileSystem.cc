@@ -84,9 +84,9 @@ namespace FileSystem {
 #endif
 
     static constexpr std::array<std::string_view, static_cast<std::size_t>(FileTypes::Num)> FileTypesExt{
-        "epJSON", "json", "glhe", "cbor", "msgpack", "ubjson", "bson", "idf", "imf", "csv", "tsv", "txt", "eso", "mtr", "ddy"};
+        "epJSON", "json", "ghe", "cbor", "msgpack", "ubjson", "bson", "idf", "imf", "csv", "tsv", "txt", "eso", "mtr", "ddy"};
     static constexpr std::array<std::string_view, static_cast<std::size_t>(FileTypes::Num)> FileTypesExtUC{
-        "EPJSON", "JSON", "GLHE", "CBOR", "MSGPACK", "UBJSON", "BSON", "IDF", "IMF", "CSV", "TSV", "TXT", "ESO", "MTR", "DDY"};
+        "EPJSON", "JSON", "GHE", "CBOR", "MSGPACK", "UBJSON", "BSON", "IDF", "IMF", "CSV", "TSV", "TXT", "ESO", "MTR", "DDY"};
 
     static_assert(FileTypesExt.size() == static_cast<std::size_t>(FileTypes::Num), "Mismatched FileTypes enum and FileTypesExt array.");
     static_assert(FileTypesExtUC.size() == static_cast<std::size_t>(FileTypes::Num), "Mismatched FileTypes enum and FileTypesExtUC array.");
@@ -388,7 +388,7 @@ namespace FileSystem {
         switch (ext) {
         case FileTypes::EpJSON:
         case FileTypes::JSON:
-        case FileTypes::GLHE:
+        case FileTypes::GHE:
             return nlohmann::json::parse(file, nullptr, true, true);
         case FileTypes::CBOR:
             return nlohmann::json::from_cbor(file);
