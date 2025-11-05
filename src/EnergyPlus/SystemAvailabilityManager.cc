@@ -1377,7 +1377,7 @@ namespace Avail {
             } // End of Num Loop
 
         } else {
-            if (AvailabilityListName != "") {
+            if (!AvailabilityListName.empty()) {
                 ShowWarningError(state,
                                  format("GetPlantLoopData/GetPlantAvailabilityManager: AvailabilityManagerAssignmentList={} not found in lists.  No "
                                         "availability will be used.",
@@ -1448,7 +1448,7 @@ namespace Avail {
             } // End of Num Loop
 
         } else {
-            if (AvailabilityListName != "") {
+            if (!AvailabilityListName.empty()) {
                 ShowWarningError(state,
                                  format("GetAirPathData/GetAirLoopAvailabilityManager: AvailabilityManagerAssignmentList={} not found in lists.  No "
                                         "availability will be used.",
