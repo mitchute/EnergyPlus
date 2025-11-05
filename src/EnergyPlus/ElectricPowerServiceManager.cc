@@ -429,7 +429,7 @@ void ElectricPowerServiceManager::setupMeterIndices(EnergyPlusData &state)
     elecProducedPowerConversionMeterIndex_ = GetMeterIndex(state, "POWERCONVERSION:ELECTRICITYPRODUCED");
 
     if (numLoadCenters_ > 0) {
-        for (auto &e : elecLoadCenterObjs) {
+        for (const auto &e : elecLoadCenterObjs) {
             e->setupLoadCenterMeterIndices(state);
         }
     }
@@ -472,8 +472,8 @@ void ElectricPowerServiceManager::reinitAtBeginEnvironment()
 
 void ElectricPowerServiceManager::verifyCustomMetersElecPowerMgr(EnergyPlusData &state)
 {
-    for (std::size_t loop = 0; loop < elecLoadCenterObjs.size(); ++loop) {
-        elecLoadCenterObjs[loop]->setupLoadCenterMeterIndices(state);
+    for (const auto &elecLoadCenterObj : elecLoadCenterObjs) {
+        elecLoadCenterObj->setupLoadCenterMeterIndices(state);
     }
 }
 
