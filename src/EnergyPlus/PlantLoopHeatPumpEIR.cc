@@ -2330,7 +2330,7 @@ void EIRPlantLoopHeatPump::oneTimeInit(EnergyPlusData &state)
 
     if (this->oneTimeInitFlag) {
         bool errFlag = false;
-        std::string suffix = "";
+        std::string suffix;
         if (this->EIRHPType == DataPlant::PlantEquipmentType::HeatPumpAirToWaterHeating) {
             suffix = " in Heating Mode";
         } else if (this->EIRHPType == DataPlant::PlantEquipmentType::HeatPumpAirToWaterCooling) {
@@ -2682,8 +2682,8 @@ void HeatPumpAirToWater::oneTimeInit(EnergyPlusData &state)
         return;
     }
     EIRPlantLoopHeatPump::oneTimeInit(state);
-    std::string suffix = "";
-    std::string mode_keyword = "";
+    std::string suffix;
+    std::string mode_keyword;
     if (this->EIRHPType == DataPlant::PlantEquipmentType::HeatPumpAirToWaterHeating) {
         suffix = " in Heating Mode";
         mode_keyword = "Heating";
@@ -4232,7 +4232,7 @@ void EIRPlantLoopHeatPump::setUpEMS(EnergyPlusData &)
 void HeatPumpAirToWater::setUpEMS(EnergyPlusData &state)
 {
 
-    std::string mode_keyword = "";
+    std::string mode_keyword;
     if (this->EIRHPType == DataPlant::PlantEquipmentType::HeatPumpAirToWaterHeating) {
         // defrost related actuators
         mode_keyword = "Heating";

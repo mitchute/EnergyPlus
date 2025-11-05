@@ -1999,7 +1999,7 @@ void ReportCoilSelection::setCoilEqNum(EnergyPlusData &state,
 
 std::string ReportCoilSelection::getTimeText(EnergyPlusData &state, int const timeStepAtPeak)
 {
-    std::string returnString = "";
+    std::string returnString;
 
     if (timeStepAtPeak == 0) {
         return returnString;
