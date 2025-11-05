@@ -2997,9 +2997,8 @@ namespace DesiccantDehumidifiers {
                                                                 RegenCoilActual);
                         if (RegenCoilHeatLoad != 0.0) {
                             return (RegenCoilActual - RegenCoilHeatLoad) / RegenCoilHeatLoad;
-                        } else { // Autodesk:Return ELSE added to assure return value is set
-                            return 0.0;
-                        }
+                        } // Autodesk:Return ELSE added to assure return value is set
+                        return 0.0;
                     };
                     General::SolveRoot(state, ErrTolerance, SolveMaxIter, SolFlag, HotWaterMdot, f, MinWaterFlow, MaxHotWaterFlow);
                     if (SolFlag == -1) {
@@ -3107,11 +3106,10 @@ namespace DesiccantDehumidifiers {
         int WhichDesicDehum = Util::FindItemInList(DesicDehumName, state.dataDesiccantDehumidifiers->DesicDehum);
         if (WhichDesicDehum != 0) {
             return state.dataDesiccantDehumidifiers->DesicDehum(WhichDesicDehum).ProcAirInNode;
-        } else {
-            ShowSevereError(state, format("GetProcAirInletNodeNum: Could not find Desciccant Dehumidifier = \"{}\"", DesicDehumName));
-            ErrorsFound = true;
-            return 0;
         }
+        ShowSevereError(state, format("GetProcAirInletNodeNum: Could not find Desciccant Dehumidifier = \"{}\"", DesicDehumName));
+        ErrorsFound = true;
+        return 0;
     }
 
     int GetProcAirOutletNodeNum(EnergyPlusData &state, std::string const &DesicDehumName, bool &ErrorsFound)
@@ -3133,11 +3131,10 @@ namespace DesiccantDehumidifiers {
         int WhichDesicDehum = Util::FindItemInList(DesicDehumName, state.dataDesiccantDehumidifiers->DesicDehum);
         if (WhichDesicDehum != 0) {
             return state.dataDesiccantDehumidifiers->DesicDehum(WhichDesicDehum).ProcAirOutNode;
-        } else {
-            ShowSevereError(state, format("GetProcAirInletNodeNum: Could not find Desciccant Dehumidifier = \"{}\"", DesicDehumName));
-            ErrorsFound = true;
-            return 0;
         }
+        ShowSevereError(state, format("GetProcAirInletNodeNum: Could not find Desciccant Dehumidifier = \"{}\"", DesicDehumName));
+        ErrorsFound = true;
+        return 0;
     }
 
     //        End of Reporting subroutines for the SimAir Module
