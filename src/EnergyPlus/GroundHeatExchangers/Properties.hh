@@ -60,7 +60,7 @@ namespace GroundHeatExchangers {
     static constexpr Real64 hrsPerMonth = 730.0; // Number of hours in month
     static constexpr Real64 maxTSinHr = 60.0;    // Max number of time step in an hour
 
-    enum class GFuncCalcMethod
+    enum class GFuncCalcMethod : std::int8_t
     {
         Invalid = -1,
         UniformHeatFlux,

@@ -65,7 +65,7 @@ namespace Humidifiers {
 
     static constexpr std::array<std::string_view, 2> HumidifierType = {"Humidifier:Steam:Electric", "Humidifier:Steam:Gas"};
 
-    enum class HumidType
+    enum class HumidType : std::int8_t
     {
         Invalid = -1,
         Electric,
@@ -73,7 +73,7 @@ namespace Humidifiers {
         Num
     };
 
-    enum class InletWaterTemp
+    enum class InletWaterTemp : std::int8_t
     {
         Invalid = -1,
         Fixed,

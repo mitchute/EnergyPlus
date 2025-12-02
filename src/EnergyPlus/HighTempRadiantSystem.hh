@@ -66,7 +66,7 @@ namespace HighTempRadiantSystem {
 
     // Types
 
-    enum class RadControlType : int
+    enum class RadControlType : std::int8_t
     {
         Invalid = -1,
         MATControl,

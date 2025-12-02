@@ -66,7 +66,7 @@ struct EnergyPlusData;
 namespace Fans {
 
     // Fan Minimum Flow Fraction Input Method
-    enum class MinFlowFracMethod
+    enum class MinFlowFracMethod : std::int8_t
     {
         Invalid = -1,
         MinFrac,
@@ -74,7 +74,7 @@ namespace Fans {
         Num
     };
 
-    enum class AvailManagerMode
+    enum class AvailManagerMode : std::int8_t
     {
         Invalid = -1,
         Coupled,
@@ -194,7 +194,7 @@ namespace Fans {
         std::string sizingPrefix;
     };
 
-    enum class VFDEffType
+    enum class VFDEffType : std::int8_t
     {
         Invalid = -1,
         Speed,
@@ -326,7 +326,7 @@ namespace Fans {
                                         int FanCurvePtr                // Fan Curve Pointer
     );
 
-    enum class PowerSizing
+    enum class PowerSizing : std::int8_t
     {
         Invalid = -1,
         PerFlow,
@@ -338,7 +338,7 @@ namespace Fans {
     static constexpr std::array<std::string_view, (int)PowerSizing::Num> powerSizingNamesUC = {
         "POWERPERFLOW", "POWERPERFLOWPERPRESSURE", "TOTALEFFICIENCYANDPRESSURE"};
 
-    enum class HeatLossDest
+    enum class HeatLossDest : std::int8_t
     {
         Invalid = -1,
         Zone,
@@ -346,7 +346,7 @@ namespace Fans {
         Num
     };
 
-    enum class SpeedControl : int
+    enum class SpeedControl : std::int8_t
     {
         // TODO: enum check
         Invalid = -1,

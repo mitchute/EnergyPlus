@@ -64,7 +64,7 @@ namespace EnergyPlus {
 // Forward declarations
 struct EnergyPlusData;
 
-enum class BooleanSwitch
+enum class BooleanSwitch : std::int8_t
 {
     Invalid = -1,
     No,

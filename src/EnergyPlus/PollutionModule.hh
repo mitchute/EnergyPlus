@@ -61,7 +61,7 @@ namespace EnergyPlus {
 
 namespace Pollution {
 
-    enum class Pollutant
+    enum class Pollutant : std::int8_t
     {
         Invalid = -1,
         CO2,
@@ -155,7 +155,7 @@ namespace Pollution {
         "Nuclear Low Level Waste Volume", // NuclearLow
     };
 
-    enum class PollFuel
+    enum class PollFuel : std::int8_t
     {
         Invalid = -1,
         Electricity,
@@ -226,7 +226,7 @@ namespace Pollution {
         Constant::eFuelNamesUC[(int)pollFuel2fuel[(int)PollFuel::OtherFuel2]]   // OtherFuel2
     };
 
-    enum class PollFuelComponent
+    enum class PollFuelComponent : std::int8_t
     {
         Invalid = -1,
         Electricity,
@@ -270,7 +270,7 @@ namespace Pollution {
         PollFuelComponent::OtherFuel2,
     };
 
-    enum class PollFacilityMeter
+    enum class PollFacilityMeter : std::int8_t
     {
         Invalid = -1,
         Electricity,

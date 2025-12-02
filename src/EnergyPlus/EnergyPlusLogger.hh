@@ -53,7 +53,7 @@
 class EnergyPlusLogger : public Courierr::Courierr
 {
 public:
-    enum class Log_level
+    enum class Log_level : std::int8_t
     {
         Invalid = -1,
         Debug,

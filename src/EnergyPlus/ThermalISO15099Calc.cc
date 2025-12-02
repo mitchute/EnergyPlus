@@ -93,7 +93,7 @@ using namespace TARCOGGasses90;
 using namespace TarcogShading;
 
 //  Calculation outcome
-enum class CalculationOutcome
+enum class CalculationOutcome : std::int8_t
 {
     Invalid = -1,
     OK,

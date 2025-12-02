@@ -76,7 +76,7 @@ public:
     bool hasErrors();
     bool hasWarnings();
 
-    enum class Token : size_t
+    enum class Token : std::uint8_t
     {
         NONE,
         FILE_END,

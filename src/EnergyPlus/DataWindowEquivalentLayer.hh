@@ -74,7 +74,7 @@ namespace DataWindowEquivalentLayer {
     // Gap information
     // Equivalent Layer Window Constructon
     // CFSLAYER: layer types
-    enum class LayerType
+    enum class LayerType : std::int8_t
     {
         Invalid = -1,
         NONE,   // unused / empty layer
@@ -90,7 +90,7 @@ namespace DataWindowEquivalentLayer {
     };
 
     // index for solar arrays
-    enum class SolarArrays
+    enum class SolarArrays : std::int8_t
     {
         Invalid = -1,
         DIFF,
@@ -100,7 +100,7 @@ namespace DataWindowEquivalentLayer {
 
     // Parameters to indicate blind orientation for use with the Material
     // derived type (see below):
-    enum class Orientation
+    enum class Orientation : std::int8_t
     {
         Invalid = -1,
         Horizontal,
@@ -111,7 +111,7 @@ namespace DataWindowEquivalentLayer {
     static constexpr std::array<std::string_view, (int)Orientation::Num> orientationNames = {"Horizontal", "Vertical"};
     static constexpr std::array<std::string_view, (int)Orientation::Num> orientationNamesUC = {"HORIZONTAL", "VERTICAL"};
 
-    enum class AngleType
+    enum class AngleType : std::int8_t
     {
         Invalid = -1,
         Fixed,

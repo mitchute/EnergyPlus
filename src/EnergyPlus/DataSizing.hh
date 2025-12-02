@@ -68,7 +68,7 @@ struct EnergyPlusData;
 
 namespace DataSizing {
 
-    enum class OAFlowCalcMethod
+    enum class OAFlowCalcMethod : std::int8_t
     // parameters for outside air flow method
     {
         Invalid = -1,
@@ -98,7 +98,7 @@ namespace DataSizing {
         "ProportionalControlBasedOnDesignOccupancy"};
 
     // parameters for outside air
-    enum class OAControl
+    enum class OAControl : std::int8_t
     {
         Invalid = -1,
         AllOA,
@@ -107,7 +107,7 @@ namespace DataSizing {
     };
 
     // parameters for loop fluid type
-    enum class TypeOfPlantLoop
+    enum class TypeOfPlantLoop : std::int8_t
     {
         Invalid = -1,
         Heating,
@@ -118,7 +118,7 @@ namespace DataSizing {
     };
 
     // parameters for zone and system sizing concurrence method
-    enum class SizingConcurrence
+    enum class SizingConcurrence : std::int8_t
     {
         Invalid = -1,
         NonCoincident,
@@ -130,7 +130,7 @@ namespace DataSizing {
     constexpr std::array<std::string_view, static_cast<int>(SizingConcurrence::Num)> SizingConcurrenceNames{"NonCoincident", "Coincident"};
 
     // parameters for coil sizing concurrence method
-    enum class CoilSizingConcurrence
+    enum class CoilSizingConcurrence : std::int8_t
     {
         Invalid = -1,
         NonCoincident,
@@ -144,7 +144,7 @@ namespace DataSizing {
         "Non-Coincident", "Coincident", "Combination", "N/A"};
 
     // parameters for Cooling Peak Load Type
-    enum class PeakLoad
+    enum class PeakLoad : std::int8_t
     {
         Invalid = -1,
         SensibleCooling,
@@ -153,7 +153,7 @@ namespace DataSizing {
     };
 
     // parameters for Central Cooling Capacity Control Method
-    enum class CapacityControl
+    enum class CapacityControl : std::int8_t
     {
         Invalid = -1,
         VAV,
@@ -170,7 +170,7 @@ namespace DataSizing {
     constexpr int HumidityRatioDifference(4);
 
     // parameters for sizing
-    enum class AirflowSizingMethod
+    enum class AirflowSizingMethod : std::int8_t
     {
         Invalid = -1,
         FromDDCalc,
@@ -179,7 +179,7 @@ namespace DataSizing {
         Num
     };
 
-    enum class DOASControl
+    enum class DOASControl : std::int8_t
     {
         Invalid = -1,
         NeutralSup,
@@ -189,7 +189,7 @@ namespace DataSizing {
     };
 
     // parameters for Type of Load to Size On
-    enum class LoadSizing
+    enum class LoadSizing : std::int8_t
     {
         Invalid = -1,
         Sensible,
@@ -205,7 +205,7 @@ namespace DataSizing {
     // parameter for (time-of-peak) sizing format
     static constexpr std::string_view PeakHrMinFmt("{:02}:{:02}:00");
 
-    enum class SysOAMethod
+    enum class SysOAMethod : std::int8_t
     {
         Invalid = -1,
         ZoneSum, // Sum the outdoor air flow rates of all zones
@@ -236,7 +236,7 @@ namespace DataSizing {
                                                                                                 "Ventilation Rate Procedure Level"};
 
     // Zone HVAC Equipment Sizing Option
-    enum class DesignSizingType
+    enum class DesignSizingType : std::int8_t
     {
         Invalid = -1,
         Dummy1BasedOffset,
@@ -288,7 +288,7 @@ namespace DataSizing {
     constexpr int GlobalCoolingSizingFactorMode(103);
     constexpr int LoopComponentSizingFactorMode(104);
 
-    enum class ZoneSizing
+    enum class ZoneSizing : std::int8_t
     {
         Invalid = -1,
         Sensible,
@@ -300,7 +300,7 @@ namespace DataSizing {
     constexpr std::array<std::string_view, static_cast<int>(ZoneSizing::Num)> ZoneSizingMethodNamesUC{
         "SENSIBLE LOAD", "LATENT LOAD", "SENSIBLE AND LATENT LOAD", "SENSIBLE LOAD ONLY NO LATENT LOAD"};
 
-    enum class HeatCoilSizMethod
+    enum class HeatCoilSizMethod : std::int8_t
     {
         Invalid = -1,
         None,

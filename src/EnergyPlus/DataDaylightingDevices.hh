@@ -63,7 +63,7 @@ namespace Dayltg {
     constexpr int MaxTZones(10);   // Maximum number of transition zones
     constexpr int NumOfAngles(19); // Number of data points on transmittance vs. angle curve
 
-    enum class RadType
+    enum class RadType : std::int8_t
     {
         Invalid = -1,
         VisibleBeam,

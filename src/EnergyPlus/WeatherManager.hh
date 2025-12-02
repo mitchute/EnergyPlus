@@ -70,7 +70,7 @@ struct EnergyPlusData;
 
 namespace Weather {
 
-    enum class EpwHeaderType
+    enum class EpwHeaderType : std::int8_t
     {
         Invalid = -1,
         Location = 0, // epw Headers are assumed to be in this order
@@ -85,7 +85,7 @@ namespace Weather {
     };
 
     // Following are Date Types read in from EPW file or IDF
-    enum class DateType
+    enum class DateType : std::int8_t
     {
         Invalid = -1,
         MonthDay = 1,
@@ -95,7 +95,7 @@ namespace Weather {
     };
 
     // Water mains temperatures calculation methods
-    enum class WaterMainsTempCalcMethod
+    enum class WaterMainsTempCalcMethod : std::int8_t
     {
         Invalid = -1,
         Schedule,
@@ -105,7 +105,7 @@ namespace Weather {
         Num
     };
 
-    enum class DesDaySolarModel
+    enum class DesDaySolarModel : std::int8_t
     {
         Invalid = -1,
         ASHRAE_ClearSky,     // Design Day solar model ASHRAE ClearSky (default)
@@ -123,7 +123,7 @@ namespace Weather {
         "ASHRAECLEARSKY", "ZHANGHUANG", "SCHEDULE", "ASHRAETAU", "ASHRAETAU2017"};
 
     // Design Day Humidity Indicating Type
-    enum class DesDayHumIndType
+    enum class DesDayHumIndType : std::int8_t
     {
         Invalid = -1,
         WetBulb,   // Wetbulb (default)
@@ -147,7 +147,7 @@ namespace Weather {
                                                                                                          "WETBULBPROFILEMULTIPLIERSCHEDULE"};
 
     // Design Day DryBulb Range Type
-    enum class DesDayDryBulbRangeType
+    enum class DesDayDryBulbRangeType : std::int8_t
     {
         Invalid = -1,
         Default,    // Default Multipliers
@@ -160,7 +160,7 @@ namespace Weather {
     static constexpr std::array<std::string_view, (int)DesDayDryBulbRangeType::Num> DesDayDryBulbRangeTypeNamesUC = {
         "DEFAULTMULTIPLIERS", "MULTIPLIERSCHEDULE", "DIFFERENCESCHEDULE", "TEMPERATUREPROFILESCHEDULE"};
 
-    enum class SkyTempModel
+    enum class SkyTempModel : std::int8_t
     {
         Invalid = -1,
         ClarkAllen,    // Use Clark & Allen model for sky emissivity calculation
@@ -329,7 +329,7 @@ namespace Weather {
         int CompDate = 0;                      // Start Date in "compressed date" format, only if Month/Day
         bool WthrFile = false;                 // True if this Special Day came from weather file (EPW)
         int Duration = 0;                      // Number of days this special Day is used for
-        int DayType = 0;                       // Day Type desigation for this Special Day period
+        int DayType = 0;                       // Day Type designation for this Special Day period
         int ActStMon = 0;
         int ActStDay = 0;
         bool Used = false; // Set to true in a run period after use (NthDayOfMonth and LastDayOfMonth only)

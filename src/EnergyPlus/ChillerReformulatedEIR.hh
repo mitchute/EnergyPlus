@@ -65,7 +65,7 @@ struct EnergyPlusData;
 
 namespace ChillerReformulatedEIR {
 
-    enum class PLR
+    enum class PLR : std::int8_t
     {
         Invalid = -1,
         LeavingCondenserWaterTemperature, // Type 1_LeavingCondenserWaterTemperature

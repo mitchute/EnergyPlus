@@ -71,7 +71,7 @@ namespace SimAirServingZones {
 
     // CompType numerics -- for this module
     // component types addressed by this module
-    enum class CompType
+    enum class CompType : std::int8_t
     {
         Invalid = -1,
         OAMixer_Num,

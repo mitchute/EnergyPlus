@@ -69,7 +69,7 @@ struct EnergyPlusData;
 
 namespace WaterThermalTanks {
 
-    enum class WTTAmbientTemp
+    enum class WTTAmbientTemp : std::int8_t
     {
         Invalid = -1,
         Schedule,   // ambient temperature around tank (or HPWH inlet air) is scheduled
@@ -88,7 +88,7 @@ namespace WaterThermalTanks {
         "OUTDOORS",
     };
 
-    enum class CrankcaseHeaterControlTemp
+    enum class CrankcaseHeaterControlTemp : std::int8_t
     {
         Invalid = -1,
         Schedule, // temperature controlling compressor crankcase heater is scheduled
@@ -103,7 +103,7 @@ namespace WaterThermalTanks {
         "OUTDOORS",
     };
 
-    enum class TankShape
+    enum class TankShape : std::int8_t
     {
         Invalid = -1,
         VertCylinder,  // tank shape is a vertical cylinder
@@ -118,7 +118,7 @@ namespace WaterThermalTanks {
         "OTHER",
     };
 
-    enum class HeaterControlMode
+    enum class HeaterControlMode : std::int8_t
     {
         Invalid = -1,
         Cycle,
@@ -128,7 +128,7 @@ namespace WaterThermalTanks {
 
     constexpr std::array<std::string_view, static_cast<int>(HeaterControlMode::Num)> HeaterControlModeNamesUC{"CYCLE", "MODULATE"};
 
-    enum class PriorityControlMode // For Stratified Water Heaters, this controls how the two heating elements work together
+    enum class PriorityControlMode : std::int8_t // For Stratified Water Heaters, this controls how the two heating elements work together
     {
         Invalid = -1,
         MasterSlave,  // water heater only, master-slave priority control of heater elements
@@ -138,7 +138,7 @@ namespace WaterThermalTanks {
 
     constexpr std::array<std::string_view, static_cast<int>(PriorityControlMode::Num)> PriorityControlModeNamesUC{"MASTERSLAVE", "SIMULTANEOUS"};
 
-    enum class InletPositionMode
+    enum class InletPositionMode : std::int8_t
     {
         Invalid = -1,
         Fixed,   // water heater only, inlet water always enters at the user-specified height
@@ -149,7 +149,7 @@ namespace WaterThermalTanks {
     constexpr std::array<std::string_view, static_cast<int>(InletPositionMode::Num)> InletPositionModeNamesUC{"FIXED", "SEEKING"};
 
     // reclaim heat object types for Coil:WaterHeating:Desuperheater object
-    enum class ReclaimHeatObjectType
+    enum class ReclaimHeatObjectType : std::int8_t
     {
         Invalid = -1,
         CoilCoolingDX,                  // reclaim heating source is new DX Cooling coil
@@ -164,7 +164,7 @@ namespace WaterThermalTanks {
         Num
     };
 
-    enum class WaterHeaterSide
+    enum class WaterHeaterSide : std::int8_t
     {
         Invalid = -1,
         Use,    // Indicates Use side of water heater
@@ -172,7 +172,7 @@ namespace WaterThermalTanks {
         Num
     };
 
-    enum class SizingMode
+    enum class SizingMode : std::int8_t
     {
         Invalid = -1,
         PeakDraw,
@@ -184,7 +184,7 @@ namespace WaterThermalTanks {
         Num
     };
 
-    enum class SourceSideControl
+    enum class SourceSideControl : std::int8_t
     {
         Invalid = -1,
         StorageTank,
@@ -196,7 +196,7 @@ namespace WaterThermalTanks {
     constexpr std::array<std::string_view, static_cast<int>(SourceSideControl::Num)> SourceSideControlNamesUC{
         "STORAGETANK", "INDIRECTHEATPRIMARYSETPOINT", "INDIRECTHEATALTERNATESETPOINT"};
 
-    enum class FlowMode
+    enum class FlowMode : std::int8_t
     {
         Invalid = -1,
         PassingFlowThru,
@@ -205,7 +205,7 @@ namespace WaterThermalTanks {
         Num
     };
 
-    enum class TankOperatingMode
+    enum class TankOperatingMode : std::int8_t
     {
         Invalid = -1,
         Heating,  // heating source is on, source will not turn off until setpoint temp is reached

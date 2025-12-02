@@ -183,7 +183,7 @@ namespace DataAirLoop {
         Real64 BypassMassFlow = 0.0;        // air loop bypass mass flow NOT entering splitter but included in mixer or plenum
     };
 
-    enum class ControllerKind
+    enum class ControllerKind : std::int8_t
     {
         Invalid = -1,
         WaterCoil,  // Controller:WaterCoil

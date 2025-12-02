@@ -176,7 +176,7 @@ namespace HeatBalanceKivaManager {
             Real64 groundRoughness;
             Real64 farFieldWidth;
 
-            enum DGType
+            enum DGType : std::uint8_t
             {
                 ZERO_FLUX,
                 GROUNDWATER,
@@ -189,7 +189,7 @@ namespace HeatBalanceKivaManager {
             Real64 minCellDim;
             Real64 maxGrowthCoeff;
 
-            enum TSType
+            enum TSType : std::uint8_t
             {
                 HOURLY,
                 TIMESTEP

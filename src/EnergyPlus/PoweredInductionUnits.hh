@@ -72,7 +72,7 @@ namespace PoweredInductionUnits {
     // Data
     // MODULE PARAMETER DEFINITIONS
     // coil types in this module
-    enum class HtgCoilType
+    enum class HtgCoilType : std::int8_t
     {
         Invalid = -1,
         Gas,
@@ -88,21 +88,21 @@ namespace PoweredInductionUnits {
     static constexpr std::array<std::string_view, static_cast<int>(HtgCoilType::Num)> HCoilNames{
         "Coil:Heating:Fuel", "Coil:Heating:Electric", "Coil:Heating:Water", "Coil:Heating:Steam"};
 
-    enum class FanCntrlType
+    enum class FanCntrlType : std::int8_t
     {
         Invalid = -1,
         ConstantSpeedFan,
         VariableSpeedFan,
         Num
     };
-    enum class HeatCntrlBehaviorType
+    enum class HeatCntrlBehaviorType : std::int8_t
     {
         Invalid = -1,
         StagedHeaterBehavior,
         ModulatedHeaterBehavior,
         Num
     };
-    enum class HeatOpModeType
+    enum class HeatOpModeType : std::int8_t
     {
         Invalid = -1,
         HeaterOff,
@@ -114,7 +114,7 @@ namespace PoweredInductionUnits {
         ModulatedHeatThirdStage,
         Num
     };
-    enum class CoolOpModeType
+    enum class CoolOpModeType : std::int8_t
     {
         Invalid = -1,
         CoolerOff,

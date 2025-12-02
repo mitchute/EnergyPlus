@@ -57,7 +57,7 @@ namespace EnergyPlus::TARCOGGassesParams {
 int constexpr maxgas = 10;
 
 // Standards:
-enum class Stdrd
+enum class Stdrd : std::int8_t
 {
     Invalid = -1,
     ISO15099,    // standard = ISO15099

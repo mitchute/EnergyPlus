@@ -80,7 +80,7 @@ namespace Fluid {
     std::uint64_t constexpr t_sh_cache_mask = (t_sh_cache_size - 1);
 #endif
 
-    enum class RefrigError
+    enum class RefrigError : std::int8_t
     {
         Invalid = -1,
         SatTemp,
@@ -236,7 +236,7 @@ namespace Fluid {
         void setTempLimits(EnergyPlusData &state, bool &ErrorsFound);
     };
 
-    enum class GlycolError
+    enum class GlycolError : std::int8_t
     {
         Invalid = -1,
         SpecHeatLow,

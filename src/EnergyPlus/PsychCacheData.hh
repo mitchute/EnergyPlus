@@ -52,7 +52,7 @@
 
 namespace EnergyPlus {
 
-enum class PsychrometricFunction : int
+enum class PsychrometricFunction : std::int8_t
 {
     Invalid = -1,
     TdpFnTdbTwbPb,

@@ -69,7 +69,7 @@ struct EnergyPlusData;
 
 namespace UnitVentilator {
 
-    enum class CoilsUsed
+    enum class CoilsUsed : std::int8_t
     {
         Invalid = -1,
         None,
@@ -78,7 +78,7 @@ namespace UnitVentilator {
         Cooling,
         Num
     };
-    enum class HeatCoilType
+    enum class HeatCoilType : std::int8_t
     {
         Invalid = -1,
         Electric,
@@ -87,7 +87,7 @@ namespace UnitVentilator {
         Steam,
         Num
     };
-    enum class CoolCoilType
+    enum class CoolCoilType : std::int8_t
     {
         Invalid = -1,
         Water,
@@ -95,7 +95,7 @@ namespace UnitVentilator {
         HXAssisted,
         Num
     };
-    enum class OAControl
+    enum class OAControl : std::int8_t
     {
         Invalid = -1,
         VariablePercent,

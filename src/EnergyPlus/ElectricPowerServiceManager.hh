@@ -69,7 +69,7 @@
 
 namespace EnergyPlus {
 
-enum class GeneratorType
+enum class GeneratorType : std::int8_t
 {
     Invalid = -1,
     ICEngine,
@@ -101,7 +101,7 @@ constexpr std::array<std::string_view, (int)GeneratorType::Num> generatorTypeNam
                                                                                         "GENERATOR:WINDTURBINE",
                                                                                         "GENERATOR:PVWATTS"};
 
-enum class ThermalLossDestination
+enum class ThermalLossDestination : std::int8_t
 {
     Invalid = -1,
     ZoneGains,     // device thermal losses are added to a zone as internal gains
@@ -117,7 +117,7 @@ class DCtoACInverter
 {
 
 public: // Methods
-    enum class InverterModelType
+    enum class InverterModelType : std::int8_t
     {
         Invalid = -1,
         CECLookUpTableModel,
@@ -215,7 +215,7 @@ private: // methods
     void calcEfficiency(EnergyPlusData &state);
 
 private: // data
-    enum class ConverterModelType
+    enum class ConverterModelType : std::int8_t
     {
         Invalid = -1,
         CurveFuncOfPower,
@@ -348,7 +348,7 @@ private:                            // methods
     );
 
 private: // data
-    enum class StorageModelType
+    enum class StorageModelType : std::int8_t
     {
         Invalid = -1,
         SimpleBucketStorage,
@@ -471,7 +471,7 @@ public: // methods
     std::string const &name() const;
 
 private: // data
-    enum class TransformerUse
+    enum class TransformerUse : std::int8_t
     {
         Invalid = -1,
         PowerInFromGrid,               // condition power from grid going into building buss
@@ -486,7 +486,7 @@ private: // data
     static constexpr std::array<std::string_view, (int)TransformerUse::Num> transformerUseNamesUC = {
         "POWERINFROMGRID", "POWEROUTTOGRID", "LOADCENTERPOWERCONDITIONING"};
 
-    enum class TransformerPerformanceInput
+    enum class TransformerPerformanceInput : std::int8_t
     {
         Invalid = -1,
         LossesMethod,
@@ -631,7 +631,7 @@ private: // Methods
     Real64 calcLoadCenterThermalLoad(EnergyPlusData &state); // returns heat rate called for from cogenerator(watts)
 
 public: // data public for unit test
-    enum class ElectricBussType
+    enum class ElectricBussType : std::int8_t
     {
         Invalid = -1,
         ACBuss,
@@ -680,7 +680,7 @@ public: // data public for unit test
     bool storOpIsDischarging;     // true if storage operation scheme is trying to discharge
 
 private: // data
-    enum class GeneratorOpScheme : int
+    enum class GeneratorOpScheme : std::int8_t
     {
         Invalid = -1,
         BaseLoad,
@@ -698,7 +698,7 @@ private: // data
     static constexpr std::array<std::string_view, (int)GeneratorOpScheme::Num> generatorOpSchemeNamesUC = {
         "BASELOAD", "DEMANDLIMIT", "TRACKELECTRICAL", "TRACKSCHEDULE", "TRACKMETER", "FOLLOWTHERMAL", "FOLLOWTHERMALLIMITELECTRICAL"};
 
-    enum class StorageOpScheme : int
+    enum class StorageOpScheme : std::int8_t
     {
         Invalid = -1,
         FacilityDemandStoreExcessOnSite, // legacy control behavior

@@ -71,7 +71,7 @@ namespace HVACInterfaceManager {
     constexpr int PrimaryRecirc(1);   // flow from Supply-outlet/Demand-inlet to Supply-inlet/demand-outlet
     constexpr int SecondaryRecirc(2); // flow from Supply-inlet/Demand-outlet to Supply-outlet/demand-inlet
 
-    enum class FlowType
+    enum class FlowType : std::int8_t
     {
         Invalid = -1,
         Constant,

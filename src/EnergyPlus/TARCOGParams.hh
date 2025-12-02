@@ -65,7 +65,7 @@ int constexpr maxlay2(maxlay * 2);  // maximum number of glass surfaces (maxlay*
 int constexpr maxlay3(maxlay2 + 1); // maximum number of ? (maxlay2+1)
 
 //  Layer types:
-enum class TARCOGLayerType : int
+enum class TARCOGLayerType : std::int8_t
 {
     Invalid = -1,
     SPECULAR,
@@ -81,7 +81,7 @@ enum class TARCOGLayerType : int
 extern const std::array<std::string_view, (int)TARCOGLayerType::Num> layerTypeNamesUC;
 
 //  Thermal models:
-enum class TARCOGThermalModel : int
+enum class TARCOGThermalModel : std::int8_t
 {
     Invalid = -1,
     ISO15099,
@@ -96,7 +96,7 @@ extern const std::array<std::string_view, (int)TARCOGThermalModel::Num> thermalM
 int constexpr YES_SupportPillar = 1; // Exsqueeze me?
 
 // Deflection parameters
-enum class DeflectionCalculation : int
+enum class DeflectionCalculation : std::int8_t
 {
     Invalid = -1,
     NONE,

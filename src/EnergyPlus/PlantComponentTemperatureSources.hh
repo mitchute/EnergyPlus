@@ -67,7 +67,7 @@ struct EnergyPlusData;
 namespace PlantComponentTemperatureSources {
 
     // MODULE PARAMETER DEFINITIONS:
-    enum class TempSpecType
+    enum class TempSpecType : std::int8_t
     {
         Invalid = -1,
         Constant,

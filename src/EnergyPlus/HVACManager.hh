@@ -66,7 +66,7 @@ namespace HVACManager {
     // SUBROUTINE SPECIFICATIONS FOR MODULE PrimaryPlantLoops
     // and zone equipment simulations
 
-    enum class ConvErrorCallType
+    enum class ConvErrorCallType : std::int8_t
     {
         Invalid = -1,
         MassFlow,

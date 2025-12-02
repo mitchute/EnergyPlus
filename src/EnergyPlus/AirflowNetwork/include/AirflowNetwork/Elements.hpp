@@ -61,7 +61,7 @@ struct AirflowNetworkData;
 
 namespace AirflowNetwork {
 
-    enum VentControlType // TODO: make enum class
+    enum VentControlType : std::uint8_t
     {
         None = 0,  // Wrong input
         Temp = 1,  // Temperature venting control
@@ -75,28 +75,28 @@ namespace AirflowNetwork {
         AdjEnth = 9    // Enthalpy venting control based on adjacent zone conditions
     };
 
-    enum OpenStatus // TODO: make enum class
+    enum OpenStatus : std::uint8_t
     {
         FreeOperation = 0,     // Free operation
         MinCheckForceOpen = 1, // Force open when opening elapsed time is less than minimum opening time
         MinCheckForceClose = 2 // Force open when closing elapsed time is less than minimum closing time
     };
 
-    enum ProbabilityCheck // TODO: make enum class
+    enum ProbabilityCheck : std::uint8_t
     {
         NoAction = 0,    // No action from probability check
         ForceChange = 1, // Force open or close from probability check
         KeepStatus = 2   // Keep status at the previous time step from probability check
     };
 
-    enum class EquivRec
+    enum class EquivRec : std::uint8_t
     {
         Height,          // Effective rectangle polygonal height selection
         BaseAspectRatio, // Effective rectangle base surface aspect ratio selection
         UserAspectRatio  // Effective rectangle user input aspect ratio selection
     };
 
-    enum class DuctLineType
+    enum class DuctLineType : std::int8_t
     {
         Invalid = -1,
         SupplyTrunk,  // Supply trunk
@@ -112,7 +112,7 @@ namespace AirflowNetwork {
     // all variables in this module must be PUBLIC.
 
     // MODULE PARAMETER DEFINITIONS:
-    enum class iComponentTypeNum : int
+    enum class iComponentTypeNum : std::uint8_t
     {
         Invalid = 0,
         DOP = 1,  // Detailed large opening component
@@ -140,7 +140,7 @@ namespace AirflowNetwork {
         Num
     };
 
-    enum class ComponentType
+    enum class ComponentType : std::int8_t
     {
         // TODO: enum check
         Invalid = -1,
@@ -170,7 +170,7 @@ namespace AirflowNetwork {
     };
 
     // EPlus component Type
-    enum class iEPlusComponentType : int
+    enum class iEPlusComponentType : std::uint8_t
     {
         Invalid = 0,
         SCN = 1, // Supply connection
@@ -184,7 +184,7 @@ namespace AirflowNetwork {
     };
 
     // EPlus node type
-    enum class iEPlusNodeType : int
+    enum class iEPlusNodeType : std::uint8_t
     {
         Invalid = 0,
         ZIN = 1,  // Zone inlet node
@@ -205,7 +205,7 @@ namespace AirflowNetwork {
         Num
     };
 
-    enum class iWPCCntr : int
+    enum class iWPCCntr : std::uint8_t
     {
         Invalid = 0,
         Input = 1,

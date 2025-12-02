@@ -51,7 +51,7 @@
 namespace EnergyPlus::DataPlant {
 
 // Parameters for loop flow request priority, used in logic to deal with Node%MassFlowRequest for determining overall loop flow rate
-enum class LoopFlowStatus
+enum class LoopFlowStatus : std::int8_t
 {
     Invalid = -1,        // component's status is not yet set
     NeedyAndTurnsLoopOn, // component is a "winner" for loop flow requests active valve inside component that modulates flow gets the loop going under
@@ -62,7 +62,7 @@ enum class LoopFlowStatus
     Num
 };
 
-enum class LoopSideLocation
+enum class LoopSideLocation : std::int8_t
 {
     Invalid = -1,
     Demand,
@@ -79,7 +79,7 @@ constexpr std::array<std::string_view, static_cast<int>(LoopSideLocation::Num)> 
 // As in PlantLoop(:)%OpScheme(:)%Type
 // Also in PlantLoop()LoopSide()Branch()Comp()%CurOpSchemeType
 // this may be changed later...
-enum class OpScheme
+enum class OpScheme : std::int8_t
 { // Changed to enum: Better semantic fit and allows use in switch statements: Suggest this migration throughout EnergyPlus (and probably C++11
   // enum "class")
     Invalid = -1,
@@ -108,7 +108,7 @@ enum class OpScheme
 // Adding a new item to the PlantEquipmentType enum requires similar changes to
 // Component.hh PlantEquipmentCtrlType and PlantEquipmentTypeIsPump
 // DataPlant.hh PlantEquipTypeNames, PlantEquipTypeNamesUC, and ValidLoopEquipTypes
-enum class PlantEquipmentType
+enum class PlantEquipmentType : std::int8_t
 {
     Invalid = -1,
     Boiler_Simple,
@@ -224,7 +224,7 @@ enum class PlantEquipmentType
 
 // Parameters for component character wrt how load gets met (or not)
 //  used in %HowLoadServed to facilitate load dispatch logic
-enum class HowMet
+enum class HowMet : std::int8_t
 {
     Invalid = -1,                         // not yet set
     NoneDemand,                           // does not meet a load, demand component
@@ -237,7 +237,7 @@ enum class HowMet
     Num
 };
 
-enum class LoadingScheme
+enum class LoadingScheme : std::int8_t
 {
     Invalid = -1,
     Optimal,              // Optimal Load Distribution Scheme
@@ -248,7 +248,7 @@ enum class LoadingScheme
     Num
 };
 
-enum class FlowMode
+enum class FlowMode : std::int8_t
 {
     Invalid = -1,
     Constant,
@@ -261,7 +261,7 @@ enum class FlowMode
 constexpr std::array<std::string_view, static_cast<int>(FlowMode::Num)> FlowModeNamesUC{
     "CONSTANTFLOW", "NOTMODULATED", "LEAVINGSETPOINTMODULATED", "VARIABLESPEEDPUMPING"};
 
-enum class CondenserFlowControl
+enum class CondenserFlowControl : std::int8_t
 {
     Invalid = -1,
     ConstantFlow,
@@ -274,7 +274,7 @@ enum class CondenserFlowControl
 constexpr std::array<std::string_view, static_cast<int>(CondenserFlowControl::Num)> CondenserFlowControlNamesUC{
     "CONSTANTFLOW", "MODULATEDCHILLERPLR", "MODULATEDLOOPPLR", "MODULATEDDELTATEMPERATURE"};
 
-enum class CondenserType
+enum class CondenserType : std::int8_t
 {
     Invalid = -1,
     AirCooled,
@@ -287,7 +287,7 @@ static constexpr std::array<std::string_view, static_cast<int>(CondenserType::Nu
     "AIRCOOLED", "WATERCOOLED", "EVAPORATIVELYCOOLED"};
 
 // SimFlagCriteriaTypes for use in performing interconnect re-sim checks
-enum class CriteriaType
+enum class CriteriaType : std::int8_t
 {
     Invalid = -1,
     MassFlowRate,
@@ -296,7 +296,7 @@ enum class CriteriaType
     Num
 };
 
-enum class FreeCoolControlMode
+enum class FreeCoolControlMode : std::int8_t
 {
     Invalid = -1,
     WetBulb, // HeatExchanger:Hydronic model control type mode, outdoor wetbulb sensor
@@ -305,7 +305,7 @@ enum class FreeCoolControlMode
     Num
 };
 
-enum class LoopDemandCalcScheme
+enum class LoopDemandCalcScheme : std::int8_t
 {
     Invalid = -1,
     SingleSetPoint,       // Uses a single temp setpoint to calculate loop demand
@@ -313,7 +313,7 @@ enum class LoopDemandCalcScheme
     Num
 };
 
-enum class CommonPipeType
+enum class CommonPipeType : std::int8_t
 {
     Invalid = -1,
     No,
@@ -322,7 +322,7 @@ enum class CommonPipeType
     Num
 };
 
-enum class FlowLock
+enum class FlowLock : std::int8_t
 {
     Invalid = -1,
     PumpQuery, // Used to ask the pumps for their min/max avail based on no constraints
@@ -331,7 +331,7 @@ enum class FlowLock
     Num
 };
 
-enum class PressureCall
+enum class PressureCall : std::int8_t
 {
     Invalid = -1,
     Init,
@@ -340,7 +340,7 @@ enum class PressureCall
     Num
 };
 
-enum class PressSimType
+enum class PressSimType : std::int8_t
 {
     Invalid = -1,
     NoPressure,          // Nothing for that particular loop
@@ -357,7 +357,7 @@ static constexpr std::array<std::string_view, static_cast<int>(PressSimType::Num
     "PRESSURESIMULATION",
 };
 
-enum class CtrlType
+enum class CtrlType : std::int8_t
 {
     Invalid = -1,
     HeatingOp, // Constant for Heating Operation
@@ -367,7 +367,7 @@ enum class CtrlType
 };
 
 // branch loop type for absorption chillerheater models
-enum class BrLoopType
+enum class BrLoopType : std::int8_t
 {
     Invalid = -1,
     Chiller,

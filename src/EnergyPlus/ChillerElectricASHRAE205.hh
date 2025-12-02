@@ -62,7 +62,7 @@ struct EnergyPlusData;
 
 namespace ChillerElectricASHRAE205 {
 
-    enum class AmbientTempIndicator
+    enum class AmbientTempIndicator : std::int8_t
     {
         Invalid = -1,
         Schedule,   // ambient temperature around tank (or HPWH inlet air) is scheduled

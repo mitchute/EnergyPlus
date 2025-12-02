@@ -59,7 +59,7 @@ struct EnergyPlusData;
 
 namespace CostEstimateManager {
 
-    enum class ParentObject
+    enum class ParentObject : std::int8_t
     {
         Invalid = -1,
         General,

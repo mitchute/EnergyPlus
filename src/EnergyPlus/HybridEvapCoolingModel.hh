@@ -73,7 +73,7 @@ struct EnergyPlusData;
 
 namespace HybridEvapCoolingModel {
 
-    enum class SYSTEMOUTPUTS
+    enum class SYSTEMOUTPUTS : std::int8_t
     {
         Invalid = -1,
         VENTILATION_AIR_V,

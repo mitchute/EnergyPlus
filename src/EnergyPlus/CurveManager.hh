@@ -82,7 +82,7 @@ namespace Curve {
 
     // Curve Type parameters, these can differ from object types (e.g. a CurveType_TableOneIV can be linear, quadratic, etc)
 
-    enum class CurveType
+    enum class CurveType : std::int8_t
     {
         Invalid = -1,
         Linear,

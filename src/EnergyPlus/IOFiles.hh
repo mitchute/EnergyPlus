@@ -339,7 +339,7 @@ namespace EnergyPlus {
 // Forward declarations
 struct EnergyPlusData;
 
-enum class FormatSyntax
+enum class FormatSyntax : std::int8_t
 {
     Invalid = -1,
     Fortran,

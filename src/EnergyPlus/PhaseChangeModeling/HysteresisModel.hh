@@ -62,7 +62,7 @@ struct EnergyPlusData;
 
 namespace Material {
 
-    enum class Phase
+    enum class Phase : std::int8_t
     {
         Invalid = -1,
         Liquid,

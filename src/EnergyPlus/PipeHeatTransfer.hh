@@ -73,7 +73,7 @@ struct EnergyPlusData;
 
 namespace PipeHeatTransfer {
 
-    enum class EnvrnPtr
+    enum class EnvrnPtr : std::int8_t
     {
         Invalid = -1,
         None,
@@ -84,7 +84,7 @@ namespace PipeHeatTransfer {
         Num
     };
 
-    enum TimeIndex
+    enum TimeIndex : std::int8_t
     {
         Invalid = -1,
         Previous = 1,

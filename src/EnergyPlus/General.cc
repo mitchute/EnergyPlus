@@ -86,7 +86,7 @@ namespace EnergyPlus::General {
 // MODULE PARAMETER DEFINITIONS
 static constexpr std::string_view BlankString;
 
-enum class ReportType
+enum class ReportType : std::int8_t
 {
     Invalid = -1,
     DXF,
@@ -97,7 +97,7 @@ enum class ReportType
 
 constexpr std::array<std::string_view, static_cast<int>(ReportType::Num)> ReportTypeNamesUC{"DXF", "DXF:WIREFRAME", "VRML"};
 
-enum class AvailRpt
+enum class AvailRpt : std::int8_t
 {
     Invalid = -1,
     None,
@@ -108,7 +108,7 @@ enum class AvailRpt
 
 constexpr std::array<std::string_view, static_cast<int>(AvailRpt::Num)> AvailRptNamesUC{"NONE", "NOTBYUNIQUEKEYNAMES", "VERBOSE"};
 
-enum class ERLdebugOutputLevel
+enum class ERLdebugOutputLevel : std::int8_t
 {
     Invalid = -1,
     None,
@@ -119,7 +119,7 @@ enum class ERLdebugOutputLevel
 
 constexpr std::array<std::string_view, static_cast<int>(ERLdebugOutputLevel::Num)> ERLdebugOutputLevelNamesUC{"NONE", "ERRORSONLY", "VERBOSE"};
 
-enum class ReportName
+enum class ReportName : std::int8_t
 {
     Invalid = -1,
     Constructions,
@@ -133,7 +133,7 @@ enum class ReportName
 constexpr std::array<std::string_view, static_cast<int>(ReportName::Num)> ReportNamesUC{
     "CONSTRUCTIONS", "VIEWFACTORINFO", "VARIABLEDICTIONARY", "SURFACES", "ENERGYMANAGEMENTSYSTEM"};
 
-enum class RptKey
+enum class RptKey : std::int8_t
 {
     Invalid = -1,
     Costinfo,

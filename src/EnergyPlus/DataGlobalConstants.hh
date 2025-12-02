@@ -61,7 +61,7 @@ namespace Constant {
     static constexpr bool python_cli_enabled = false;
 #endif
 
-    enum class EndUse
+    enum class EndUse : std::int8_t
     {
         Invalid = -1,
         Heating,
@@ -96,7 +96,7 @@ namespace Constant {
                                                                                      "REFRIGERATION",
                                                                                      "COGENERATION"};
 
-    enum class eResource
+    enum class eResource : std::int8_t
     {
         Invalid = -1,
         Electricity,
@@ -150,7 +150,7 @@ namespace Constant {
         Num
     };
 
-    enum class eFuel
+    enum class eFuel : std::int8_t
     {
         Invalid = -1,
         Electricity,
@@ -368,7 +368,7 @@ namespace Constant {
         eResourceNames[(int)eFuel2eResource[(int)eFuel::Water]],
         eResourceNames[(int)eFuel2eResource[(int)eFuel::None]]};
 
-    enum class Units : signed int
+    enum class Units : std::int8_t
     {
         Invalid = -1,
         kg_s,
@@ -536,7 +536,7 @@ namespace Constant {
         "CUSTOMEMS"         // customEMS
     };
 
-    enum class CallIndicator
+    enum class CallIndicator : std::int8_t
     {
         Invalid = -1,
         BeginDay,
@@ -547,7 +547,7 @@ namespace Constant {
         Num
     };
 
-    enum class HeatOrCool
+    enum class HeatOrCool : std::int8_t
     {
         Invalid = -1,
         NoHeatNoCool,
@@ -558,7 +558,7 @@ namespace Constant {
     };
 
     // Parameters for KindOfSim
-    enum class KindOfSim
+    enum class KindOfSim : std::int8_t
     {
         // TODO: enum check
         Invalid = -1,

@@ -61,14 +61,14 @@ struct EnergyPlusData;
 
 namespace IndoorGreen {
 
-    enum class ETCalculationMethod
+    enum class ETCalculationMethod : std::int8_t
     {
         Invalid = -1,
         PenmanMonteith,
         Stanghellini,
         Num
     };
-    enum class LightingMethod
+    enum class LightingMethod : std::int8_t
     {
         Invalid = -1,
         LED,

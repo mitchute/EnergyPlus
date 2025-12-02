@@ -71,7 +71,7 @@ namespace Material {
     // derived type (see below):
 
     // Don't change these numbers because they are printed out by number in SQLite (shouldn't print out internal enums by number)
-    enum class Group
+    enum class Group : std::int8_t
     {
         Invalid = -1,
         Regular,
@@ -97,7 +97,7 @@ namespace Material {
         Num
     };
 
-    enum class GasType
+    enum class GasType : std::int8_t
     {
         Invalid = -1,
         Custom,
@@ -108,7 +108,7 @@ namespace Material {
         Num
     };
 
-    enum class GapVentType
+    enum class GapVentType : std::int8_t
     {
         Invalid = -1,
         Sealed,
@@ -122,7 +122,7 @@ namespace Material {
     extern const std::array<std::string_view, (int)GasType::Num> gasTypeNames;
     extern const std::array<std::string_view, (int)GapVentType::Num> gapVentTypeNames;
 
-    enum class SlatAngleType
+    enum class SlatAngleType : std::int8_t
     {
         Invalid = -1,
         FixedSlatAngle,
@@ -134,7 +134,7 @@ namespace Material {
     constexpr std::array<std::string_view, (int)SlatAngleType::Num> slatAngleTypeNamesUC = {"FIXEDSLATANGLE", "MAXIMIZESOLAR", "BLOCKBEAMSOLAR"};
 
     // Parameter for window screens beam reflectance accounting
-    enum class ScreenBeamReflectanceModel
+    enum class ScreenBeamReflectanceModel : std::int8_t
     {
         Invalid = -1,
         DoNotModel,
@@ -146,7 +146,7 @@ namespace Material {
     constexpr std::array<std::string_view, (int)ScreenBeamReflectanceModel::Num> screenBeamReflectanceModelNamesUC = {
         "DONOTMODEL", "MODELASDIRECTBEAM", "MODELASDIFFUSE"};
 
-    enum class VariableAbsCtrlSignal
+    enum class VariableAbsCtrlSignal : std::int8_t
     {
         Invalid = -1,
         SurfaceTemperature,
@@ -161,7 +161,7 @@ namespace Material {
 
     // Parameters to indicate surface roughness for use with the Material
     // derived type:
-    enum class SurfaceRoughness
+    enum class SurfaceRoughness : std::int8_t
     {
         Invalid = -1,
         VeryRough,
@@ -772,7 +772,7 @@ namespace Material {
     };
 
     // EcoRoof
-    enum EcoRoofCalcMethod
+    enum EcoRoofCalcMethod : std::int8_t
     {
         Invalid = -1,
         Simple,

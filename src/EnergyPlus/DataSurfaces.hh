@@ -84,7 +84,7 @@ namespace DataSurfaces {
     using DataVectorTypes::Vector;
 
     // Not sure this is the right module for this stuff, may move it later
-    enum class Compass4
+    enum class Compass4 : std::int8_t
     {
         Invalid = -1,
         North,
@@ -101,7 +101,7 @@ namespace DataSurfaces {
 
     Compass4 AzimuthToCompass4(Real64 azimuth);
 
-    enum class Compass8
+    enum class Compass8 : std::int8_t
     {
         Invalid = -1,
         North,
@@ -128,7 +128,7 @@ namespace DataSurfaces {
 
     // Parameters to indicate surface shape for use with the Surface
     // derived type (see below):
-    enum class SurfaceShape : int
+    enum class SurfaceShape : std::int8_t
     {
         // TODO: enum check
         Invalid = -1,
@@ -146,7 +146,7 @@ namespace DataSurfaces {
         Num
     };
 
-    enum class SurfaceClass : int
+    enum class SurfaceClass : std::int8_t
     {
         Invalid = -1, // If any addition classes get added to this list, add appropriate data
         None,         // to ComputeNominalUwithConvCoeffs in DataHeatBalance.cc and make sure
@@ -168,7 +168,7 @@ namespace DataSurfaces {
     };
 
     // A coarse grain version of SurfaceClass
-    enum class FWC
+    enum class FWC : std::int8_t
     {
         Invalid = -1,
         Floor,
@@ -181,7 +181,7 @@ namespace DataSurfaces {
     int constexpr iFWC_Wall = (int)FWC::Wall;
     int constexpr iFWC_Ceiling = (int)FWC::Ceiling;
 
-    enum class SurfaceFilter
+    enum class SurfaceFilter : std::int8_t
     {
         Invalid = -1,
         AllExteriorSurfaces,
@@ -210,7 +210,7 @@ namespace DataSurfaces {
                                                                                                          "ALLINTERIORCEILINGS",
                                                                                                          "ALLINTERIORFLOORS"};
 
-    enum class WinCover
+    enum class WinCover : std::int8_t
     {
         Invalid = -1,
         Bare,
@@ -221,7 +221,7 @@ namespace DataSurfaces {
     constexpr int iWinCover_Bare = (int)WinCover::Bare;
     constexpr int iWinCover_Shaded = (int)WinCover::Shaded;
 
-    enum class WinShadingType
+    enum class WinShadingType : std::int8_t
     {
         Invalid = -1,
         NoShade,
@@ -244,7 +244,7 @@ namespace DataSurfaces {
         Num
     }; // Valid window shading types: IntShade <= Type <= BGBlind; the rest are shading status
 
-    enum class WindowShadingControlType
+    enum class WindowShadingControlType : std::int8_t
     {
         Invalid = -1,
         AlwaysOn,                       // "ALWAYSON",
@@ -274,7 +274,7 @@ namespace DataSurfaces {
         Num
     };
 
-    enum RefAirTemp // Parameters to indicate reference air temperatures for inside surface temperature calculations
+    enum RefAirTemp : std::int8_t // Parameters to indicate reference air temperatures for inside surface temperature calculations
     {
         Invalid = -1,
         ZoneMeanAirTemp,   // mean air temperature of the zone => MAT
@@ -317,7 +317,7 @@ namespace DataSurfaces {
     // in SurfaceGeometry.cc, SurfaceWindow%OriginalClass holds the true value)
     // why aren't these sequential
 
-    enum class HeatTransferModel
+    enum class HeatTransferModel : std::int8_t
     {
         Invalid = -1,
         None, // shading surfaces
@@ -346,7 +346,7 @@ namespace DataSurfaces {
         "Air Boundary - No Heat Transfer"};
 
     // Daylighting illuminance components
-    enum class Lum
+    enum class Lum : std::int8_t
     {
         Invalid = -1,
         Illum,
@@ -416,7 +416,7 @@ namespace DataSurfaces {
     }
 
     // WindowShadingControl Slat Angle Control for Blinds
-    enum class SlatAngleControl
+    enum class SlatAngleControl : std::int8_t
     {
         Invalid = -1,
         Fixed,
@@ -426,7 +426,7 @@ namespace DataSurfaces {
     };
 
     // Parameters for air flow window source
-    enum class WindowAirFlowSource
+    enum class WindowAirFlowSource : std::int8_t
     {
         Invalid = -1,
         Indoor,
@@ -435,7 +435,7 @@ namespace DataSurfaces {
     };
 
     // Parameters for air flow window destination
-    enum class WindowAirFlowDestination
+    enum class WindowAirFlowDestination : std::int8_t
     {
         Invalid = -1,
         Indoor,
@@ -445,7 +445,7 @@ namespace DataSurfaces {
     };
 
     // Parameters for air flow window control
-    enum class WindowAirFlowControlType
+    enum class WindowAirFlowControlType : std::int8_t
     {
         Invalid = -1,
         MaxFlow,
@@ -455,7 +455,7 @@ namespace DataSurfaces {
     };
 
     // Parameters for window model selection
-    enum class WindowModel
+    enum class WindowModel : std::int8_t
     {
         Invalid = -1,
         Detailed, // indicates original winkelmann window 5 implementation
@@ -971,7 +971,7 @@ namespace DataSurfaces {
     {
     };
 
-    enum class NfrcProductOptions : int
+    enum class NfrcProductOptions : std::int8_t
     {
         Invalid = -1,
         CasementDouble,
@@ -999,7 +999,7 @@ namespace DataSurfaces {
         Num
     };
 
-    enum class NfrcVisionType : int
+    enum class NfrcVisionType : std::int8_t
     {
         Invalid = -1,
         Single,
@@ -1008,7 +1008,7 @@ namespace DataSurfaces {
         Num
     };
 
-    enum class FrameDividerType : int
+    enum class FrameDividerType : std::int8_t
     {
         Invalid = -1,
         DividedLite,
@@ -1017,7 +1017,7 @@ namespace DataSurfaces {
     };
 
     // Type of control order when multiple surfaces are referenced
-    enum class MultiSurfaceControl
+    enum class MultiSurfaceControl : std::int8_t
     {
         Invalid = -1,
         Sequential,

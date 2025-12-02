@@ -71,7 +71,7 @@ namespace RuntimeLanguageProcessor {
 
     int constexpr MaxErrors(20);
 
-    enum class Token
+    enum class Token : std::int8_t
     {
         Invalid = -1,
         Number = 1,            // matches the ValueNumber

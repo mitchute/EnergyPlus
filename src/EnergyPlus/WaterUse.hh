@@ -65,7 +65,7 @@ struct EnergyPlusData;
 
 namespace WaterUse {
 
-    enum class HeatRecovHX
+    enum class HeatRecovHX : std::int8_t
     {
         Invalid = -1,
         Ideal,
@@ -74,7 +74,7 @@ namespace WaterUse {
         Num
     };
 
-    enum class HeatRecovConfig
+    enum class HeatRecovConfig : std::int8_t
     {
         Invalid = -1,
         Plant,

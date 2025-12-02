@@ -1029,7 +1029,7 @@ void GLHEVert::calcShortTimestepGFunctions(EnergyPlusData &state)
     // SUBROUTINE PARAMETER DEFINITIONS:
     std::string_view constexpr RoutineName = "calcShortTimestepGFunctions";
 
-    enum class CellType
+    enum class CellType : std::int8_t
     {
         Invalid = -1,
         FLUID,

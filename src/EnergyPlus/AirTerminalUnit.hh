@@ -62,7 +62,7 @@ namespace EnergyPlus {
 struct EnergyPlusData;
 
 // types of air terminal units, refactored from old DataDefineEquip
-enum AirTerminalUnitType
+enum AirTerminalUnitType : std::uint8_t
 {
     notYetDetermined,
     dualDuctConstVolume,

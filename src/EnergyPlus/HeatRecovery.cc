@@ -105,7 +105,7 @@ namespace HeatRecovery {
     // U.S. Environmental Protection Agency software "SAVES" -
     //  School Advanced Ventilation Engineering Software http://www.epa.gov/iaq/schooldesign/saves.html
 
-    enum class HXOperation
+    enum class HXOperation : std::int8_t
     {
         Invalid = -1,
         WhenFansOn,

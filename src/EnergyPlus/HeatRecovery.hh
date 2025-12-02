@@ -63,7 +63,7 @@ struct EnergyPlusData;
 
 namespace HeatRecovery {
 
-    enum class HXConfiguration
+    enum class HXConfiguration : std::int8_t
     {
         Invalid = -1,
         CounterFlow,
@@ -73,7 +73,7 @@ namespace HeatRecovery {
         Num
     };
 
-    enum class HXExchConfigType
+    enum class HXExchConfigType : std::int8_t
     {
         Invalid = -1,
         Plate,
@@ -81,7 +81,7 @@ namespace HeatRecovery {
         Num
     };
 
-    enum class FrostControlOption
+    enum class FrostControlOption : std::int8_t
     {
         Invalid = -1,
         None,
@@ -94,7 +94,7 @@ namespace HeatRecovery {
     // invalid and num are not used for this internal enum class, but if I leave them out, the custom_check script complains
     // I'm not sure whether to leave them in unused, or add them to the exception list in the script
     // leaving them for now.
-    enum class CalculateNTUBoundsErrors
+    enum class CalculateNTUBoundsErrors : std::int8_t
     {
         Invalid = -1,
         NoError,

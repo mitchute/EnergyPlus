@@ -67,7 +67,7 @@ namespace Curve {
 
 namespace ZoneDehumidifier {
 
-    enum class CondensateOutlet
+    enum class CondensateOutlet : std::int8_t
     { // Water Systems
         Invalid = -1,
         Discarded, // Default mode where water is "lost"

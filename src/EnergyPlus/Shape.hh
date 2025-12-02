@@ -50,7 +50,7 @@
 
 namespace EnergyPlus {
 
-enum class ShapeCat
+enum class ShapeCat : std::int8_t
 {
     Invalid = -1,
     Triangular,

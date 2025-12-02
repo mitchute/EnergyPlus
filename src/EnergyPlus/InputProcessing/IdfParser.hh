@@ -83,7 +83,7 @@ public:
 
     bool hasErrors();
 
-    enum class Token : size_t
+    enum class Token : std::uint8_t
     {
         NONE = 0,
         END,

@@ -67,7 +67,7 @@ namespace HeatingCoils {
     // MODULE PARAMETER DEFINITIONS
     Real64 constexpr MinAirMassFlow(0.001);
 
-    enum class HeatObjTypes // reclaim heat object types
+    enum class HeatObjTypes : std::int8_t // reclaim heat object types
     {
         Invalid = -1,
         COMPRESSORRACK_REFRIGERATEDCASE,

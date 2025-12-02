@@ -66,7 +66,7 @@ namespace Pumps {
     // Data
     // MODULE PARAMETER DEFINITIONS:
 
-    enum class PumpControlType
+    enum class PumpControlType : std::int8_t
     {
         Invalid = -1,
         Continuous,   // Pump control type (pump always running)
@@ -74,7 +74,7 @@ namespace Pumps {
         Num
     };
 
-    enum class ControlTypeVFD
+    enum class ControlTypeVFD : std::int8_t
     {
         Invalid = -1,
         VFDManual,    // VFD control type (Scheduled RPM)
@@ -82,7 +82,7 @@ namespace Pumps {
         Num
     };
 
-    enum class PumpBankControlSeq
+    enum class PumpBankControlSeq : std::int8_t
     {
         Invalid = -1,
         OptimalScheme,    // Control sequencing for pump bank
@@ -91,7 +91,7 @@ namespace Pumps {
         Num
     };
 
-    enum class PumpType : int
+    enum class PumpType : std::int8_t
     {
         Invalid = -1,
         VarSpeed,
@@ -102,7 +102,7 @@ namespace Pumps {
         Num
     };
 
-    enum class PowerSizingMethod
+    enum class PowerSizingMethod : std::int8_t
     {
         Invalid = -1,
         SizePowerPerFlow,

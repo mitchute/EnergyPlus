@@ -66,7 +66,7 @@ namespace EnergyPlus {
 class AnnualFieldSet
 {
 public:
-    enum AggregationKind
+    enum AggregationKind : std::uint8_t
     {
         sumOrAvg,
         maximum,

@@ -112,7 +112,7 @@ namespace HVACMultiSpeedHeatPump {
     // of supply air fan heat/energy usage. The supply air fan is modeled by other modules.
 
     // Curve Types
-    enum class CurveType
+    enum class CurveType : std::int8_t
     {
         Invalid = -1,
         Linear,      // Linear curve type

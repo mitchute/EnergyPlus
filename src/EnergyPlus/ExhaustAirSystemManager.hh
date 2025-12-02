@@ -88,7 +88,7 @@ namespace ExhaustAirSystemManager {
 
     struct ZoneExhaustControl
     {
-        enum class FlowControlType
+        enum class FlowControlType : std::int8_t
         {
             Invalid = -1,
             Scheduled,

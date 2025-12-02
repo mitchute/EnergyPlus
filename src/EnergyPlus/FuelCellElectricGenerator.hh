@@ -67,7 +67,7 @@ namespace Curve {
 
 namespace FuelCellElectricGenerator {
 
-    enum class GasID
+    enum class GasID : std::int8_t
     // This enum starts at 1 because it has to match Gas Phase ThermoChemistry Structure Array in DataGenerators & GeneratorFuelSupply
     {
         Invalid = -1,

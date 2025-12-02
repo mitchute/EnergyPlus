@@ -77,7 +77,7 @@ namespace FaultsManager {
     int constexpr iController_AirEconomizer = 1001;
 
     // Input methods for fouling coils
-    enum class FouledCoil
+    enum class FouledCoil : std::int8_t
     {
         Invalid = -1,
         UARated,
@@ -86,7 +86,7 @@ namespace FaultsManager {
     };
 
     // FaultTypeEnum
-    enum class FaultType
+    enum class FaultType : std::int8_t
     {
         Invalid = -1,
         TemperatureSensorOffset_OutdoorAir,

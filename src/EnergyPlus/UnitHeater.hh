@@ -65,7 +65,7 @@ struct EnergyPlusData;
 
 namespace UnitHeater {
 
-    enum class HCoilType
+    enum class HCoilType : std::int8_t
     {
         Invalid = -1,
         Electric,

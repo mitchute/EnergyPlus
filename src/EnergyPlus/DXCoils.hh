@@ -84,7 +84,7 @@ namespace DXCoils {
     constexpr int MaxModes(MaxCapacityStages *(MaxDehumidModes + 1)); // Maximum number of performance modes
 
     // Water Systems
-    enum class CondensateCollectAction
+    enum class CondensateCollectAction : std::int8_t
     {
         Invalid = -1,
         Discard, // default mode where water is "lost"
@@ -92,7 +92,7 @@ namespace DXCoils {
         Num
     };
 
-    enum class EvapWaterSupply
+    enum class EvapWaterSupply : std::int8_t
     {
         Invalid = -1,
         FromMains,

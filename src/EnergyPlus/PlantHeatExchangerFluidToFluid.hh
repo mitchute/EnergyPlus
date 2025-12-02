@@ -65,7 +65,7 @@ struct EnergyPlusData;
 
 namespace PlantHeatExchangerFluidToFluid {
 
-    enum class FluidHXType
+    enum class FluidHXType : std::int8_t
     {
         Invalid = -1,
         CrossFlowBothUnMixed,
@@ -78,7 +78,7 @@ namespace PlantHeatExchangerFluidToFluid {
         Num
     };
 
-    enum class ControlType
+    enum class ControlType : std::int8_t
     {
         Invalid = -1,
         UncontrolledOn,
@@ -96,7 +96,7 @@ namespace PlantHeatExchangerFluidToFluid {
         Num
     };
 
-    enum class CtrlTempType
+    enum class CtrlTempType : std::int8_t
     {
         Invalid = -1,
         WetBulbTemperature,
@@ -105,7 +105,7 @@ namespace PlantHeatExchangerFluidToFluid {
         Num
     };
 
-    enum class HXAction
+    enum class HXAction : std::int8_t
     {
         Invalid = -1,
         HeatingSupplySideLoop,

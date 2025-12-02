@@ -68,7 +68,7 @@ namespace Dayltg {
     // Two kinds of reference points: used directly in daylighting, used to show illuminance map of zone
     constexpr int MaxMapRefPoints(2500); // Maximum number of Illuminance Map Ref Points
 
-    enum class SkyType
+    enum class SkyType : std::int8_t
     {
         Invalid = -1,
         Clear,
@@ -85,7 +85,7 @@ namespace Dayltg {
         Real64 sunDisk = 0.0;
     };
 
-    enum class ExtWinType
+    enum class ExtWinType : std::int8_t
     {
         Invalid = -1,
         NotInOrAdjZone, // Exterior window is not in a Daylighting:Detailed zone or in an adjacent zone with a shared interior window
@@ -94,7 +94,7 @@ namespace Dayltg {
         Num
     };
 
-    enum class CalledFor
+    enum class CalledFor : std::int8_t
     {
         Invalid = -1,
         RefPoint,
@@ -102,7 +102,7 @@ namespace Dayltg {
         Num
     };
 
-    enum class DaylightingMethod
+    enum class DaylightingMethod : std::int8_t
     {
         Invalid = -1,
         None,
@@ -114,7 +114,7 @@ namespace Dayltg {
     static constexpr std::array<std::string_view, (int)DaylightingMethod::Num> DaylightingMethodNamesUC = {"NONE", "SPLITFLUX", "DELIGHT"};
 
     // Parameters for "Lighting Control Type" - these are the values expected by DElight
-    enum class LtgCtrlType
+    enum class LtgCtrlType : std::int8_t
     {
         Invalid = -1,
         Continuous = 1,

@@ -59,7 +59,7 @@ struct EnergyPlusData;
 
 namespace GroundTemp {
 
-    enum class ModelType
+    enum class ModelType : std::int8_t
     {
         Invalid = -1,
         Kusuda,

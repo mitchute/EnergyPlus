@@ -68,7 +68,7 @@ struct EnergyPlusData;
 namespace DemandManager {
 
     // MODULE PARAMETER DEFINITIONS:
-    enum class ManagerType
+    enum class ManagerType : std::int8_t
     {
         Invalid = -1,
         ExtLights,
@@ -79,7 +79,7 @@ namespace DemandManager {
         Num
     };
 
-    enum class ManagePriorityType
+    enum class ManagePriorityType : std::int8_t
     {
         Invalid = -1,
         Sequential,
@@ -88,7 +88,7 @@ namespace DemandManager {
         Num
     };
 
-    enum class ManagerLimit
+    enum class ManagerLimit : std::int8_t
     {
         Invalid = -1,
         Off,
@@ -98,7 +98,7 @@ namespace DemandManager {
         Num
     };
 
-    enum class ManagerSelection
+    enum class ManagerSelection : std::int8_t
     {
         Invalid = -1,
         All,
@@ -107,7 +107,7 @@ namespace DemandManager {
         Num
     };
 
-    enum class DemandAction
+    enum class DemandAction : std::int8_t
     {
         Invalid = -1,
         CheckCanReduce,

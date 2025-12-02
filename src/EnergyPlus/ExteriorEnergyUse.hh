@@ -67,7 +67,7 @@ struct EnergyPlusData;
 
 namespace ExteriorEnergyUse {
 
-    enum class LightControlType
+    enum class LightControlType : std::int8_t
     {
         Invalid = -1,
         ScheduleOnly = 1,       // exterior lights only on schedule

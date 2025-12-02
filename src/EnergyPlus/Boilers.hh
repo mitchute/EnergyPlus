@@ -75,7 +75,7 @@ namespace Curve {
 namespace Boilers {
 
     // water temperature evaluation method
-    enum class TempMode
+    enum class TempMode : std::int8_t
     {
         Invalid = -1,
         NOTSET,

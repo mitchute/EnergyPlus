@@ -87,7 +87,7 @@ namespace FileSystem {
 
     extern std::string const exeExtension;
 
-    enum class FileTypes
+    enum class FileTypes : std::int8_t
     {
         Invalid = -1,
         // JSON types should go first,

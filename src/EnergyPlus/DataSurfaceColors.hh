@@ -64,7 +64,7 @@ namespace DataSurfaceColors {
 
     static constexpr std::array<int, 15> defaultcolorno = {3, 43, 143, 143, 45, 8, 15, 195, 9, 13, 174, 143, 143, 10, 5};
 
-    enum class ColorNo
+    enum class ColorNo : std::int8_t
     {
         Invalid = -1,
         Text,

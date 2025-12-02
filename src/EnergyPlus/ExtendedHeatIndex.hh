@@ -60,7 +60,7 @@ struct EnergyPlusData;
 
 namespace ExtendedHI {
 
-    enum class EqvarName
+    enum class EqvarName : std::int8_t
     {
         Invalid = -1,
         Phi,

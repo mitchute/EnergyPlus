@@ -67,7 +67,7 @@ struct EnergyPlusData;
 
 namespace OutdoorAirUnit {
 
-    enum class CompType : int
+    enum class CompType : std::int8_t
     {
         Invalid = -1,
         WaterCoil_Cooling,       // "COIL:COOLING:WATER",
@@ -119,7 +119,7 @@ namespace OutdoorAirUnit {
         "AIRLOOPHVAC:UNITARYSYSTEM",
     };
 
-    enum class OAUnitCtrlType
+    enum class OAUnitCtrlType : std::int8_t
     {
         Invalid = -1,
         Neutral,
@@ -128,7 +128,7 @@ namespace OutdoorAirUnit {
         Num
     };
 
-    enum class Operation
+    enum class Operation : std::int8_t
     {
         Invalid = -1,
         HeatingMode, // normal heating coil operation

@@ -70,7 +70,7 @@ namespace EconomicLifeCycleCost {
 
     // Data
     // MODULE PARAMETER DEFINITIONS:
-    enum class DiscConv
+    enum class DiscConv : std::int8_t
     {
         Invalid = -1,
         BeginOfYear,
@@ -83,7 +83,7 @@ namespace EconomicLifeCycleCost {
 
     constexpr std::array<std::string_view, static_cast<int>(DiscConv::Num)> DiscConvNames{"BeginningOfYear", "MidYear", "EndOfYear"};
 
-    enum class InflAppr
+    enum class InflAppr : std::int8_t
     {
         Invalid = -1,
         ConstantDollar,
@@ -95,7 +95,7 @@ namespace EconomicLifeCycleCost {
 
     constexpr std::array<std::string_view, static_cast<int>(InflAppr::Num)> InflApprNames{"ConstantDollar", "CurrentDollar"};
 
-    enum class DeprMethod
+    enum class DeprMethod : std::int8_t
     {
         Invalid = -1,
         MACRS3,
@@ -167,7 +167,7 @@ namespace EconomicLifeCycleCost {
         "None",
     };
 
-    enum CostCategory
+    enum CostCategory : std::int8_t
     {
         Invalid = -1,
         Maintenance,
@@ -267,7 +267,7 @@ namespace EconomicLifeCycleCost {
     //   Residual oil - FuelOilNo2
     //   Coal
 
-    enum class StartCosts
+    enum class StartCosts : std::int8_t
     {
         Invalid = -1,
         ServicePeriod,
@@ -277,7 +277,7 @@ namespace EconomicLifeCycleCost {
 
     constexpr std::array<std::string_view, static_cast<int>(StartCosts::Num)> StartCostNamesUC{"SERVICEPERIOD", "BASEPERIOD"};
 
-    enum class SourceKindType
+    enum class SourceKindType : std::int8_t
     {
         Invalid = -1,
         Recurring,
@@ -289,7 +289,7 @@ namespace EconomicLifeCycleCost {
 
     constexpr std::array<std::string_view, static_cast<int>(SourceKindType::Num)> SourceKindTypeNames{"Recurring", "Nonrecurring"};
 
-    enum class ResourceCostCategory
+    enum class ResourceCostCategory : std::int8_t
     {
         Invalid = -1,
         Water,
@@ -298,7 +298,7 @@ namespace EconomicLifeCycleCost {
     };
     constexpr std::array<std::string_view, static_cast<int>(ResourceCostCategory::Num)> ResourceCostCategoryNames{"Water Cost", "Energy Cost"};
 
-    enum class PrValKind
+    enum class PrValKind : std::int8_t
     {
         Invalid = -1,
         Energy,

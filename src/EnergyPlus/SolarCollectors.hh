@@ -66,7 +66,7 @@ struct EnergyPlusData;
 
 namespace SolarCollectors {
 
-    enum struct TestTypeEnum
+    enum struct TestTypeEnum : std::int8_t
     {
         INVALID = -1,
         INLET,

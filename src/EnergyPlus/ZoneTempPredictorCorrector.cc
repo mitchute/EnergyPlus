@@ -120,7 +120,7 @@ namespace EnergyPlus::ZoneTempPredictorCorrector {
 //    "Predict" step is used to get zone loads for HVAC equipment
 //    "correct" step determines zone air temp with available HVAC
 
-enum class ZoneControlTypes
+enum class ZoneControlTypes : std::int8_t
 {
     Invalid = -1,
     TStat = 1,
@@ -132,7 +132,7 @@ enum class ZoneControlTypes
     Num
 };
 
-enum class AdaptiveComfortModel
+enum class AdaptiveComfortModel : std::int8_t
 {
     Invalid = -1,
     ADAP_NONE = 1,

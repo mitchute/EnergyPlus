@@ -62,7 +62,7 @@ namespace EnergyPlus {
 namespace DataGenerators {
 
     // MODULE PARAMETER DEFINITIONS:
-    enum class CurveMode
+    enum class CurveMode : std::int8_t
     {
         Invalid = -1,
         Normalized, // mode where efficiency curves are modifier curves
@@ -70,7 +70,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class SkinLoss
+    enum class SkinLoss : std::int8_t
     {
         Invalid = -1,
         ConstantRate,
@@ -79,7 +79,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class AirSupRateMode
+    enum class AirSupRateMode : std::int8_t
     {
         Invalid = -1,
         QuadraticFuncofNdot,  // function of fuel rate mode for air flow
@@ -88,7 +88,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class RecoverMode
+    enum class RecoverMode : std::int8_t
     {
         Invalid = -1,
         NoRecoveryOnAirIntake,  // mode for controlling intake air heat recovery
@@ -100,7 +100,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class ConstituentMode
+    enum class ConstituentMode : std::int8_t
     {
         Invalid = -1,
         RegularAir,
@@ -108,7 +108,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class FuelTemperatureMode
+    enum class FuelTemperatureMode : std::int8_t
     {
         Invalid = -1,
         FuelInTempFromNode,
@@ -116,7 +116,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class WaterTempMode
+    enum class WaterTempMode : std::int8_t
     {
         Invalid = -1,
         Mains,
@@ -126,7 +126,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class InverterEfficiencyMode
+    enum class InverterEfficiencyMode : std::int8_t
     {
         Invalid = -1,
         Constant,
@@ -134,7 +134,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class ExhaustGasHX
+    enum class ExhaustGasHX : std::int8_t
     {
         Invalid = -1,
         FixedEffectiveness,   // exhaust gas HX modeling mode
@@ -144,7 +144,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class ElectricalStorage
+    enum class ElectricalStorage : std::int8_t
     {
         Invalid = -1,
         SimpleEffConstraints,         // electrical storage modeling mode
@@ -153,7 +153,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class LossDestination
+    enum class LossDestination : std::int8_t
     {
         Invalid = -1,
         SurroundingZone,
@@ -161,7 +161,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class OperatingMode
+    enum class OperatingMode : std::int8_t
     {
         Invalid = -1,
         Off,      // CHP operating mode OFF
@@ -172,7 +172,7 @@ namespace DataGenerators {
         Num
     };
 
-    enum class FuelMode
+    enum class FuelMode : std::int8_t
     {
         Invalid = -1,
         GaseousConstituents,
@@ -183,7 +183,7 @@ namespace DataGenerators {
     Real64 constexpr MinProductGasTemp(-100.0); // Minimum bound on search for product gas temps
     Real64 constexpr MaxProductGasTemp(2000.0); // Maximum bound on search for product gas temps
 
-    enum class ThermodynamicMode
+    enum class ThermodynamicMode : std::int8_t
     {
         Invalid = -1,
         NISTShomate,

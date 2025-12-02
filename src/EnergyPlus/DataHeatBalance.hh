@@ -78,7 +78,7 @@ namespace DataHeatBalance {
     using DataVectorTypes::Vector;
 
     // Parameters for Interior and Exterior Solar Distribution
-    enum class Shadowing
+    enum class Shadowing : std::int8_t
     {
         Invalid = -1,
         Minimal,              // all incoming solar hits floor, no exterior shadowing except reveals
@@ -97,7 +97,7 @@ namespace DataHeatBalance {
     constexpr int DefaultMinNumberOfWarmupDays(1);  // Default minimum number of warmup days allowed
 
     // Parameters for ZoneAirSolutionAlgo
-    enum class SolutionAlgo
+    enum class SolutionAlgo : std::int8_t
     {
         Invalid = -1,
         ThirdOrder,
@@ -107,7 +107,7 @@ namespace DataHeatBalance {
     };
 
     // Parameter for MRT calculation type
-    enum class CalcMRT
+    enum class CalcMRT : std::int8_t
     {
         Invalid = -1,
         EnclosureAveraged,
@@ -117,7 +117,7 @@ namespace DataHeatBalance {
     };
 
     // Parameters for Ventilation
-    enum class VentilationType
+    enum class VentilationType : std::int8_t
     {
         Invalid = -1,
         Natural,
@@ -128,7 +128,7 @@ namespace DataHeatBalance {
     };
 
     // Parameters for hybrid ventilation using Ventilation and Mixing objects
-    enum class HybridCtrlType
+    enum class HybridCtrlType : std::int8_t
     {
         Invalid = -1,
         Indiv,
@@ -138,7 +138,7 @@ namespace DataHeatBalance {
     };
 
     // System type, detailed refrigeration or refrigerated case rack
-    enum class RefrigSystemType
+    enum class RefrigSystemType : std::int8_t
     {
         Invalid = -1,
         Detailed,
@@ -147,7 +147,7 @@ namespace DataHeatBalance {
     };
 
     // Refrigeration condenser type
-    enum class RefrigCondenserType
+    enum class RefrigCondenserType : std::int8_t
     {
         Invalid = -1,
         Air,
@@ -164,7 +164,7 @@ namespace DataHeatBalance {
         "AIRCOOLED", "EVAPORATIVELYCOOLED", "WATERCOOLED", "CASCADE", "WATERHEATER"}; // Are the last two used?
 
     // Parameters for type of infiltration model
-    enum class InfiltrationModelType
+    enum class InfiltrationModelType : std::int8_t
     {
         Invalid = -1,
         DesignFlowRate,
@@ -174,7 +174,7 @@ namespace DataHeatBalance {
     };
 
     // Parameters for type of ventilation model
-    enum class VentilationModelType
+    enum class VentilationModelType : std::int8_t
     {
         Invalid = -1,
         DesignFlowRate,
@@ -182,7 +182,7 @@ namespace DataHeatBalance {
         Num
     };
 
-    enum class InfVentDensityBasis
+    enum class InfVentDensityBasis : std::int8_t
     {
         Invalid = -1,
         Outdoor,
@@ -192,7 +192,7 @@ namespace DataHeatBalance {
     };
 
     // Parameters for type of zone air balance model
-    enum class AirBalance
+    enum class AirBalance : std::int8_t
     {
         Invalid = -1,
         None,
@@ -201,7 +201,7 @@ namespace DataHeatBalance {
     };
 
     // Parameter for source zone air flow mass balance infiltration treatment
-    enum class InfiltrationFlow
+    enum class InfiltrationFlow : std::int8_t
     {
         Invalid = -1,
         No,
@@ -210,7 +210,7 @@ namespace DataHeatBalance {
         Num
     };
 
-    enum class InfiltrationZoneType
+    enum class InfiltrationZoneType : std::int8_t
     {
         Invalid = -1,
         MixingSourceZonesOnly,
@@ -219,7 +219,7 @@ namespace DataHeatBalance {
     };
 
     // zone air flow balancing method
-    enum class AdjustmentType
+    enum class AdjustmentType : std::int8_t
     {
         Invalid = -1,
         AdjustMixingOnly,
@@ -230,7 +230,7 @@ namespace DataHeatBalance {
         Num
     };
 
-    enum class IntGainType
+    enum class IntGainType : std::int8_t
     {
         Invalid = -1,
         People,
@@ -565,7 +565,7 @@ namespace DataHeatBalance {
         }
     };
 
-    enum class HeatIndexMethod : int
+    enum class HeatIndexMethod : std::int8_t
     {
         Invalid = -1,
         Simplified,
@@ -742,7 +742,7 @@ namespace DataHeatBalance {
         int Multiplier = 1; // Zone List multiplier
     };
 
-    enum class ClothingType
+    enum class ClothingType : std::int8_t
     {
         Invalid = -1,
         InsulationSchedule,
@@ -956,7 +956,7 @@ namespace DataHeatBalance {
 
     // ITE Equipment Environmental Class Data
     // MODULE PARAMETER DEFINITIONS:
-    enum class ITEClass
+    enum class ITEClass : std::int8_t
     {
         Invalid = -1,
         None, // (0)
@@ -971,7 +971,7 @@ namespace DataHeatBalance {
     };
     static constexpr std::array<std::string_view, static_cast<int>(ITEClass::Num)> ITEClassNamesUC = {"NONE", "A1", "A2", "A3", "A4", "B", "C", "H1"};
 
-    enum class ITEInletConnection
+    enum class ITEInletConnection : std::int8_t
     {
         Invalid = -1,
         AdjustedSupply,
@@ -982,7 +982,7 @@ namespace DataHeatBalance {
     static constexpr std::array<std::string_view, static_cast<int>(ITEInletConnection::Num)> ITEInletConnectionNamesUC = {
         "ADJUSTEDSUPPLY", "ZONEAIRNODE", "ROOMAIRMODEL"};
 
-    enum class PERptVars
+    enum class PERptVars : std::uint8_t
     {
         CPU = 0,       // ITE CPU Electric Power/Energy
         Fan,           // ITE Fan Electric Power/Energy

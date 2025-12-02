@@ -64,7 +64,7 @@ struct EnergyPlusData;
 
 namespace CoolTower {
 
-    enum class FlowCtrl
+    enum class FlowCtrl : std::int8_t
     {
         Invalid = -1,
         FlowSchedule,
@@ -72,7 +72,7 @@ namespace CoolTower {
         Num
     };
 
-    enum class WaterSupplyMode
+    enum class WaterSupplyMode : std::int8_t
     {
         Invalid = -1,
         FromMains,

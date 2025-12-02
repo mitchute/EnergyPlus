@@ -67,7 +67,7 @@ struct EnergyPlusData;
 
 namespace Furnaces {
 
-    enum class ModeOfOperation
+    enum class ModeOfOperation : std::int8_t
     {
         Invalid = -1,
         CoolingMode, // last compressor operating mode was in cooling
@@ -77,7 +77,7 @@ namespace Furnaces {
     };
 
     // Airflow control for contant fan mode
-    enum class AirFlowControlConstFan
+    enum class AirFlowControlConstFan : std::int8_t
     {
         Invalid = -1,         // default
         UseCompressorOnFlow,  // set compressor OFF air flow rate equal to compressor ON air flow rate
@@ -86,7 +86,7 @@ namespace Furnaces {
     };
 
     // Dehumidification control modes (DehumidControlMode)
-    enum class DehumidificationControlMode
+    enum class DehumidificationControlMode : std::int8_t
     {
         Invalid = -1,
         None,
@@ -95,7 +95,7 @@ namespace Furnaces {
         Num
     };
 
-    enum class WAHPCoilType
+    enum class WAHPCoilType : std::int8_t
     {
         Invalid = -1,
         Simple,

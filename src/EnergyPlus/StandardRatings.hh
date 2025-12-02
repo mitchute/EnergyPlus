@@ -107,7 +107,7 @@ namespace StandardRatings {
 </ol>)html";
 
     // Defrost strategy (heat pump only)
-    enum class DefrostStrat
+    enum class DefrostStrat : std::int8_t
     {
         Invalid = -1,
         ReverseCycle, // uses reverse cycle defrost strategy
@@ -118,7 +118,7 @@ namespace StandardRatings {
     static constexpr std::array<std::string_view, static_cast<int>(DefrostStrat::Num)> DefrostStratUC = {"REVERSECYCLE", "RESISTIVE"};
 
     // Defrost control  (heat pump only)
-    enum class HPdefrostControl : int
+    enum class HPdefrostControl : std::int8_t
     {
         Invalid = -1,
         Timed,    // defrost cycle is timed
@@ -128,7 +128,7 @@ namespace StandardRatings {
 
     static constexpr std::array<std::string_view, static_cast<int>(HPdefrostControl::Num)> HPdefrostControlUC = {"TIMED", "ONDEMAND"};
 
-    enum class AhriChillerStd
+    enum class AhriChillerStd : std::int8_t
     {
         Invalid = -1,
         AHRI550_590,

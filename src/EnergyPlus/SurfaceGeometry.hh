@@ -74,7 +74,7 @@ namespace SurfaceGeometry {
     using DataSurfaces::SurfaceData;
     using DataVectorTypes::Vector;
 
-    enum enclosureType
+    enum enclosureType : std::uint8_t
     {
         RadiantEnclosures,
         SolarEnclosures

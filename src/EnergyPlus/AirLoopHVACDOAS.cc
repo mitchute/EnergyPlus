@@ -89,7 +89,7 @@ namespace EnergyPlus {
 namespace AirLoopHVACDOAS {
 
     // the equipment list object has its own subset of E+ components that are valid, this covers that list
-    enum class ValidEquipListType
+    enum class ValidEquipListType : std::int8_t
     {
         Invalid = -1,
         OutdoorAirMixer,

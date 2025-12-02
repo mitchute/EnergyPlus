@@ -62,7 +62,7 @@ struct EnergyPlusData;
 
 namespace Window {
 
-    enum class OpticalDataModel
+    enum class OpticalDataModel : std::int8_t
     {
         Invalid = -1,
         SpectralAverage,
@@ -75,7 +75,7 @@ namespace Window {
     extern const std::array<std::string_view, (int)OpticalDataModel::Num> opticalDataModelNames;
     extern const std::array<std::string_view, (int)OpticalDataModel::Num> opticalDataModelNamesUC;
 
-    enum class WindowsModel
+    enum class WindowsModel : std::int8_t
     {
         Invalid = -1,
         BuiltIn,
@@ -102,7 +102,7 @@ namespace Window {
         WindowsModel m_Model;
     };
 
-    enum class WindowsOpticalModel
+    enum class WindowsOpticalModel : std::int8_t
     {
         Invalid = -1,
         Simplified,

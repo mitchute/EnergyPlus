@@ -72,7 +72,7 @@ namespace WaterCoils {
     constexpr Real64 MinWaterMassFlowFrac = 0.000001;
     constexpr Real64 MinAirMassFlow = 0.001;
 
-    enum class CoilModel
+    enum class CoilModel : std::int8_t
     {
         Invalid = -1,
         HeatingSimple,

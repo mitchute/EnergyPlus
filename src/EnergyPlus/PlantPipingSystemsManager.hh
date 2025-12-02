@@ -83,7 +83,7 @@ namespace PlantPipingSystemsManager {
     extern std::string const ObjName_ZoneCoupled_Slab;
     extern std::string const ObjName_ZoneCoupled_Basement;
 
-    enum class SegmentFlow
+    enum class SegmentFlow : std::int8_t
     {
         Invalid = -1,
         IncreasingZ,
@@ -91,7 +91,7 @@ namespace PlantPipingSystemsManager {
         Num
     };
 
-    enum class MeshDistribution
+    enum class MeshDistribution : std::int8_t
     {
         Invalid = -1,
         Uniform,
@@ -100,7 +100,7 @@ namespace PlantPipingSystemsManager {
         Num
     };
 
-    enum class RegionType
+    enum class RegionType : std::int8_t
     {
         Invalid = -1,
         Pipe,
@@ -121,7 +121,7 @@ namespace PlantPipingSystemsManager {
         Num
     };
 
-    enum class Direction
+    enum class Direction : std::int8_t
     {
         Invalid = -1,
         PositiveY,
@@ -133,7 +133,7 @@ namespace PlantPipingSystemsManager {
         Num
     };
 
-    enum class PartitionType
+    enum class PartitionType : std::int8_t
     {
         Invalid = -1,
         BasementWall,
@@ -152,7 +152,7 @@ namespace PlantPipingSystemsManager {
         Num
     };
 
-    enum class CellType
+    enum class CellType : std::int8_t
     {
         Invalid = -1,
         Pipe,
@@ -170,7 +170,7 @@ namespace PlantPipingSystemsManager {
         Num
     };
 
-    enum class SlabPosition
+    enum class SlabPosition : std::int8_t
     {
         Invalid = -1,
         InGrade,
@@ -178,7 +178,7 @@ namespace PlantPipingSystemsManager {
         Num
     };
 
-    enum class HorizInsulation
+    enum class HorizInsulation : std::int8_t
     {
         Invalid = -1,
         None,

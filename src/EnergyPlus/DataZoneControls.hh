@@ -61,7 +61,7 @@ namespace EnergyPlus {
 namespace DataZoneControls {
 
     // Average method parameter with multiple people objects in a zone
-    enum class AverageMethod
+    enum class AverageMethod : std::int8_t
     {
         Invalid = -1,
         NO,  // No multiple people objects
@@ -76,7 +76,7 @@ namespace DataZoneControls {
     constexpr std::array<std::string_view, (int)AverageMethod::Num> averageMethodNamesUC = {
         "NOMULTIPLEPEOPLEOBJECTS", "SPECIFICOBJECT", "OBJECTAVERAGE", "PEOPLEAVERAGE"};
 
-    enum class TempCtrl
+    enum class TempCtrl : std::int8_t
     {
         Invalid = -1,
         None,

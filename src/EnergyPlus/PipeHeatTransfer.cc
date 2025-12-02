@@ -111,7 +111,7 @@ namespace EnergyPlus::PipeHeatTransfer {
 
 // OTHER NOTES: Equation Numbers listed in buried pipe routines are from Piechowski's thesis
 
-enum class PipeIndoorBoundaryType
+enum class PipeIndoorBoundaryType : std::int8_t
 {
     Invalid = -1,
     Zone,

@@ -68,7 +68,7 @@ struct EnergyPlusData;
 
 namespace SetPointManager {
 
-    enum class SupplyFlowTempStrategy
+    enum class SupplyFlowTempStrategy : std::int8_t
     {
         Invalid = -1,
         MaxTemp,
@@ -76,7 +76,7 @@ namespace SetPointManager {
         Num
     };
 
-    enum class ControlStrategy
+    enum class ControlStrategy : std::int8_t
     {
         Invalid = -1,
         TempFirst,
@@ -84,7 +84,7 @@ namespace SetPointManager {
         Num
     };
 
-    enum class AirTempType
+    enum class AirTempType : std::int8_t
     {
         Invalid = -1,
         WetBulb,
@@ -92,7 +92,7 @@ namespace SetPointManager {
         Num
     };
 
-    enum class ReturnTempType
+    enum class ReturnTempType : std::int8_t
     {
         Invalid = -1,
         Scheduled,
@@ -101,7 +101,7 @@ namespace SetPointManager {
         Num
     };
 
-    enum class SPMType
+    enum class SPMType : std::int8_t
     {
         Invalid = -1,
         Scheduled,

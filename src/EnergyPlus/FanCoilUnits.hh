@@ -76,7 +76,7 @@ namespace FanCoilUnits {
     // coil type units supported in this module
     constexpr int FanCoilUnit_4Pipe(1);
 
-    enum class CCoil
+    enum class CCoil : std::int8_t
     {
         Invalid = -1,
         Water,
@@ -85,7 +85,7 @@ namespace FanCoilUnits {
         Num
     };
 
-    enum class HCoil
+    enum class HCoil : std::int8_t
     {
         Invalid = -1,
         Water,
@@ -93,7 +93,7 @@ namespace FanCoilUnits {
         Num
     };
 
-    enum class CCM // capacity control method supported in this module
+    enum class CCM : std::int8_t // capacity control method supported in this module
     {
         Invalid = -1,
         ConsFanVarFlow,

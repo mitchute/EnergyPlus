@@ -74,7 +74,7 @@ struct EnergyPlusData;
 
 namespace PVWatts {
 
-    enum class ModuleType
+    enum class ModuleType : std::int8_t
     {
         Invalid = -1,
         STANDARD,
@@ -83,7 +83,7 @@ namespace PVWatts {
         Num
     };
 
-    enum class ArrayType
+    enum class ArrayType : std::int8_t
     {
         Invalid = -1,
         FIXED_OPEN_RACK,
@@ -94,7 +94,7 @@ namespace PVWatts {
         Num
     };
 
-    enum class GeometryType
+    enum class GeometryType : std::int8_t
     {
         Invalid = -1,
         TILT_AZIMUTH,
@@ -129,7 +129,7 @@ namespace PVWatts {
     class PVWattsGenerator
     {
     private:
-        enum AlphaFields
+        enum AlphaFields : std::uint8_t
         {
             NAME = 1,
             VERSION = 2,
@@ -139,7 +139,7 @@ namespace PVWatts {
             SURFACE_NAME = 6,
         };
 
-        enum NumFields
+        enum NumFields : std::uint8_t
         {
             DC_SYSTEM_CAPACITY = 1,
             SYSTEM_LOSSES = 2,

@@ -70,7 +70,7 @@ namespace RoomAir {
     constexpr std::string_view cTempPatternSurfMapObject("RoomAir:TemperaturePattern:SurfaceMapping");
 
     // Parameters to indicate room air model selected
-    enum class RoomAirModel : int
+    enum class RoomAirModel : std::int8_t
     {
         Invalid = -1,
         UserDefined,    // user defined patterns
@@ -88,7 +88,7 @@ namespace RoomAir {
     extern const std::array<std::string_view, (int)RoomAirModel::Num> roomAirModelNamesUC;
 
     // Parameters to indicate air temperature coupling scheme
-    enum class CouplingScheme
+    enum class CouplingScheme : std::int8_t
     {
         Invalid = -1,
         Direct,
@@ -97,7 +97,7 @@ namespace RoomAir {
     };
 
     // Parameters to indicate type of air node, which is dependent on air models
-    enum class AirNodeType
+    enum class AirNodeType : std::int8_t
     {
         Invalid = -1,
         Inlet,   // air node at inlet (for Mundt and Rees&Haves Models)
@@ -115,7 +115,7 @@ namespace RoomAir {
     extern const std::array<std::string_view, (int)AirNodeType::Num> airNodeTypeNamesUC;
 
     // user-defined pattern two gradient interpolation modes
-    enum class UserDefinedPatternMode
+    enum class UserDefinedPatternMode : std::int8_t
     {
         Invalid = -1,
         OutdoorDryBulb,   // by outdoor air bulb.
@@ -129,7 +129,7 @@ namespace RoomAir {
     extern const std::array<std::string_view, (int)UserDefinedPatternMode::Num> userDefinedPatternModeNamesUC;
 
     // user defined temperature pattern types
-    enum class UserDefinedPatternType
+    enum class UserDefinedPatternType : std::int8_t
     {
         Invalid = -1,
         ConstGradTemp,  // constant gradient in vertical direction
@@ -142,7 +142,7 @@ namespace RoomAir {
     extern const std::array<std::string_view, (int)UserDefinedPatternType::Num> userDefinedPatternNamesUC;
 
     // parameters to indicate diffuser type
-    enum class Diffuser
+    enum class Diffuser : std::int8_t
     {
         Invalid = -1,
         Swirl,
@@ -155,7 +155,7 @@ namespace RoomAir {
 
     extern const std::array<std::string_view, (int)Diffuser::Num> diffuserNamesUC;
 
-    enum class Comfort
+    enum class Comfort : std::int8_t
     {
         Invalid = -1,
         Jet,

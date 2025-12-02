@@ -65,11 +65,8 @@
 #include <EnergyPlus/DataBranchAirLoopPlant.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataHVACGlobals.hh>
-#include <EnergyPlus/DataHeatBalSurface.hh>
-#include <EnergyPlus/DataHeatBalance.hh>
 #include <EnergyPlus/DataLoopNode.hh>
 #include <EnergyPlus/DataSizing.hh>
-#include <EnergyPlus/DataSurfaces.hh>
 #include <EnergyPlus/DataZoneEquipment.hh>
 #include <EnergyPlus/ExhaustAirSystemManager.hh>
 #include <EnergyPlus/FanCoilUnits.hh>
@@ -77,7 +74,6 @@
 #include <EnergyPlus/HVACSingleDuctInduc.hh>
 #include <EnergyPlus/HWBaseboardRadiator.hh>
 #include <EnergyPlus/InputProcessing/InputProcessor.hh>
-#include <EnergyPlus/Material.hh>
 #include <EnergyPlus/MixerComponent.hh>
 #include <EnergyPlus/OutdoorAirUnit.hh>
 #include <EnergyPlus/PlantUtilities.hh>
@@ -85,7 +81,6 @@
 #include <EnergyPlus/Psychrometrics.hh>
 #include <EnergyPlus/PurchasedAirManager.hh>
 #include <EnergyPlus/ScheduleManager.hh>
-#include <EnergyPlus/SolarCollectors.hh>
 #include <EnergyPlus/SplitterComponent.hh>
 #include <EnergyPlus/SteamBaseboardRadiator.hh>
 #include <EnergyPlus/UnitHeater.hh>
@@ -98,7 +93,7 @@
 namespace EnergyPlus {
 
 // Integer constants for different system types handled by the routines in this file
-enum GeneralRoutinesEquipNums
+enum GeneralRoutinesEquipNums : std::uint8_t
 {
     ParallelPIUReheatNum = 1,
     SeriesPIUReheatNum = 2,
@@ -113,7 +108,7 @@ enum GeneralRoutinesEquipNums
     VentilatedSlabNum = 11
 };
 
-enum class AirLoopHVACCompType
+enum class AirLoopHVACCompType : std::int8_t
 {
     Invalid = -1,
     SupplyPlenum,

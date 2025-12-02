@@ -69,7 +69,7 @@ namespace Sched {
     constexpr int SchedNum_AlwaysOff = 0;
     constexpr int SchedNum_AlwaysOn = 1;
 
-    enum class DayType
+    enum class DayType : std::int8_t
     {
         Invalid = -1,
         Unused, // This is annoying.  Will get rid of it later
@@ -104,7 +104,7 @@ namespace Sched {
     extern const std::array<std::string_view, (int)DayType::Num> dayTypeNames;
     extern const std::array<std::string_view, (int)DayType::Num> dayTypeNamesUC;
 
-    enum class DayTypeGroup
+    enum class DayTypeGroup : std::int8_t
     {
         Invalid = -1,
         Weekday,
@@ -114,7 +114,7 @@ namespace Sched {
         Num
     };
 
-    enum class SchedType
+    enum class SchedType : std::int8_t
     {
         Invalid = -1,
         Year,
@@ -125,7 +125,7 @@ namespace Sched {
         Num
     };
 
-    enum class ReportLevel
+    enum class ReportLevel : std::int8_t
     {
         Invalid = -1,
         Hourly,
@@ -133,7 +133,7 @@ namespace Sched {
         Num
     };
 
-    enum class Interpolation
+    enum class Interpolation : std::int8_t
     {
         Invalid = -1,
         No,      // no interpolation
@@ -142,7 +142,7 @@ namespace Sched {
         Num
     };
 
-    enum class LimitUnits
+    enum class LimitUnits : std::int8_t
     {
         Invalid = -1,
         Dimensionless,

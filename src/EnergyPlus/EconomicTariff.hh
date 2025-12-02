@@ -67,7 +67,7 @@ struct EnergyPlusData;
 
 namespace EconomicTariff {
 
-    enum class ObjType
+    enum class ObjType : std::int8_t
     {
         Invalid = -1,
         Tariff,
@@ -83,7 +83,7 @@ namespace EconomicTariff {
         Num
     };
 
-    enum class EconConv
+    enum class EconConv : std::int8_t
     {
         Invalid = -1,
         USERDEF,
@@ -100,7 +100,7 @@ namespace EconomicTariff {
         Num
     };
 
-    enum class DemandWindow
+    enum class DemandWindow : std::int8_t
     {
         Invalid = -1,
         Quarter,
@@ -111,7 +111,7 @@ namespace EconomicTariff {
         Num
     };
 
-    enum class BuySell
+    enum class BuySell : std::int8_t
     {
         Invalid = -1,
         BuyFromUtility,
@@ -121,7 +121,7 @@ namespace EconomicTariff {
     };
 
     // For several different objects that reference seasons
-    enum class Season
+    enum class Season : std::int8_t
     {
         Invalid = -1,
         Unused, // Can't use 0 because these things appear in schedules
@@ -140,7 +140,7 @@ namespace EconomicTariff {
 
     // For ComputeSteps
     // All are negative because all variables are positive
-    enum class Op
+    enum class Op : std::int8_t
     {
         Invalid = -1,
         SUM,
@@ -182,7 +182,7 @@ namespace EconomicTariff {
     int constexpr varUserDefined(-1);
     int constexpr varNotYetDefined(-2);
 
-    enum class Cat
+    enum class Cat : std::int8_t
     {
         Invalid = -1,
         EnergyCharges,
@@ -198,7 +198,7 @@ namespace EconomicTariff {
         Num
     };
 
-    enum class Native
+    enum class Native : std::int8_t
     {
         Invalid = -1,
         TotalEnergy,
@@ -244,7 +244,7 @@ namespace EconomicTariff {
     int constexpr NumMonths(12);
     int constexpr maxNumBlk(15);
 
-    enum class Period
+    enum class Period : std::int8_t
     {
         Invalid = -1,
         Unused, // Can't use 0 because these things appear in schedules
@@ -255,7 +255,7 @@ namespace EconomicTariff {
         Num
     };
 
-    enum class MeterType
+    enum class MeterType : std::int8_t
     {
         Invalid = -1,
         ElecSimple,
@@ -269,7 +269,7 @@ namespace EconomicTariff {
         Num
     };
 
-    enum class VarUnitType
+    enum class VarUnitType : std::int8_t
     {
         Invalid = -1,
         Energy,
@@ -491,7 +491,7 @@ namespace EconomicTariff {
 
     void UpdateUtilityBills(EnergyPlusData &state);
 
-    enum class StepType
+    enum class StepType : std::uint8_t
     {
         Op,
         Var,

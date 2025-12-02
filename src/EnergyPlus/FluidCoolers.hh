@@ -63,7 +63,7 @@ namespace EnergyPlus {
 
 namespace FluidCoolers {
 
-    enum class PerfInputMethod
+    enum class PerfInputMethod : std::int8_t
     {
         Invalid = -1,
         NOMINAL_CAPACITY,

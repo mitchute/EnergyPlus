@@ -68,7 +68,7 @@ struct EnergyPlusData;
 namespace IntegratedHeatPump {
 
     // operation mode
-    enum class IHPOperationMode : int
+    enum class IHPOperationMode : std::int8_t
     {
         Invalid = -1,
         Idle,

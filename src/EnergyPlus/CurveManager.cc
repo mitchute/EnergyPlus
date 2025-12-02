@@ -2568,7 +2568,7 @@ namespace Curve {
 
                 // Normalize data
                 Real64 normalizationDivisor = 1.0;
-                enum NormalizationMethod
+                enum NormalizationMethod : std::uint8_t
                 {
                     NM_NONE,
                     NM_DIVISOR_ONLY,
@@ -2979,7 +2979,7 @@ namespace Curve {
         // Returns true if the input unit type is valid
 
         // currently this is a bit overkill to have an enum and string view array, but this sets it up in case we want to do more with these inputs
-        enum class CurveInputType
+        enum class CurveInputType : std::int8_t
         {
             Invalid = -1,
             Dimensionless,
@@ -3026,7 +3026,7 @@ namespace Curve {
         // Returns true if the output unit type is valid
 
         // currently this is a bit overkill to have an enum and string view array, but this sets it up in case we want to do more with these inputs
-        enum class CurveOutputType
+        enum class CurveOutputType : std::int8_t
         {
             Invalid = -1,
             Dimensionless,

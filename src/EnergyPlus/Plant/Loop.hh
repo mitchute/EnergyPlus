@@ -60,7 +60,7 @@ struct EnergyPlusData;
 namespace DataPlant {
 
     // "Both" is used as a special flag and is never assigned to the loop's TypeOfLoop member
-    enum class LoopType
+    enum class LoopType : std::int8_t
     {
         Invalid = -1,
         Plant,
@@ -71,7 +71,7 @@ namespace DataPlant {
 
     constexpr std::array<std::string_view, (int)LoopType::Num> loopTypeNames = {"PlantLoop", "CondenserLoop", "Both"};
 
-    enum class WaterLoopType
+    enum class WaterLoopType : std::int8_t
     {
         Invalid = -1,
         HotWater,

@@ -149,7 +149,7 @@ namespace FaultsManager {
     //      'FaultModel:DamperLeakage:ReturnAir           ', &
     //      'FaultModel:DamperLeakage:OutdoorAir          ' /)
 
-    enum class ChillerType
+    enum class ChillerType : std::int8_t
     {
         Invalid = -1,
         ChillerElectric,
@@ -163,7 +163,7 @@ namespace FaultsManager {
         Num
     };
 
-    enum class CoilType
+    enum class CoilType : std::int8_t
     {
         Invalid = -1,
         CoilHeatingElectric,

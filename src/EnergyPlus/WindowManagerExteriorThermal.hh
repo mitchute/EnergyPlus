@@ -84,7 +84,7 @@ struct EnergyPlusData;
 
 namespace Window {
 
-    enum class ShadePosition
+    enum class ShadePosition : std::int8_t
     {
         Invalid = -1,
         NoShade,

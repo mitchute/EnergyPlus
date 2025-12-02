@@ -7699,7 +7699,7 @@ namespace SurfaceGeometry {
 
             // Choose calculation method
 
-            enum class CalculationMethod
+            enum class CalculationMethod : std::int8_t
             {
                 Invalid = -1,
                 TotalExposedPerimeter,
@@ -10259,7 +10259,7 @@ namespace SurfaceGeometry {
                 ErrorsFound = true;
             }
 
-            enum Month
+            enum Month : std::uint8_t
             {
                 January = 1,
                 February,
@@ -11683,7 +11683,7 @@ namespace SurfaceGeometry {
         int NNums;
         int IOStat;
 
-        enum class InsulationType
+        enum class InsulationType : std::int8_t
         {
             Invalid = -1,
             Outside,
@@ -11893,7 +11893,7 @@ namespace SurfaceGeometry {
         bool ShowZoneSurfaces = (state.dataInputProcessing->inputProcessor->getNumSectionsFound("SHOWZONESURFACES_DEBUG") > 0);
         EPVector<int> surfacenotused;
 
-        enum class ZoneVolumeCalcMethod
+        enum class ZoneVolumeCalcMethod : std::int8_t
         {
             Invalid = -1,
             Enclosed,

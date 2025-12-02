@@ -74,7 +74,7 @@ namespace MixedAir {
     // Data
     // MODULE PARAMETER DEFINITIONS
 
-    enum class LockoutType
+    enum class LockoutType : std::int8_t
     {
         Invalid = -1,
         NoLockoutPossible,
@@ -83,7 +83,7 @@ namespace MixedAir {
         Num
     };
 
-    enum class EconoOp
+    enum class EconoOp : std::int8_t
     {
         Invalid = -1,
         NoEconomizer,
@@ -97,7 +97,7 @@ namespace MixedAir {
         Num
     };
 
-    enum class MixedAirControllerType
+    enum class MixedAirControllerType : std::int8_t
     {
         Invalid = -1,
         ControllerOutsideAir,
@@ -107,7 +107,7 @@ namespace MixedAir {
 
     // Parameters below (CMO - Current Module Object.  used primarily in Get Inputs)
     // Multiple Get Input routines in this module or these would be in individual routines.
-    enum class CMO
+    enum class CMO : std::int8_t
     {
         Invalid = -1,
         None,
@@ -124,7 +124,7 @@ namespace MixedAir {
 
     // OA Controller Limiting Factor
     // Must keep these values to use for integer output variable OAControllerProps::OALimitingFactorReport
-    enum class OALimitFactor
+    enum class OALimitFactor : std::int8_t
     {
         Invalid = -1,
         None = 0,        // No limit other than fixed OA amount

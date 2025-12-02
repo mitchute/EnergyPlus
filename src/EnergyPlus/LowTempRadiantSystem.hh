@@ -72,7 +72,7 @@ namespace LowTempRadiantSystem {
     // MODULE PARAMETER DEFINITIONS:
     // System types:
 
-    enum class SystemType
+    enum class SystemType : std::int8_t
     {
         Invalid = -1,
         Hydronic,     // Variable flow hydronic radiant system
@@ -81,7 +81,7 @@ namespace LowTempRadiantSystem {
         Num
     };
 
-    enum class OpMode
+    enum class OpMode : std::int8_t
     {
         Cool = -1, // Ok for this to be -1 because this isn't coming from the IDF so there is no Invalid
         None,
@@ -89,7 +89,7 @@ namespace LowTempRadiantSystem {
     };
 
     // Control types:
-    enum class CtrlType
+    enum class CtrlType : std::int8_t
     {
         Invalid = -1,
         MAT,            // Controls system using mean air temperature
@@ -105,7 +105,7 @@ namespace LowTempRadiantSystem {
     };
 
     // Setpoint Types:
-    enum class SetpointType
+    enum class SetpointType : std::int8_t
     {
         Invalid = -1,
         HalfFlowPower, // Controls system where the setpoint is at the 50% flow/power point
@@ -114,7 +114,7 @@ namespace LowTempRadiantSystem {
     };
 
     // Fluid to Slab Heat Transfer Types:
-    enum class FluidToSlabHeatTransferType
+    enum class FluidToSlabHeatTransferType : std::int8_t
     {
         Invalid = -1,
         ConvectionOnly, // Convection only model (legacy code, original model)
@@ -122,7 +122,7 @@ namespace LowTempRadiantSystem {
         Num
     };
 
-    enum class CondCtrlType
+    enum class CondCtrlType : std::int8_t
     {
         Invalid = -1,
         None,      // Condensation control--none, so system never shuts down
@@ -132,7 +132,7 @@ namespace LowTempRadiantSystem {
     };
 
     // Number of Circuits per Surface Calculation Method
-    enum class CircuitCalc
+    enum class CircuitCalc : std::int8_t
     {
         Invalid = -1,
         OneCircuit,          // there is 1 circuit per surface

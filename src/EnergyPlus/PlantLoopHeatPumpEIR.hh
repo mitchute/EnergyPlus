@@ -67,7 +67,7 @@ struct EnergyPlusData;
 namespace EIRPlantLoopHeatPumps {
 
     // control heat pump on load or set point
-    enum class ControlType
+    enum class ControlType : std::int8_t
     {
         Invalid = -1,
         Setpoint,
@@ -76,7 +76,7 @@ namespace EIRPlantLoopHeatPumps {
     };
 
     // Method of sizing heating capacity
-    enum class HeatSizingType
+    enum class HeatSizingType : std::int8_t
     {
         Invalid = -1,
         Heating,
@@ -86,7 +86,7 @@ namespace EIRPlantLoopHeatPumps {
     };
 
     // Defrost strategy
-    enum class DefrostControl
+    enum class DefrostControl : std::int8_t
     {
         Invalid = -1,
         None,
@@ -354,7 +354,7 @@ namespace EIRPlantLoopHeatPumps {
         // a couple worker functions to easily allow merging of cooling and heating operations
 
         // enum definitions for Fuel Fired only
-        enum class OATempCurveVar
+        enum class OATempCurveVar : std::int8_t
         {
             Invalid = -1,
             DryBulb,
@@ -362,7 +362,7 @@ namespace EIRPlantLoopHeatPumps {
             Num
         };
 
-        enum class WaterTempCurveVar
+        enum class WaterTempCurveVar : std::int8_t
         {
             Invalid = -1,
             EnteringCondenser,
@@ -372,7 +372,7 @@ namespace EIRPlantLoopHeatPumps {
             Num
         };
 
-        enum class DefrostType
+        enum class DefrostType : std::int8_t
         {
             Invalid = -1,
             Timed,
@@ -439,7 +439,7 @@ namespace EIRPlantLoopHeatPumps {
     struct HeatPumpAirToWater : public EIRPlantLoopHeatPump
     {
 
-        enum class OperatingModeControlMethod
+        enum class OperatingModeControlMethod : std::int8_t
         {
             Invalid = -1,
             ScheduledModes,
@@ -447,7 +447,7 @@ namespace EIRPlantLoopHeatPumps {
             Load,
             Num
         };
-        enum class OperatingModeControlOptionMultipleUnit
+        enum class OperatingModeControlOptionMultipleUnit : std::int8_t
         {
             Invalid = -1,
             SingleMode,
@@ -516,7 +516,7 @@ namespace EIRPlantLoopHeatPumps {
         Real64 sourceSideDesignInletTemp = 0.0;     // Rated Inlet Air Temperature in xx Mode
         Real64 ratedLeavingWaterTemperature = 0.0;  // rated_leaving_water_temperature_in_xx_mode
         Real64 ratedEnteringWaterTemperature = 0.0; // rated_leaving_water_temperature_in_xx_mode
-        enum class CompressorControlType
+        enum class CompressorControlType : std::int8_t
         {
             Invalid = -1,
             FixedSpeed,

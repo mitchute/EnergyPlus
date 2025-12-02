@@ -56,7 +56,7 @@
 
 namespace EnergyPlus::DataRootFinder {
 
-enum class Slope
+enum class Slope : std::int8_t
 {
     Invalid = -1, // Undefined slope specification
     Increasing,   // For overall increasing function F(X) between min and max points
@@ -64,7 +64,7 @@ enum class Slope
     Num
 };
 
-enum class RootFinderStatus
+enum class RootFinderStatus : std::int8_t
 {
     Invalid = -1,
     ErrorSingular, // Error because the overall slope appears to be flat between the min and max points, implying that the
@@ -92,7 +92,7 @@ enum class RootFinderStatus
     Num
 };
 
-enum class RootFinderMethod
+enum class RootFinderMethod : std::int8_t
 {
     Invalid = -1,
     None,          // No solution method (used internally only when root finder is reset)

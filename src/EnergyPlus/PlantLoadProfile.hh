@@ -65,7 +65,7 @@ struct EnergyPlusData;
 
 namespace PlantLoadProfile {
 
-    enum class PlantLoopFluidType
+    enum class PlantLoopFluidType : std::int8_t
     {
         Invalid = -1,
         Water,

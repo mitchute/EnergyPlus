@@ -748,7 +748,7 @@ namespace OutputProcessor {
         // Bad input
         WriteTimeStampFormatData(*state,
                                  state->files.mtr,
-                                 static_cast<ReportFreq>(999),
+                                 static_cast<ReportFreq>(127),
                                  RunPeriodStampReportNum,
                                  DayOfSimChr,
                                  PrintTimeStamp,
@@ -760,7 +760,7 @@ namespace OutputProcessor {
                                  -1,  // DST
                                  ""); // dayType
 
-        EXPECT_EQ("SQLite3 message, Illegal reportingInterval passed to WriteTimeStampFormatData: 999\n", ss->str());
+        EXPECT_EQ("SQLite3 message, Illegal reportingInterval passed to WriteTimeStampFormatData: 127\n", ss->str());
         ss->str(std::string());
 
         auto timeResults = queryResult("SELECT * FROM Time;", "Time");

@@ -66,7 +66,7 @@ struct EneryPlusData;
 namespace RefrigeratedCase {
 
     // Walk In Cooler Stock Door Protection types
-    enum class WIStockDoor
+    enum class WIStockDoor : std::int8_t
     {
         Invalid = -1,
         None,
@@ -76,7 +76,7 @@ namespace RefrigeratedCase {
     };
 
     // Compressor suction pressure control
-    enum class CompressorSuctionPressureCtrl
+    enum class CompressorSuctionPressureCtrl : std::int8_t
     {
         Invalid = -1,
         FloatSuctionTemperature,
@@ -85,7 +85,7 @@ namespace RefrigeratedCase {
     };
 
     // Subcooler type
-    enum class SubcoolerType
+    enum class SubcoolerType : std::int8_t
     {
         Invalid = -1,
         LiquidSuction,
@@ -94,7 +94,7 @@ namespace RefrigeratedCase {
     };
 
     // Walk In Cooler Defrost Control type
-    enum class DefrostCtrlType
+    enum class DefrostCtrlType : std::int8_t
     {
         Invalid = -1,
         Sched,
@@ -103,7 +103,7 @@ namespace RefrigeratedCase {
     };
 
     // Secondary loop parameters
-    enum class SecFluidType
+    enum class SecFluidType : std::int8_t
     {
         Invalid = -1,
         AlwaysLiquid,
@@ -111,7 +111,7 @@ namespace RefrigeratedCase {
         Num
     };
 
-    enum class SecPumpCtrl
+    enum class SecPumpCtrl : std::int8_t
     {
         Invalid = -1,
         Constant,
@@ -120,7 +120,7 @@ namespace RefrigeratedCase {
     };
 
     // Refrigerated display case energy equation form
-    enum class EnergyEqnForm
+    enum class EnergyEqnForm : std::int8_t
     {
         Invalid = -1,
         None,
@@ -131,7 +131,7 @@ namespace RefrigeratedCase {
     };
 
     // Cascade condenser temperature control types
-    enum class CascadeCndsrTempCtrlType
+    enum class CascadeCndsrTempCtrlType : std::int8_t
     {
         Invalid = -1,
         TempSet,
@@ -140,7 +140,7 @@ namespace RefrigeratedCase {
     };
 
     // Water-cooled condenser loop flow type
-    enum class CndsrFlowType : int
+    enum class CndsrFlowType : std::int8_t
     {
         Invalid = -1,
         Variable,
@@ -149,7 +149,7 @@ namespace RefrigeratedCase {
     };
 
     // Air- and evap-cooled condenser fan speed control types
-    enum class FanSpeedCtrlType
+    enum class FanSpeedCtrlType : std::int8_t
     {
         Invalid = -1,
         VariableSpeed,
@@ -160,7 +160,7 @@ namespace RefrigeratedCase {
     };
 
     // Refrigerated display case rack heat rejection location
-    enum class HeatRejLocation
+    enum class HeatRejLocation : std::int8_t
     {
         Invalid = -1,
         Outdoors,
@@ -169,7 +169,7 @@ namespace RefrigeratedCase {
     };
 
     // Refrigerated display case defrost type
-    enum class RefCaseDefrostType
+    enum class RefCaseDefrostType : std::int8_t
     {
         Invalid = -1,
         None,
@@ -183,7 +183,7 @@ namespace RefrigeratedCase {
     };
 
     // Anti-sweat heater control type
-    enum class ASHtrCtrlType
+    enum class ASHtrCtrlType : std::int8_t
     {
         Invalid = -1,
         None,
@@ -195,7 +195,7 @@ namespace RefrigeratedCase {
     };
 
     // Compressor rating types
-    enum class CompRatingType
+    enum class CompRatingType : std::int8_t
     {
         Invalid = -1,
         Superheat,
@@ -206,7 +206,7 @@ namespace RefrigeratedCase {
     };
 
     // Condenser evap cooling water supply
-    enum class WaterSupply
+    enum class WaterSupply : std::int8_t
     {
         Invalid = -1,
         FromMains,
@@ -214,7 +214,7 @@ namespace RefrigeratedCase {
         Num
     };
 
-    enum class RatingType
+    enum class RatingType : std::int8_t
     {
         Invalid = -1,
         RatedCapacityTotal,
@@ -232,7 +232,7 @@ namespace RefrigeratedCase {
         Num
     };
 
-    enum class SHRCorrectionType
+    enum class SHRCorrectionType : std::int8_t
     {
         Invalid = -1,
         SHR60,
@@ -242,7 +242,7 @@ namespace RefrigeratedCase {
         Num
     };
 
-    enum class VerticalLoc
+    enum class VerticalLoc : std::int8_t
     {
         Invalid = -1,
         Ceiling,
@@ -251,7 +251,7 @@ namespace RefrigeratedCase {
         Num
     };
 
-    enum class SourceType
+    enum class SourceType : std::int8_t
     {
         Invalid = -1,
         DetailedSystem,
@@ -260,7 +260,7 @@ namespace RefrigeratedCase {
     };
 
     // Warehouse coil Defrost type
-    enum class DefrostType
+    enum class DefrostType : std::int8_t
     {
         Invalid = -1,
         Fluid,
@@ -270,7 +270,7 @@ namespace RefrigeratedCase {
         Num
     };
 
-    enum class CriticalType
+    enum class CriticalType : std::int8_t
     {
         Invalid = -1,
         Subcritical,
@@ -278,7 +278,7 @@ namespace RefrigeratedCase {
         Num
     };
 
-    enum class IntercoolerType
+    enum class IntercoolerType : std::int8_t
     {
         Invalid = -1,
         None,
@@ -287,7 +287,7 @@ namespace RefrigeratedCase {
         Num
     };
 
-    enum class TransSysType
+    enum class TransSysType : std::int8_t
     {
         Invalid = -1,
         SingleStage,

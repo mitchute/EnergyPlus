@@ -63,7 +63,7 @@ namespace EnergyPlus {
 
 namespace DataLoopNode {
 
-    enum class NodeFluidType
+    enum class NodeFluidType : std::int8_t
     {
         Invalid = -1,
         Blank, // TODO: remove, should be same as Invalid
@@ -74,7 +74,7 @@ namespace DataLoopNode {
         Num
     };
 
-    enum class ConnectionType
+    enum class ConnectionType : std::int8_t
     {
         Invalid = -1,
         Blank, // TODO: remove, should be same as Invalid
@@ -145,7 +145,7 @@ namespace DataLoopNode {
                                                                                                                   "OUTSIDEAIRREFERENCE",
                                                                                                                   "INDUCEDAIR"};
 
-    enum class ConnectionObjectType
+    enum class ConnectionObjectType : std::int16_t
     {
         Invalid = -1,
         Undefined,

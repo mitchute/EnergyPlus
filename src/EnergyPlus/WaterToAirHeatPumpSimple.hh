@@ -69,7 +69,7 @@ namespace Curve {
 
 namespace WaterToAirHeatPumpSimple {
 
-    enum class WatertoAirHP
+    enum class WatertoAirHP : std::int8_t
     {
         Invalid = -1,
         Heating,

@@ -66,7 +66,7 @@ struct EnergyPlusData;
 
 namespace DesiccantDehumidifiers {
 
-    enum class DesicDehumType // Desiccant dehumidifier type
+    enum class DesicDehumType : std::int8_t // Desiccant dehumidifier type
     {
         Invalid = -1,
         Solid,
@@ -74,7 +74,7 @@ namespace DesiccantDehumidifiers {
         Num
     };
 
-    enum class DesicDehumCtrlType
+    enum class DesicDehumCtrlType : std::int8_t
     {
         Invalid = -1,
         FixedHumratBypass, // FIXED LEAVING HUMRAT SETPOINT:BYPASS
@@ -82,7 +82,7 @@ namespace DesiccantDehumidifiers {
         Num
     };
 
-    enum class Selection
+    enum class Selection : std::int8_t
     {
         Invalid = -1,
         No,  // Condenser waste heat NOT reclaimed for desiccant regeneration
@@ -90,7 +90,7 @@ namespace DesiccantDehumidifiers {
         Num
     };
 
-    enum class PerformanceModel
+    enum class PerformanceModel : std::int8_t
     {
         Invalid = -1,
         Default,

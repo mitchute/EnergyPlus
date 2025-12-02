@@ -68,7 +68,7 @@ struct EnergyPlusData;
 
 namespace IceThermalStorage {
 
-    enum class CurveVars
+    enum class CurveVars : std::int8_t
     {
         Invalid = -1,
         FracChargedLMTD,
@@ -78,7 +78,7 @@ namespace IceThermalStorage {
         Num
     };
 
-    enum class DetIce
+    enum class DetIce : std::int8_t
     {
         Invalid = -1,
         InsideMelt,  // Inside melt system--charge starting with bare coil
@@ -86,7 +86,7 @@ namespace IceThermalStorage {
         Num
     };
 
-    enum class ITSType
+    enum class ITSType : std::int8_t
     {
         Invalid = -1,
         IceOnCoilInternal,

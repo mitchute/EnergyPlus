@@ -51,24 +51,22 @@
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array1A.hh>
 #include <ObjexxFCL/Array1D.hh>
-#include <ObjexxFCL/Array1S.hh>
-#include <ObjexxFCL/Array2A.hh>
 #include <ObjexxFCL/Optional.hh>
 
 // EnergyPlus Headers
 #include <EnergyPlus/Data/BaseData.hh>
-#include <EnergyPlus/EPVector.hh>
 #include <EnergyPlus/EnergyPlus.hh>
+#include <EnergyPlus/WeatherManager.hh>
 
 namespace EnergyPlus {
 
 // Forward declarations
 struct EnergyPlusData;
 
-namespace Weather {
-    enum class DateType;
-    struct ReportPeriodData;
-} // namespace Weather
+// namespace Weather {
+//     enum class DateType;
+//     struct ReportPeriodData;
+// } // namespace Weather
 
 namespace General {
 

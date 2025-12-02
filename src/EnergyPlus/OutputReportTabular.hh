@@ -83,7 +83,7 @@ namespace OutputReportTabular {
     // Data
     // MODULE PARAMETER DEFINITIONS:
 
-    enum class AggType
+    enum class AggType : std::int8_t
     {
         Invalid = -1,
         SumOrAvg,
@@ -102,7 +102,7 @@ namespace OutputReportTabular {
         Num
     };
 
-    enum class TableStyle
+    enum class TableStyle : std::int8_t
     {
         Invalid = -1,
         Comma,
@@ -113,7 +113,7 @@ namespace OutputReportTabular {
         Num
     };
 
-    enum class UnitsStyle
+    enum class UnitsStyle : std::int8_t
     {
         Invalid = -1,
         None,
@@ -128,7 +128,7 @@ namespace OutputReportTabular {
     constexpr std::array<std::string_view, static_cast<int>(UnitsStyle::Num) - 1> UnitsStyleNamesUC{
         "NONE", "JTOKWH", "JTOMJ", "JTOGJ", "INCHPOUND", "INCHPOUNDEXCEPTELECTRICITY"};
 
-    enum class EndUseSubTableType
+    enum class EndUseSubTableType : std::int8_t
     {
         Invalid = -1,
         BySubCategory,
@@ -136,7 +136,7 @@ namespace OutputReportTabular {
         Num
     };
 
-    enum LoadCompCol // These correspond to the columns in the load component table
+    enum LoadCompCol : std::int8_t // These correspond to the columns in the load component table
     {
         // Invalid is not necessary since this is not specified by the user in the IDF
         SensInst = 1,
@@ -149,7 +149,7 @@ namespace OutputReportTabular {
         PerArea
     };
 
-    enum LoadCompRow
+    enum LoadCompRow : std::int8_t
     {
         // Invalid is not necessary since this is not specified by the user in the IDF
         // internal gains
@@ -196,7 +196,7 @@ namespace OutputReportTabular {
 
     constexpr const char *validChars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_:.");
 
-    enum class OutputType
+    enum class OutputType : std::int8_t
     {
         Invalid = -1,
         Space,
@@ -218,7 +218,7 @@ namespace OutputReportTabular {
     constexpr int maxNumStyles(5);
 
     // LineTypes for reading the stat file
-    enum class StatLineType
+    enum class StatLineType : std::int8_t
     {
         Invalid = -1,
         Initialized, // used as a dummy placeholder

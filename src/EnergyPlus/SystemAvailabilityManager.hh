@@ -70,7 +70,7 @@ namespace Avail {
     // belongs) creates a circular dependency between
     // SystemAvailabilityManager and PlantAvailablityManager which
     // needs to be resolved by unifying those two.
-    enum class Status
+    enum class Status : std::int8_t
     {
         Invalid = -1,
         NoAction,
@@ -80,7 +80,7 @@ namespace Avail {
         Num
     };
 
-    enum class ControlAlgorithm
+    enum class ControlAlgorithm : std::int8_t
     {
         Invalid = -1,
         ConstantTemperatureGradient,
@@ -91,7 +91,7 @@ namespace Avail {
     };
 
     // Cycling Run Time Control Type
-    enum class CyclingRunTimeControl
+    enum class CyclingRunTimeControl : std::int8_t
     {
         Invalid = -1,
         FixedRunTime,
@@ -100,7 +100,7 @@ namespace Avail {
         Num
     };
 
-    enum class NightCycleControlType
+    enum class NightCycleControlType : std::int8_t
     {
         Invalid = -1,
         Off,
@@ -115,7 +115,7 @@ namespace Avail {
     };
 
     // Optimum start parameter definitions
-    enum class OptimumStartControlType
+    enum class OptimumStartControlType : std::int8_t
     {
         Invalid = -1,
         Off,
@@ -124,7 +124,7 @@ namespace Avail {
         Num
     };
 
-    enum class ManagerType
+    enum class ManagerType : std::int8_t
     {
         Invalid = -1,
         Scheduled,
@@ -309,7 +309,7 @@ namespace Avail {
     };
 
     // Hybrid Ventilation parameters
-    enum class VentCtrlType
+    enum class VentCtrlType : std::int8_t
     {
         Invalid = -1,
         No,       // No hybrid ventilation control
@@ -323,7 +323,7 @@ namespace Avail {
         Num
     };
 
-    enum class VentCtrlStatus
+    enum class VentCtrlStatus : std::int8_t
     {
         Invalid = -1,
         NoAction, // No hybrid ventilation control

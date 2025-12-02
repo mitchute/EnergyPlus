@@ -51,7 +51,7 @@
 #include <EnergyPlus/Data/BaseData.hh>
 
 namespace EnergyPlus {
-enum class HVACSystemRootSolverAlgorithm : int
+enum class HVACSystemRootSolverAlgorithm : std::int8_t
 {
     Invalid = -1,
     RegulaFalsi,

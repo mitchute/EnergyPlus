@@ -64,7 +64,7 @@ struct EnergyPlusData;
 
 namespace EvaporativeFluidCoolers {
 
-    enum class EvapLoss
+    enum class EvapLoss : std::int8_t
     {
         Invalid = -1,
         ByUserFactor,
@@ -72,7 +72,7 @@ namespace EvaporativeFluidCoolers {
         Num
     };
 
-    enum class Blowdown
+    enum class Blowdown : std::int8_t
     {
         Invalid = -1,
         ByConcentration,
@@ -80,14 +80,14 @@ namespace EvaporativeFluidCoolers {
         Num
     };
 
-    enum struct PIM
+    enum struct PIM : std::int8_t
     {
         StandardDesignCapacity,
         UFactor,
         UserSpecifiedDesignCapacity
     };
 
-    enum class CapacityControl
+    enum class CapacityControl : std::int8_t
     {
         Invalid = -1,
         FanCycling,

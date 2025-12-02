@@ -69,7 +69,7 @@ namespace DataBSDFWindow {
     // Using/Aliasing
     using DataVectorTypes::Vector;
 
-    enum class Basis
+    enum class Basis : std::int8_t
     {
         Invalid = -1,
         WINDOW,
@@ -79,7 +79,7 @@ namespace DataBSDFWindow {
 
     static constexpr std::array<std::string_view, (int)Basis::Num> basisNamesUC = {"LBNLWINDOW", "USERDEFINED"};
 
-    enum class BasisSymmetry
+    enum class BasisSymmetry : std::int8_t
     {
         Invalid = -1,
         Axisymmetric,
@@ -93,7 +93,7 @@ namespace DataBSDFWindow {
     // noCondition is used when performing timestep calculations
     // 'Summer' will override certain parameters so that produced results are matching standard summer WINDOW  = software results
     // 'Winter' will override certain parameters so that produced results are matching standard winter WINDOW  = software results
-    enum class Condition
+    enum class Condition : std::int8_t
     {
         Invalid = -1,
         Summer,

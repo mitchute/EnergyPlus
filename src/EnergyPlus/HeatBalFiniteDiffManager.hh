@@ -74,7 +74,7 @@ namespace HeatBalFiniteDiffManager {
     constexpr Real64 MinTempLimit = -100.0; // lower limit check, degree C
     constexpr Real64 MaxTempLimit = 100.0;  // upper limit check, degree C
 
-    enum class CondFDScheme
+    enum class CondFDScheme : std::int8_t
     {
         Invalid = -1,
         CrankNicholsonSecondOrder, // original CondFD scheme.  semi implicit, second order in time

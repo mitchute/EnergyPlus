@@ -186,7 +186,7 @@ namespace UnitarySystems {
     struct UnitarySys : HVACSystemData
     {
 
-        enum class UnitarySysCtrlType : int
+        enum class UnitarySysCtrlType : std::int8_t
         {
             Invalid = -1,
             None,
@@ -196,7 +196,7 @@ namespace UnitarySystems {
             Num
         };
 
-        enum class DehumCtrlType : int
+        enum class DehumCtrlType : std::int8_t
         {
             Invalid = -1,
             None,
@@ -206,7 +206,7 @@ namespace UnitarySystems {
         };
 
         // Airflow control for constant fan mode
-        enum class UseCompFlow
+        enum class UseCompFlow : std::int8_t
         {
             Invalid = -1,
             On,  // set compressor OFF air flow rate equal to compressor ON air flow rate
@@ -215,7 +215,7 @@ namespace UnitarySystems {
         };
 
         // Parent models simulated using UnitarySystem source code
-        enum class SysType
+        enum class SysType : std::int8_t
         {
             Invalid = -1,
             Unitary,          // AirloopHVAC:UnitarySystem

@@ -68,7 +68,7 @@ namespace DataSystemVariables {
     int constexpr iUnicode_end = 0; // endline value when Unicode file
 
     // Shading methods
-    enum class ShadingMethod
+    enum class ShadingMethod : std::int8_t
     {
         Invalid = -1,
         PolygonClipping,

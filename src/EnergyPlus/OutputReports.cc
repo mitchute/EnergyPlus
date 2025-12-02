@@ -1503,7 +1503,7 @@ void VRMLOut(EnergyPlusData &state, const std::string &PolygonAction, const std:
     // lines.
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    enum class Color
+    enum class Color : std::int8_t
     {
         Invalid = -1,
         Wall,

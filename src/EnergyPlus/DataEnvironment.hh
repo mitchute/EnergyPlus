@@ -66,7 +66,7 @@ struct EnergyPlusData;
 
 namespace DataEnvironment {
 
-    enum class GroundTempType
+    enum class GroundTempType : std::int8_t
     {
         Invalid = -1,
         BuildingSurface,

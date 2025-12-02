@@ -62,7 +62,7 @@ namespace EnergyPlus {
 
 namespace HVACCooledBeam {
 
-    enum class CooledBeamType
+    enum class CooledBeamType : std::int8_t
     {
         Invalid = -1,
         Passive,

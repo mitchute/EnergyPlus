@@ -134,7 +134,7 @@ struct CoilCoolingDXCurveFitOperatingMode
     Real64 ratedTotCapFlowEMSOverrideValue = 0.0;
     Real64 minOutdoorDrybulb = -25.0;
 
-    enum class CondenserType
+    enum class CondenserType : std::int8_t
     {
         Invalid = -1,
         AIRCOOLED,

@@ -65,7 +65,7 @@ struct EnergyPlusData;
 namespace EarthTube {
 
     // Parameters for Ventilation
-    enum class Ventilation
+    enum class Ventilation : std::int8_t
     {
         Invalid = -1,
         Natural,
@@ -74,7 +74,7 @@ namespace EarthTube {
         Num
     };
 
-    enum class EarthTubeModelType
+    enum class EarthTubeModelType : std::int8_t
     {
         Invalid = -1,
         Basic,

@@ -65,7 +65,7 @@ struct EnergyPlusData;
 
 namespace InternalHeatGains {
 
-    enum class DesignLevelMethod
+    enum class DesignLevelMethod : std::int8_t
     {
         Invalid = -1,
         People,

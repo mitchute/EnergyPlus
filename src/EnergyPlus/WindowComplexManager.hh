@@ -67,7 +67,7 @@ struct EnergyPlusData;
 
 namespace WindowComplexManager {
 
-    enum class RayIdentificationType
+    enum class RayIdentificationType : std::int8_t
     {
         Invalid = -1,
         Front_Incident,

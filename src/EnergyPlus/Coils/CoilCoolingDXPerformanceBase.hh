@@ -105,7 +105,7 @@ struct CoilCoolingDXPerformanceBase
     HVAC::CoilMode maxAvailCoilMode = HVAC::CoilMode::Normal; // max available coil mode, 0 Normal, 1 Enhanced, 2 SubcoolReheat
     Sched::Schedule *coilCoolingDXAvailSched = nullptr;
 
-    enum CapControlMethod
+    enum CapControlMethod : std::uint8_t
     {
         CONTINUOUS,
         DISCRETE

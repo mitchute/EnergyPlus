@@ -67,7 +67,7 @@ namespace EnergyPlus {
 namespace PackagedThermalStorageCoil {
 
     // control types
-    enum class PTSCCtrlType
+    enum class PTSCCtrlType : std::int8_t
     {
         Invalid = -1,
         ScheduledOpModes,   // control over TES modes is via local schedule
@@ -76,7 +76,7 @@ namespace PackagedThermalStorageCoil {
     };
 
     // Control Modes
-    enum class PTSCOperatingMode
+    enum class PTSCOperatingMode : std::int8_t
     {
         Invalid = -1,
         Off,
@@ -89,7 +89,7 @@ namespace PackagedThermalStorageCoil {
     };
 
     // storage media
-    enum class MediaType
+    enum class MediaType : std::int8_t
     {
         Invalid = -1,
         Water,
@@ -99,7 +99,7 @@ namespace PackagedThermalStorageCoil {
     };
 
     // Water Systems
-    enum class CondensateAction
+    enum class CondensateAction : std::int8_t
     {
         Invalid = -1,
         Discard, // default mode where water is "lost"
@@ -107,7 +107,7 @@ namespace PackagedThermalStorageCoil {
         Num
     };
 
-    enum class EvapWaterSupply
+    enum class EvapWaterSupply : std::int8_t
     {
         Invalid = -1,
         WaterSupplyFromMains,
@@ -115,7 +115,7 @@ namespace PackagedThermalStorageCoil {
         Num
     };
 
-    enum class TESCondenserType
+    enum class TESCondenserType : std::int8_t
     {
         Invalid = -1,
         Air,

@@ -64,7 +64,7 @@ struct EnergyPlusData;
 
 namespace WindTurbine {
 
-    enum class RotorType
+    enum class RotorType : std::int8_t
     {
         Invalid = -1,
         HorizontalAxis,
@@ -72,7 +72,7 @@ namespace WindTurbine {
         Num
     };
 
-    enum class ControlType
+    enum class ControlType : std::int8_t
     {
         Invalid = -1,
         FixedSpeedFixedPitch,

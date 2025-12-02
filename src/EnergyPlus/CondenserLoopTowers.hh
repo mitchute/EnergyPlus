@@ -69,7 +69,7 @@ struct EnergyPlusData;
 
 namespace CondenserLoopTowers {
 
-    enum class ModelType
+    enum class ModelType : std::int8_t
     {
         // Empirical Model Type
         Invalid = -1,
@@ -80,7 +80,7 @@ namespace CondenserLoopTowers {
         Num
     };
 
-    enum class EvapLoss
+    enum class EvapLoss : std::int8_t
     {
         Invalid = -1,
         UserFactor,
@@ -88,7 +88,7 @@ namespace CondenserLoopTowers {
         Num
     };
 
-    enum class Blowdown
+    enum class Blowdown : std::int8_t
     {
         Invalid = -1,
         Concentration,
@@ -96,7 +96,7 @@ namespace CondenserLoopTowers {
         Num
     };
 
-    enum class PIM
+    enum class PIM : std::int8_t
     {
         Invalid = -1,
         NominalCapacity,
@@ -104,7 +104,7 @@ namespace CondenserLoopTowers {
         Num
     };
 
-    enum class CapacityCtrl
+    enum class CapacityCtrl : std::int8_t
     {
         Invalid = -1,
         FanCycling,
@@ -114,7 +114,7 @@ namespace CondenserLoopTowers {
 
     constexpr std::array<std::string_view, static_cast<int>(CapacityCtrl::Num)> CapacityCtrlNamesUC{"FANCYCLING", "FLUIDBYPASS"};
 
-    enum class CellCtrl
+    enum class CellCtrl : std::int8_t
     {
         Invalid = -1,
         MinCell,

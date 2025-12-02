@@ -116,7 +116,7 @@ constexpr std::array<std::string_view, (int)RefTemp::Num> RefTempNamesUC{"MEANAI
 constexpr std::array<std::string_view, (int)RefWind::Num> RefWindNamesUC{
     "WEATHERFILE", "HEIGHTADJUST", "PARALLELCOMPONENT", "PARALLELCOMPONENTHEIGHTADJUST"};
 
-enum class ConvSurfDeltaT
+enum class ConvSurfDeltaT : std::int8_t
 {
     Invalid = -1,
     Positive,
@@ -126,7 +126,7 @@ enum class ConvSurfDeltaT
 };
 
 // parameters, by zone, for flow regimes for adaptive convection on inside face
-enum class InConvFlowRegime
+enum class InConvFlowRegime : std::int8_t
 {
     Invalid = -1,
     A1, // In-floor heating or in-ceiling cooling

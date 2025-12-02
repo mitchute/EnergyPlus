@@ -64,7 +64,7 @@ struct EnergyPlusData;
 
 namespace HVACSingleDuctInduc {
 
-    enum class SingleDuct_CV
+    enum class SingleDuct_CV : std::int8_t
     {
         Invalid = -1,
         TwoPipeInduc,

@@ -132,7 +132,7 @@ bool env_var_on(std::string const &env_var_str);
 
 using OptionalOutputFileRef = std::optional<std::reference_wrapper<EnergyPlus::InputOutputFile>>;
 
-enum class ErrorMessageCategory
+enum class ErrorMessageCategory : std::int8_t
 {
     Invalid = -1,
     Unclassified,
@@ -311,7 +311,7 @@ void ShowSevereCustomField(
 
 void ShowSevereCustomAudit(EnergyPlusData &state, ErrorObjectHeader const &eoh, std::string_view msg);
 
-enum class Clusive
+enum class Clusive : std::int8_t
 {
     Invalid = -1,
     In,

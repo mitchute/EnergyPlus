@@ -74,7 +74,7 @@ struct EnergyPlusData;
 namespace HVACVariableRefrigerantFlow {
 
     // Parameters describing variable refrigerant flow terminal unit types
-    enum class TUType
+    enum class TUType : std::int8_t
     {
         Invalid = -1,
         ConstantVolume,
@@ -82,7 +82,7 @@ namespace HVACVariableRefrigerantFlow {
     };
 
     // Thermostat Priority Control Type
-    enum class ThermostatCtrlType
+    enum class ThermostatCtrlType : std::int8_t
     {
         Invalid = -1,
         LoadPriority,             // total of zone loads dictate operation in cooling or heating
@@ -99,7 +99,7 @@ namespace HVACVariableRefrigerantFlow {
         // "FIRSTONPRIORITY",
     };
 
-    enum class EvapWaterSupply
+    enum class EvapWaterSupply : std::int8_t
     {
         Invalid = -1,
         FromMains, // mains water line used as water source
@@ -108,7 +108,7 @@ namespace HVACVariableRefrigerantFlow {
     };
 
     // VRF Algorithm Type
-    enum class AlgorithmType
+    enum class AlgorithmType : std::int8_t
     {
         Invalid = -1,
         SysCurve,   // VRF model based on system curve
@@ -129,7 +129,7 @@ namespace HVACVariableRefrigerantFlow {
     }
 
     // Flag for hex operation
-    enum class HXOpMode
+    enum class HXOpMode : std::int8_t
     {
         Invalid = -1,
         CondMode, // Flag for the hex running as condenser [-]

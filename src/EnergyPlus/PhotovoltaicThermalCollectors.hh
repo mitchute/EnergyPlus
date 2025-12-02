@@ -65,7 +65,7 @@ struct EnergyPlusData;
 
 namespace PhotovoltaicThermalCollectors {
 
-    enum class PVTMode
+    enum class PVTMode : std::int8_t
     {
         Invalid = -1,
         Heating,
@@ -73,7 +73,7 @@ namespace PhotovoltaicThermalCollectors {
         Num
     };
 
-    enum struct WorkingFluidEnum
+    enum struct WorkingFluidEnum : std::int8_t
     {
         Invalid = -1,
         LIQUID,
@@ -81,7 +81,7 @@ namespace PhotovoltaicThermalCollectors {
         Num
     };
 
-    enum struct ThermEfficEnum
+    enum struct ThermEfficEnum : std::int8_t
     {
         Invalid = -1,
         SCHEDULED,
@@ -140,7 +140,7 @@ namespace PhotovoltaicThermalCollectors {
         Real64 BypassStatus = 0.0;     // 0 = no bypass, 1=full bypass
     };
 
-    enum class PVTModelType
+    enum class PVTModelType : std::int16_t
     {
         Invalid = -1,
         Simple = 1001,

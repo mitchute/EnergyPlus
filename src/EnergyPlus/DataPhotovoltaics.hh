@@ -62,7 +62,7 @@ namespace DataPhotovoltaics {
 
     Real64 constexpr MinIrradiance = 0.3; // [W/m2] Assume no operation if Ic is below this number (W/m2)
 
-    enum class PVModel
+    enum class PVModel : std::int8_t
     {
         Invalid = -1,
         Simple,
@@ -71,7 +71,7 @@ namespace DataPhotovoltaics {
         Num
     };
 
-    enum class CellIntegration
+    enum class CellIntegration : std::int8_t
     {
         Invalid = -1,             // cell temp method not set
         Decoupled,                // cell temp method based on energy balance
@@ -83,7 +83,7 @@ namespace DataPhotovoltaics {
         Num
     };
 
-    enum class Efficiency
+    enum class Efficiency : std::int8_t
     {
         Invalid = -1,
         Fixed,     // simple PV, constant efficiency
@@ -91,7 +91,7 @@ namespace DataPhotovoltaics {
         Num
     };
 
-    enum class SiPVCells
+    enum class SiPVCells : std::int8_t
     {
         Invalid = -1,
         Crystalline,

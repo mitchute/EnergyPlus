@@ -70,7 +70,7 @@ namespace NodeInputManager {
     using DataLoopNode::NodeData;
 
     // For GetOnlySingleNode(), GetNodeNums(), etc
-    enum class CompFluidStream
+    enum class CompFluidStream : std::int8_t
     {
         Invalid = -1,
         Primary = 1,

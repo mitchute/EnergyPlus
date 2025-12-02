@@ -101,7 +101,7 @@ namespace EnergyPlus::HeatBalanceAirManager {
 // OTHER NOTES:
 // This module was created from IBLAST subroutines
 
-enum class AirflowSpec
+enum class AirflowSpec : std::int8_t
 {
     Invalid = -1,
     FlowPerZone,

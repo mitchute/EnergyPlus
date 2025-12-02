@@ -66,7 +66,7 @@ namespace DataDefineEquip {
     constexpr int MaxZoneAirComponents = 1;
 
     // Equipment Types covered by ZoneAirLoopEquipment:
-    enum class ZnAirLoopEquipType
+    enum class ZnAirLoopEquipType : std::int8_t
     {
         Invalid = -1,
         DualDuctConstVolume,

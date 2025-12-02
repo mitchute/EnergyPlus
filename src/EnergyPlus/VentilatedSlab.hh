@@ -66,7 +66,7 @@ struct EnergyPlusData;
 
 namespace VentilatedSlab {
 
-    enum class HeatingCoilType
+    enum class HeatingCoilType : std::int8_t
     {
         Invalid = -1,
         Electric,
@@ -76,7 +76,7 @@ namespace VentilatedSlab {
         Num
     };
 
-    enum class CoolingCoilType
+    enum class CoolingCoilType : std::int8_t
     {
         Invalid = -1,
         WaterCooling,
@@ -86,7 +86,7 @@ namespace VentilatedSlab {
     };
 
     // Parameters for outside air control types:
-    enum class OutsideAirControlType
+    enum class OutsideAirControlType : std::int8_t
     {
         Invalid = -1,
         VariablePercent,
@@ -95,7 +95,7 @@ namespace VentilatedSlab {
         Num
     };
 
-    enum class CoilType
+    enum class CoilType : std::int8_t
     {
         Invalid = -1,
         None,
@@ -106,7 +106,7 @@ namespace VentilatedSlab {
     };
 
     //  Control Types
-    enum class ControlType
+    enum class ControlType : std::int8_t
     {
         Invalid = -1,
         MeanAirTemp,        // Controls system using mean air temperature
@@ -120,7 +120,7 @@ namespace VentilatedSlab {
     };
 
     // Ventilated Slab Configurations
-    enum class VentilatedSlabConfig
+    enum class VentilatedSlabConfig : std::int8_t
     {
         Invalid = -1,
         SlabOnly,    // Air circulate through cores of slab only

@@ -73,7 +73,7 @@ struct EnergyPlusData;
 
 namespace AirflowNetwork {
 
-    enum class ControlType
+    enum class ControlType : std::uint8_t
     {
         NoMultizoneOrDistribution = 0,                   // Simple calculations only, AirflowNetworkControlSimple(1)
         MultizoneWithoutDistribution,                    // Perform multizone calculations only, AirflowNetworkControlMultizone(2)
@@ -167,7 +167,7 @@ namespace AirflowNetwork {
         bool closing_probability(EnergyPlusData &state, Real64 TimeCloseDuration); // function to perform calculations of closing probability
     };
 
-    enum class DuctSizingMethod
+    enum class DuctSizingMethod : std::uint8_t
     {
         MaxVelocity,
         PressureLoss,
@@ -188,7 +188,7 @@ namespace AirflowNetwork {
 
     struct SimulationControl // Basic parameters for AirflowNetwork simulation
     {
-        enum class Solver
+        enum class Solver : std::uint8_t
         {
             SkylineLU,
             ConjugateGradient

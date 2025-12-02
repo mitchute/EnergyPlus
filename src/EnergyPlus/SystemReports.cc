@@ -3316,7 +3316,7 @@ void CalcSystemEnergyUse(EnergyPlusData &state,
 
     // Tuned String comparisons were a big performance hit
     // ComponentTypes and component_strings must remain in sync
-    enum ComponentTypes
+    enum ComponentTypes : std::uint8_t
     { // Using older enum style to avoid the name scoping cruft
         AIRLOOPHVAC_OUTDOORAIRSYSTEM,
         AIRLOOPHVAC_UNITARY_FURNACE_HEATCOOL,

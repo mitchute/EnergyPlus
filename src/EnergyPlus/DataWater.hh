@@ -60,7 +60,7 @@ namespace EnergyPlus {
 
 namespace DataWater {
 
-    enum class TankThermalMode
+    enum class TankThermalMode : std::int8_t
     {
         Invalid = -1,
         Scheduled,   // tank water temperature is user input via schedule
@@ -68,7 +68,7 @@ namespace DataWater {
         Num
     };
 
-    enum class RainfallMode
+    enum class RainfallMode : std::int8_t
     {
         Invalid = -1,
         None,
@@ -77,7 +77,7 @@ namespace DataWater {
         Num
     };
 
-    enum class IrrigationMode
+    enum class IrrigationMode : std::int8_t
     {
         Invalid = -1,
         SchedDesign, // mode of Irrigation determination is Scheduled Design
@@ -85,7 +85,7 @@ namespace DataWater {
         Num
     };
 
-    enum class RainLossFactor
+    enum class RainLossFactor : std::int8_t
     {
         Invalid = -1,
         Constant,
@@ -93,7 +93,7 @@ namespace DataWater {
         Num
     };
 
-    enum class AmbientTempType
+    enum class AmbientTempType : std::int8_t
     {
         Invalid = -1,
         Schedule, // ambient temperature around tank (or HPWH inlet air) is scheduled
@@ -102,7 +102,7 @@ namespace DataWater {
         Num
     };
 
-    enum class GroundWaterTable
+    enum class GroundWaterTable : std::int8_t
     {
         Invalid = -1,
         Constant,
@@ -110,7 +110,7 @@ namespace DataWater {
         Num
     };
 
-    enum class ControlSupplyType
+    enum class ControlSupplyType : std::int8_t
     {
         Invalid = -1,
         NoControlLevel,
@@ -122,7 +122,7 @@ namespace DataWater {
         Num
     };
 
-    enum class Overflow
+    enum class Overflow : std::int8_t
     {
         Invalid = -1,
         Discarded,

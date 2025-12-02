@@ -174,7 +174,7 @@ namespace GroundTemp {
 
         Array1D<Real64> cellDepths;
 
-        enum surfaceTypes
+        enum surfaceTypes : std::uint8_t
         {
             surfaceCoverType_bareSoil = 1,
             surfaceCoverType_shortGrass = 2,

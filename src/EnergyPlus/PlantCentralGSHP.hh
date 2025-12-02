@@ -64,7 +64,7 @@ struct EnergyPlusData;
 
 namespace PlantCentralGSHP {
 
-    enum class CondenserType
+    enum class CondenserType : std::int8_t
     {
         Invalid = -1,
         WaterCooled,
@@ -72,7 +72,7 @@ namespace PlantCentralGSHP {
         Num
     };
 
-    enum class CondenserModeTemperature
+    enum class CondenserModeTemperature : std::int8_t
     {
         Invalid = -1,
         EnteringCondenser,

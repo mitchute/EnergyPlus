@@ -64,7 +64,7 @@ struct EnergyPlusData;
 
 namespace WaterToAirHeatPump {
 
-    enum class CompressorType
+    enum class CompressorType : std::int8_t
     {
         Invalid = -1,
         Reciprocating,

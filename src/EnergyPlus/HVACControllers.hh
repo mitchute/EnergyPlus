@@ -78,7 +78,7 @@ namespace HVACControllers {
     using DataRootFinder::RootFinderDataType;
 
     // Parameters for controls used here
-    enum class CtrlVarType
+    enum class CtrlVarType : std::int8_t
     {
         Invalid = -1,
         NoControlVariable,

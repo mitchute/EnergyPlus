@@ -64,7 +64,7 @@ struct EnergyPlusData;
 
 namespace DualDuct {
 
-    enum class DualDuctDamper
+    enum class DualDuctDamper : std::int8_t
     {
         Invalid = -1,
         ConstantVolume,
@@ -76,7 +76,7 @@ namespace DualDuct {
     static constexpr std::array<std::string_view, static_cast<int>(DualDuctDamper::Num)> dualDuctDamperNames = {
         "ConstantVolume", "VariableVolume", "OutdoorAir"};
 
-    enum class PerPersonMode
+    enum class PerPersonMode : std::int8_t
     {
         Invalid = -1,
         ModeNotSet,

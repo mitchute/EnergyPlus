@@ -62,7 +62,7 @@
 
 namespace EnergyPlus {
 
-enum class AutoSizingType
+enum class AutoSizingType : std::int8_t
 {
     // align with DataHVACGlobals so scalable sizing strings can be applied
     // this will not be necessary when scalable sizing is moved to BaseSizerWithScalableInputs
@@ -105,7 +105,7 @@ enum class AutoSizingType
     Num
 };
 
-enum class AutoSizingResultType
+enum class AutoSizingResultType : std::int8_t
 {
     Invalid = -1,
     NoError,    // no errors found

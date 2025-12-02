@@ -66,7 +66,7 @@ namespace HVAC {
     // -only module should be available to other modules and routines.
     // Thus, all variables in this module must be PUBLIC.
 
-    enum class CtrlVarType
+    enum class CtrlVarType : std::int8_t
     {
         Invalid = -1,
         Temp,
@@ -109,7 +109,7 @@ namespace HVAC {
     [[maybe_unused]] int constexpr AutoCalculateSizing(25); // identifies an autocalulate input
 
     // The following parameters describe the setpoint types in TempControlType(ActualZoneNum)
-    enum class SetptType
+    enum class SetptType : std::int8_t
     {
         Invalid = -1,
         Uncontrolled,
@@ -126,7 +126,7 @@ namespace HVAC {
     static constexpr std::array<std::string_view, (int)SetptType::Num> setptTypeNames = {
         "Uncontrolled", "SingleHeating", "SingleCooling", "SingleHeatCool", "DualSetPointWithDeadBand"};
 
-    enum class AirDuctType
+    enum class AirDuctType : std::int8_t
     // parameters describing air duct type
     {
         Invalid = -1,
@@ -144,7 +144,7 @@ namespace HVAC {
     int constexpr Cooling(2);
     int constexpr Heating(3);
 
-    enum class FanType
+    enum class FanType : std::int8_t
     {
         Invalid = -1,
         Constant,
@@ -161,7 +161,7 @@ namespace HVAC {
 
     // Fan mode
 
-    enum class FanOp
+    enum class FanOp : std::int8_t
     {
         Invalid = -1,
         Cycling,
@@ -170,7 +170,7 @@ namespace HVAC {
     };
 
     // Fan placement
-    enum class FanPlace
+    enum class FanPlace : std::int8_t
     {
         Invalid = -1,
         BlowThru,
@@ -184,7 +184,7 @@ namespace HVAC {
     int constexpr BypassWhenWithinEconomizerLimits(0);   // heat recovery controlled by economizer limits
     int constexpr BypassWhenOAFlowGreaterThanMinimum(1); // heat recovery ON at minimum OA in economizer mode
 
-    enum class EconomizerStagingType
+    enum class EconomizerStagingType : std::int8_t
     // OA Controller Economizer Staging
     {
         Invalid = -1,
@@ -202,7 +202,7 @@ namespace HVAC {
         "InterlockedWithMechanicalCooling",
     };
 
-    enum class UnitarySysType
+    enum class UnitarySysType : std::int8_t
     {
         Invalid = -1,
         Furnace_HeatOnly,
@@ -218,7 +218,7 @@ namespace HVAC {
     extern const std::array<std::string_view, (int)UnitarySysType::Num> unitarySysTypeNames;
     extern const std::array<std::string_view, (int)UnitarySysType::Num> unitarySysTypeNamesUC;
 
-    enum class CoilType
+    enum class CoilType : std::int8_t
     {
         Invalid = -1,
         DXCoolingSingleSpeed,
@@ -339,7 +339,7 @@ namespace HVAC {
     //    int constexpr CoilDX_SubcoolReheat(36);
     int constexpr CoilDX_CurveFit_Speed(37);
 
-    enum class CoilMode
+    enum class CoilMode : std::int8_t
     {
         Invalid = -1,
         Normal,
@@ -348,7 +348,7 @@ namespace HVAC {
         Num
     };
 
-    enum class WaterFlow
+    enum class WaterFlow : std::int8_t
     {
         Invalid = -1,
         Cycling,
@@ -384,7 +384,7 @@ namespace HVAC {
     constexpr std::array<Real64, 2> MinOperVolFlowPerRatedTotCap = {MinOperVolFlowPerRatedTotCap1, MinOperVolFlowPerRatedTotCap2};
 
     // dx coil type (DXCT)
-    enum class DXCoilType
+    enum class DXCoilType : std::int8_t
     {
         Invalid = -1,
         Regular,
@@ -392,7 +392,7 @@ namespace HVAC {
         Num
     };
 
-    enum class HXType
+    enum class HXType : std::int8_t
     {
         Invalid = -1,
         AirToAir_FlatPlate,
@@ -404,7 +404,7 @@ namespace HVAC {
     extern const std::array<std::string_view, (int)HXType::Num> hxTypeNames;
     extern const std::array<std::string_view, (int)HXType::Num> hxTypeNamesUC;
 
-    enum class MixerType
+    enum class MixerType : std::int8_t
     {
         Invalid = -1,
         InletSide,
@@ -418,7 +418,7 @@ namespace HVAC {
     extern const std::array<std::string_view, (int)MixerType::Num> mixerTypeLocNames;
     extern const std::array<std::string_view, (int)MixerType::Num> mixerTypeLocNamesUC;
 
-    enum class OATType
+    enum class OATType : std::int8_t
     {
         Invalid = -1,
         WetBulb,
@@ -453,7 +453,7 @@ namespace HVAC {
     };
 
     // Compressor operation
-    enum class CompressorOp
+    enum class CompressorOp : std::int8_t
     {
         Invalid = -1,
         Off, // signal DXCoil that compressor shouldn't run

@@ -993,7 +993,7 @@ void ManageTwoWayCommonPipe(EnergyPlusData &state, PlantLocation const &plantLoc
     // reimplementation of CheckTwoWayCommonPipeConditions by Sankaranarayanan K P Jan 2007
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    enum class UpdateType
+    enum class UpdateType : std::uint8_t
     {
         DemandLedPrimaryInlet,
         DemandLedSecondaryInlet,

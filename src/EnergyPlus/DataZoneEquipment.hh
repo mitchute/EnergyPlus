@@ -81,7 +81,7 @@ namespace DataZoneEquipment {
     // Thus, all variables in this module must be PUBLIC.
 
     // MODULE PARAMETER DEFINITIONS:
-    enum class AirNodeType
+    enum class AirNodeType : std::int8_t
     {
         Invalid = -1,
         PathInlet,
@@ -91,7 +91,7 @@ namespace DataZoneEquipment {
         Num
     };
 
-    enum class AirLoopHVACZone
+    enum class AirLoopHVACZone : std::int8_t
     {
         Invalid = -1,
         Splitter,
@@ -109,7 +109,7 @@ namespace DataZoneEquipment {
 
     // Start zone equip objects
     // list units that are valid for zone system availability managers first
-    enum ZoneEquipType
+    enum ZoneEquipType : std::int8_t
     {
         Invalid = -1,
         DUMMY,
@@ -171,7 +171,7 @@ namespace DataZoneEquipment {
     extern Array1D_string const cValidSysAvailManagerCompTypes;
 
     // Per Person Ventilation Rate Mode
-    enum class PerPersonVentRateMode
+    enum class PerPersonVentRateMode : std::int8_t
     {
         Invalid = -1,
         DCVByCurrentLevel,
@@ -179,7 +179,7 @@ namespace DataZoneEquipment {
         Num
     };
 
-    enum class LoadDist
+    enum class LoadDist : std::int8_t
     {
         Invalid = -1,
         Sequential,
@@ -189,17 +189,17 @@ namespace DataZoneEquipment {
         Num
     };
 
-    enum class LightReturnExhaustConfig : int
+    enum class LightReturnExhaustConfig : std::int8_t
     {
         Invalid = -1,
-        NoExhast = 0, // No exhaust node
-        Single = 1,   // One to one configuration
-        Multi = 2,    // Multiple return node referred
-        Shared = 3,   // Shared exhaust node
+        NoExhaust = 0, // No exhaust node
+        Single = 1,    // One to one configuration
+        Multi = 2,     // Multiple return node referred
+        Shared = 3,    // Shared exhaust node
         Num
     };
 
-    enum class ZoneEquipTstatControl
+    enum class ZoneEquipTstatControl : std::int8_t
     {
         Invalid = -1,
         SingleSpace,
@@ -208,7 +208,7 @@ namespace DataZoneEquipment {
         Num
     };
 
-    enum class SpaceEquipSizingBasis
+    enum class SpaceEquipSizingBasis : std::int8_t
     {
         Invalid = -1,
         DesignCoolingLoad,

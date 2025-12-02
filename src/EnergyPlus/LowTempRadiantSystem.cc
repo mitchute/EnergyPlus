@@ -2651,7 +2651,7 @@ namespace LowTempRadiantSystem {
         // SUBROUTINE PARAMETER DEFINITIONS:
         constexpr std::string_view RoutineName("SizeLowTempRadiantSystem");
 
-        enum class OperatingMode
+        enum class OperatingMode : std::int8_t
         {
             Invalid = -1,
             OFF,

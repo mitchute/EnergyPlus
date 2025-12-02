@@ -64,7 +64,7 @@ struct EnergyPlusData;
 
 namespace DuctLoss {
 
-    enum class EnvironmentType
+    enum class EnvironmentType : std::int8_t
     {
         Invalid = -1,
         Zone,
@@ -72,7 +72,7 @@ namespace DuctLoss {
         Num
     };
 
-    enum class DuctLossType
+    enum class DuctLossType : std::int8_t
     {
         Invalid = -1,
         Conduction,
@@ -81,7 +81,7 @@ namespace DuctLoss {
         Num
     };
 
-    enum class DuctLossSubType
+    enum class DuctLossSubType : std::int8_t
     {
         Invalid = -1,
         SupplyBranch,
@@ -95,7 +95,7 @@ namespace DuctLoss {
         Num
     };
 
-    enum class AirPath
+    enum class AirPath : std::int8_t
     {
         Invalid = -1,
         Supply,

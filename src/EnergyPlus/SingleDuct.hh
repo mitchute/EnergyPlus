@@ -70,7 +70,7 @@ struct EnergyPlusData;
 
 namespace SingleDuct {
 
-    enum class Action
+    enum class Action : std::int8_t
     {
         Invalid = -1,
         Normal,
@@ -79,7 +79,7 @@ namespace SingleDuct {
         HeatingNotUsed,
         Num
     };
-    enum class SysType
+    enum class SysType : std::int8_t
     {
         Invalid = -1,
         SingleDuctVAVReheat,
@@ -91,7 +91,7 @@ namespace SingleDuct {
         SingleDuctCBVAVNoReheat,
         Num,
     };
-    enum class HeatingCoilType : int
+    enum class HeatingCoilType : std::int8_t
     {
         Invalid = -1,
         None,
@@ -101,7 +101,7 @@ namespace SingleDuct {
         SteamAirHeating,
         Num,
     };
-    enum class MinFlowFraction
+    enum class MinFlowFraction : std::int8_t
     {
         Invalid = -1,
         Constant,

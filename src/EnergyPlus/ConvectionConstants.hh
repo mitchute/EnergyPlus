@@ -59,7 +59,7 @@ Real64 constexpr AdaptiveHcIntLowLimit = 0.5; // W/m2-K
 Real64 constexpr AdaptiveHcExtLowLimit = 1.0; // W/m2-K
 
 // parameters for identifying more specific hc model equations, inside face
-enum class HcInt
+enum class HcInt : std::int8_t
 {
     Invalid = -1,
     Value,
@@ -232,7 +232,7 @@ constexpr std::array<int, static_cast<int>(HcInt::Num)> HcIntReportVals = {
     230   // GoldsteinNovoselacCeilingDiffuserFloor
 };
 
-enum class HcExt
+enum class HcExt : std::int8_t
 {
     Invalid = -1,
     Value,
@@ -388,7 +388,7 @@ constexpr std::array<int, static_cast<int>(HcExt::Num)> HcExtReportVals = {
 };
 
 // Parameters for classification of outside face of surfaces
-enum class ExtConvClass
+enum class ExtConvClass : std::int8_t
 {
     Invalid = -1,
     WindwardVertWall,
@@ -398,7 +398,7 @@ enum class ExtConvClass
     Num
 };
 
-enum class ExtConvClass2
+enum class ExtConvClass2 : std::int8_t
 {
     Invalid = -1,
     WindConvection_WallWindward,
@@ -415,7 +415,7 @@ enum class ExtConvClass2
 // where used, that should be handled with a static_cast<int>(OutConvClass::Invalid)
 constexpr static std::array<int, static_cast<int>(ExtConvClass::Num)> ExtConvClassReportVals = {101, 102, 103, 104};
 
-enum class SurfOrientation
+enum class SurfOrientation : std::int8_t
 {
     Invalid = -1,
     HorizontalDown,
@@ -427,7 +427,7 @@ enum class SurfOrientation
 };
 
 // Parameters for fenestration relative location in zone
-enum class IntConvWinLoc
+enum class IntConvWinLoc : std::int8_t
 {
     Invalid = -1,
     NotSet,
@@ -440,7 +440,7 @@ enum class IntConvWinLoc
 };
 
 // Parameters for adaptive convection algorithm's classification of inside face of surfaces
-enum class IntConvClass
+enum class IntConvClass : std::int8_t
 {
     Invalid = -1,
     // SimpleBuoy goes first in the IDF objects, so has to go first here too, A3 or not.
@@ -545,7 +545,7 @@ constexpr static std::array<int, static_cast<int>(IntConvClass::Num)> IntConvCla
 };
 
 // Parameters to indicate user specified convection coefficients (for surface)
-enum class OverrideType
+enum class OverrideType : std::int8_t
 {
     Invalid = -1,
     Value,          // User specified "value" as the override type
@@ -556,7 +556,7 @@ enum class OverrideType
 };
 
 // params for reference temperature type
-enum class RefTemp
+enum class RefTemp : std::int8_t
 {
     Invalid = -1,
     MeanAirTemp,
@@ -566,7 +566,7 @@ enum class RefTemp
 };
 
 // params for wind speed type
-enum class RefWind
+enum class RefWind : std::int8_t
 {
     Invalid = -1,
     WeatherFile,

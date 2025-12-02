@@ -65,7 +65,7 @@ struct EnergyPlusData;
 
 namespace SteamCoils {
 
-    enum class CoilControlType
+    enum class CoilControlType : std::int8_t
     {
         Invalid = -1,
         TemperatureSetPoint,

@@ -67,7 +67,7 @@ namespace DataHeatBalFanSys {
 
     constexpr Real64 MaxRadHeatFlux = 4000.0; // [W/m2] max limit for radiant heat flux at a surface due to HVAC equipment
 
-    enum class PredictorCorrectorCtrl
+    enum class PredictorCorrectorCtrl : std::int8_t
     {
         Invalid = -1,
         GetZoneSetPoints,

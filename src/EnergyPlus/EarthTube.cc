@@ -86,7 +86,7 @@ namespace EnergyPlus::EarthTube {
 // The enum is used in a getEnumValue call to determine what was found in GetInput
 // The value is then used as an array index to lookup thermal conductivity and such from some std::arrays
 // So the IDE thinks these are unused, and I'm not sure the best way to hint that they sorta aren't
-enum class SoilType
+enum class SoilType : std::int8_t
 {
     Invalid = -1,
     HeavyAndSat,

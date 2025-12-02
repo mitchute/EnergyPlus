@@ -74,7 +74,7 @@ namespace HVACUnitaryBypassVAV {
     int constexpr CoolingMode(1); // System operating mode is cooling
     int constexpr HeatingMode(2); // System operating mode is heating
 
-    enum class DehumidControl // Dehumidification control modes (DehumidControlMode) for Multimode units only
+    enum class DehumidControl : std::int8_t // Dehumidification control modes (DehumidControlMode) for Multimode units only
     {
         // TODO: enum check
         Invalid = -1,
@@ -84,7 +84,7 @@ namespace HVACUnitaryBypassVAV {
         Num
     };
 
-    enum class PriorityCtrlMode // Priority control mode (prioritized thermostat signal)
+    enum class PriorityCtrlMode : std::int8_t // Priority control mode (prioritized thermostat signal)
     {
         Invalid = -1,
         CoolingPriority, // Controls CBVAV system based on cooling priority
@@ -94,7 +94,7 @@ namespace HVACUnitaryBypassVAV {
         Num
     };
 
-    enum class AirFlowCtrlMode // Airflow control for contant fan mode
+    enum class AirFlowCtrlMode : std::int8_t // Airflow control for contant fan mode
     {
         Invalid = -1,
         UseCompressorOnFlow,  // Set compressor OFF air flow rate equal to compressor ON air flow rate

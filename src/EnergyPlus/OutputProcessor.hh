@@ -77,7 +77,7 @@ struct EnergyPlusData;
 
 namespace OutputProcessor {
 
-    enum class ReportVDD
+    enum class ReportVDD : std::int8_t
     {
         Invalid = -1,
         No,  // Don't report the variable dictionaries in any form
@@ -91,7 +91,7 @@ namespace OutputProcessor {
     constexpr int IMinSetValue(999999);
     constexpr int IMaxSetValue(-999999);
 
-    enum class VariableType
+    enum class VariableType : std::int8_t
     {
         Invalid = -1,
         // NotFound, // ref: GetVariableKeyCountandType, 0 = not found // TODO: This is actually used separately from Invalid, need to get rid of it
@@ -102,7 +102,7 @@ namespace OutputProcessor {
         Num
     };
 
-    enum class MeterType
+    enum class MeterType : std::int8_t
     {
         Invalid = -1,
         Normal,     // Type value for normal meters
@@ -115,7 +115,7 @@ namespace OutputProcessor {
     constexpr int N_WriteTimeStampFormatData(100);
 
     //  For IP Units (tabular reports) certain resources will be put in sub-tables
-    enum class RT_IPUnits
+    enum class RT_IPUnits : std::int8_t
     {
         Invalid = -1,
         OtherJ,
@@ -129,7 +129,7 @@ namespace OutputProcessor {
         Num
     };
 
-    enum class ReportFreq
+    enum class ReportFreq : std::int8_t
     {
         Invalid = -1,
         EachCall,   // Write out each time UpdatedataandReport is called
@@ -165,7 +165,7 @@ namespace OutputProcessor {
     // What is this thing?
     constexpr std::array<int, (int)ReportFreq::Num> reportFreqArbitraryInts = {1, 1, 1, 7, 9, 11, 11};
 
-    enum class StoreType
+    enum class StoreType : std::int8_t
     {
         Invalid = -1,
         Average, // Type value for "averaged" variables // TODO: is this just for printing annual tables
@@ -179,7 +179,7 @@ namespace OutputProcessor {
         "Sum"      // Summed
     };
 
-    enum class TimeStepType
+    enum class TimeStepType : std::int8_t
     {
         Invalid = -1,
         Zone,   // Type value for "zone" timestep variables // TODO: is this just for printing Annual tables?
@@ -193,7 +193,7 @@ namespace OutputProcessor {
         "System" // System
     };
 
-    enum class EndUseCat
+    enum class EndUseCat : std::int8_t
     {
         Invalid = -1,
         Heating,
@@ -404,7 +404,7 @@ namespace OutputProcessor {
         Constant::EndUse::Invalid,           // WindTurbine,
     };
 
-    enum class Group
+    enum class Group : std::int8_t
     {
         Invalid = -1,
         Building,

@@ -65,7 +65,7 @@ struct EnergyPlusData;
 namespace HVACMultiSpeedHeatPump {
 
     // Mode of operation
-    enum class ModeOfOperation
+    enum class ModeOfOperation : std::int8_t
     {
         Invalid = -1,
         CoolingMode, // System operating mode is cooling
@@ -74,7 +74,7 @@ namespace HVACMultiSpeedHeatPump {
     };
 
     // Airflow control for constant fan mode
-    enum class AirflowControl
+    enum class AirflowControl : std::int8_t
     {
         Invalid = -1,
         UseCompressorOnFlow,  // set compressor OFF air flow rate equal to compressor ON air flow rate

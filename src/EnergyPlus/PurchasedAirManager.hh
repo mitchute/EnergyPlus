@@ -64,7 +64,7 @@ struct EnergyPlusData;
 namespace PurchasedAirManager {
 
     // Heating and Cooling Limit type parameters
-    enum class LimitType
+    enum class LimitType : std::int8_t
     {
         Invalid = -1,
         None,
@@ -75,7 +75,7 @@ namespace PurchasedAirManager {
     };
 
     // Dehumidification and Humidification control type parameters
-    enum class HumControl
+    enum class HumControl : std::int8_t
     {
         Invalid = -1,
         None,
@@ -86,7 +86,7 @@ namespace PurchasedAirManager {
     };
 
     // Demand controlled ventilation type parameters
-    enum class DCV
+    enum class DCV : std::int8_t
     {
         Invalid = -1,
         None,
@@ -96,7 +96,7 @@ namespace PurchasedAirManager {
     };
 
     // Outdoor air economizer type parameters
-    enum class Econ
+    enum class Econ : std::int8_t
     {
         Invalid = -1,
         NoEconomizer,
@@ -106,7 +106,7 @@ namespace PurchasedAirManager {
     };
 
     // Heat recovery type parameters
-    enum class HeatRecovery
+    enum class HeatRecovery : std::int8_t
     {
         Invalid = -1,
         None,
@@ -116,7 +116,7 @@ namespace PurchasedAirManager {
     };
 
     // Operating mode parameters
-    enum class OpMode
+    enum class OpMode : std::int8_t
     {
         Invalid = -1,
         Off,

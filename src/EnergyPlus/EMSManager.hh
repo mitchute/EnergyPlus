@@ -68,7 +68,7 @@ struct EnergyPlusData;
 namespace EMSManager {
 
     // Parameters for EMS Calling Points
-    enum class EMSCallFrom
+    enum class EMSCallFrom : std::int8_t
     {
         Invalid = -1,
         ZoneSizing,

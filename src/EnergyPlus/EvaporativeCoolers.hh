@@ -70,7 +70,7 @@ namespace Curve {
 namespace EvaporativeCoolers {
 
     // MODULE PARAMETER DEFINITIONS
-    enum class WaterSupply
+    enum class WaterSupply : std::int8_t
     {
         Invalid = -1,
         FromMains,
@@ -78,7 +78,7 @@ namespace EvaporativeCoolers {
         Num
     };
 
-    enum class ControlType
+    enum class ControlType : std::int8_t
     {
         Invalid = -1,
         ZoneTemperatureDeadBandOnOffCycling,
@@ -87,7 +87,7 @@ namespace EvaporativeCoolers {
         Num
     };
 
-    enum class OperatingMode
+    enum class OperatingMode : std::int8_t
     {
         Invalid = -1,
         None,            // the indirect evaporative cooler Research Special is scheduled off or turned off
@@ -99,7 +99,7 @@ namespace EvaporativeCoolers {
         Num
     };
 
-    enum class EvapCoolerType
+    enum class EvapCoolerType : std::int8_t
     {
         Invalid = -1,
         DirectCELDEKPAD,

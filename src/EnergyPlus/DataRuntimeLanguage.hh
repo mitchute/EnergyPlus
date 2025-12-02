@@ -73,7 +73,7 @@ namespace DataRuntimeLanguage {
     // Data module should be available to other modules and routines.
     // Thus, all variables in this module must be PUBLIC.
 
-    enum class ErlKeywordParam // keyword parameters for types of Erl statements
+    enum class ErlKeywordParam : std::int8_t // keyword parameters for types of Erl statements
     {
         Invalid = -1,
         None,     // statement type not set
@@ -90,7 +90,7 @@ namespace DataRuntimeLanguage {
         Num
     };
 
-    enum class Value
+    enum class Value : std::int8_t
     {
         Invalid = -1,
         Null,       // Erl entity type, "Null" value
@@ -104,7 +104,7 @@ namespace DataRuntimeLanguage {
         Num
     };
 
-    enum class PtrDataType
+    enum class PtrDataType : std::int8_t
     {
         Invalid = -1,
         Real,    // data type for overloaded pointer management, double real
@@ -115,7 +115,7 @@ namespace DataRuntimeLanguage {
 
     // Parameters for identifying operator types in Erl
     // The number of these parameters indicates the order of precedence
-    enum class ErlFunc
+    enum class ErlFunc : std::int8_t
     {
         Invalid = -1,
         Null,

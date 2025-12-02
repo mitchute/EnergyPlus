@@ -1186,10 +1186,10 @@ void processZoneEquipmentInput(EnergyPlusData &state,
         thisEquipConfig.ReturnNodeInletNum = 0;   // initialize to zero here
         thisEquipConfig.ReturnNodeRetPathNum = 0;
         thisEquipConfig.ReturnNodeRetPathCompNum = 0;
-        thisEquipConfig.FixedReturnFlow = false;                                // initialize to false here
-        thisEquipConfig.ReturnNodePlenumNum = 0;                                // initialize to zero here
-        thisEquipConfig.ReturnNodeExhaustNodeNum = 0;                           // initialize to zero here
-        thisEquipConfig.SharedExhaustNode = LightReturnExhaustConfig::NoExhast; // initialize to zero here
+        thisEquipConfig.FixedReturnFlow = false;                                 // initialize to false here
+        thisEquipConfig.ReturnNodePlenumNum = 0;                                 // initialize to zero here
+        thisEquipConfig.ReturnNodeExhaustNodeNum = 0;                            // initialize to zero here
+        thisEquipConfig.SharedExhaustNode = LightReturnExhaustConfig::NoExhaust; // initialize to zero here
 
         for (int NodeNum = 1; NodeNum <= NumNodes; ++NodeNum) {
             thisEquipConfig.ReturnNode(NodeNum) = NodeNums(NodeNum);

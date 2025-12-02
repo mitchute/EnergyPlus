@@ -98,7 +98,7 @@ namespace DataConvergParams {
 
     constexpr int ConvergLogStackDepth(10);
 
-    enum class CalledFrom
+    enum class CalledFrom : std::int8_t
     {
         Invalid = -1,
         AirSystemDemandSide,

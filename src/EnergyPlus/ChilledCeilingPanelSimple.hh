@@ -67,7 +67,7 @@ struct EnergyPlusData;
 namespace CoolingPanelSimple {
 
     // Control types:
-    enum class ClgPanelCtrlType
+    enum class ClgPanelCtrlType : std::int8_t
     {
         Invalid = -1,
         MAT,                // Controls system using mean air temperature
@@ -81,7 +81,7 @@ namespace CoolingPanelSimple {
     };
 
     // Condensation control types:
-    enum class CondCtrl
+    enum class CondCtrl : std::int8_t
     {
         Invalid = -1,
         NONE,      // Condensation control--none, so system never shuts down
