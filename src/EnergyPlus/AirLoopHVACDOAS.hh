@@ -156,7 +156,7 @@ namespace AirLoopHVACDOAS {
 
         static void getAirLoopDOASInput(EnergyPlusData &state);
 
-        void SimAirLoopHVACDOAS(EnergyPlusData &state, bool firstHVACIteration, int &CompIndex);
+        void SimAirLoopHVACDOAS(EnergyPlusData &state, bool FirstHVACIteration, int &CompIndex);
 
         void initAirLoopDOAS(EnergyPlusData &state, bool FirstHVACIteration);
 
