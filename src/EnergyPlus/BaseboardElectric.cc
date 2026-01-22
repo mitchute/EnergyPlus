@@ -481,7 +481,7 @@ namespace BaseboardElectric {
         auto &baseboard = state.dataBaseboardElectric->baseboards(BaseboardNum);
 
         const Real64 AirInletTemp = baseboard.AirInletTemp;
-        Real64 CpAir = Psychrometrics::PsyCpAirFnW(baseboard.AirInletHumRat);
+        const Real64 CpAir = Psychrometrics::PsyCpAirFnW(baseboard.AirInletHumRat);
         Real64 AirMassFlowRate = SimpConvAirFlowSpeed;
         Real64 CapacitanceAir = CpAir * AirMassFlowRate;
         // currently only the efficiency is used to calculate the electric consumption.  There could be some
