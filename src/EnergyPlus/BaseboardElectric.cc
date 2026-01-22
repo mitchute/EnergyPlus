@@ -480,7 +480,7 @@ namespace BaseboardElectric {
 
         auto &baseboard = state.dataBaseboardElectric->baseboards(BaseboardNum);
 
-        Real64 AirInletTemp = baseboard.AirInletTemp;
+        const Real64 AirInletTemp = baseboard.AirInletTemp;
         Real64 CpAir = Psychrometrics::PsyCpAirFnW(baseboard.AirInletHumRat);
         Real64 AirMassFlowRate = SimpConvAirFlowSpeed;
         Real64 CapacitanceAir = CpAir * AirMassFlowRate;
