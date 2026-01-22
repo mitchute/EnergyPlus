@@ -408,7 +408,6 @@ namespace BaseboardElectric {
         static constexpr std::string_view RoutineName("SizeElectricBaseboard");
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        Real64 TempSize; // autosized value of coil input field
         state.dataSize->DataScalableCapSizingON = false;
 
         if (state.dataSize->CurZoneEqNum > 0) {
@@ -426,6 +425,7 @@ namespace BaseboardElectric {
             ZoneEqSizing.SizingMethod(SizingMethod) = CapSizingMethod;
             if (CapSizingMethod == DataSizing::HeatingDesignCapacity || CapSizingMethod == DataSizing::CapacityPerFloorArea ||
                 CapSizingMethod == DataSizing::FractionOfAutosizedHeatingCapacity) {
+                Real64 TempSize;
                 if (CapSizingMethod == DataSizing::HeatingDesignCapacity) {
                     if (baseboard.ScaledHeatingCapacity == DataSizing::AutoSize) {
                         CheckZoneSizing(state, CompType, CompName);
