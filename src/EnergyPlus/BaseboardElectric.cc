@@ -466,7 +466,7 @@ namespace BaseboardElectric {
         //       DATE WRITTEN   Nov 2001
 
         // PURPOSE OF THIS SUBROUTINE: This subroutine calculates the heat exchange rate
-        // in a pure Electricconvective baseboard heater.
+        // in a pure ElectricConvective baseboard heater.
 
         // METHODOLOGY EMPLOYED:
         // Currently this is primarily modified from HW Convective baseboard which has connections to
