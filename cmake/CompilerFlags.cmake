@@ -136,6 +136,9 @@ elseif(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" O
 
   # in main.cc for E+ (actual: api/EnergyPlusPgm.cc) and gtest: feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)
   target_compile_definitions(project_fp_options INTERFACE $<${need_arithm_debug_genex}:DEBUG_ARITHM_GCC_OR_CLANG>)
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+    target_compile_options(project_fp_options INTERFACE $<${need_arithm_debug_genex}:-ffp-exception-behavior=strict>)
+  endif()
   include(CheckCXXSymbolExists)
   check_cxx_symbol_exists(feenableexcept "fenv.h" HAVE_FEENABLEEXCEPT)
   message(VERBOSE "HAVE_FEENABLEEXCEPT=${HAVE_FEENABLEEXCEPT}")
@@ -151,7 +154,6 @@ elseif(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" O
     # ADD_CXX_RELEASE_DEFINITIONS("-finline-limit=2000") # More aggressive inlining   This is causing unit test failures on Ubuntu 14.04
   else()
     #check_cxx_compiler_flag(<flag> <var>)
-    #target_compile_options(project_options INTERFACE $<$<CONFIG:Debug>:-ffp-exception-behavior=strict>) # Disable optimizations that may have concealed NaN behavior
     #target_compile_options(project_options INTERFACE $<$<CONFIG:Debug>:-ftrapping-math>) # Disable optimizations that may have concealed NaN behavior
   endif()
 
