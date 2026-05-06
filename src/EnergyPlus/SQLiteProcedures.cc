@@ -67,8 +67,31 @@
 #include <EnergyPlus/SQLiteProcedures.hh>
 #include <EnergyPlus/ScheduleManager.hh>
 #include <EnergyPlus/UtilityRoutines.hh>
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+#    include <EnergyPlus/fenv_missing.h>
+#endif
 
 namespace EnergyPlus {
+
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+class FloatingPointExceptionDisabler
+{
+public:
+    FloatingPointExceptionDisabler() : oldExceptions(fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
+    {
+    }
+
+    ~FloatingPointExceptionDisabler()
+    {
+        if (oldExceptions >= 0) {
+            feenableexcept(static_cast<unsigned int>(oldExceptions));
+        }
+    }
+
+private:
+    int oldExceptions;
+};
+#endif
 
 constexpr std::array<int, (int)OutputProcessor::ReportFreq::Num> reportFreqInts = {
     -1, // EachCall
@@ -2813,6 +2836,9 @@ bool SQLiteProcedures::sqliteStepValidity(int const rc)
 
 int SQLiteProcedures::sqliteStepCommand(sqlite3_stmt *stmt)
 {
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+    FloatingPointExceptionDisabler floatingPointExceptionDisabler;
+#endif
     int rc = sqlite3_step(stmt);
     switch (rc) {
     case SQLITE_DONE:

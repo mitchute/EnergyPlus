@@ -1,10 +1,8 @@
 /* Copyright (c) 2017 Big Ladder Software LLC. All rights reserved.
  * See the LICENSE file for additional terms and conditions. */
 
-#ifndef NDEBUG
-#ifdef __unix__
-#include <cfenv>
-#endif
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+#include <EnergyPlus/fenv_missing.h>
 #endif
 
 // Penumbra
@@ -12,6 +10,24 @@
 #include "context.h"
 
 namespace Penumbra {
+
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+class FloatingPointExceptionDisabler
+{
+public:
+  FloatingPointExceptionDisabler() : oldExceptions(fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)) {}
+
+  ~FloatingPointExceptionDisabler()
+  {
+    if (oldExceptions >= 0) {
+      feenableexcept(static_cast<unsigned int>(oldExceptions));
+    }
+  }
+
+private:
+  int oldExceptions;
+};
+#endif
 
 const char *Context::render_vertex_shader_source =
     R"src(
@@ -71,18 +87,10 @@ Context::Context(GLint size_in, Courierr::Courierr *logger_in) : size(size_in), 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-#ifndef NDEBUG
-#ifdef __unix__
-  // Temporarily Disable floating point exceptions
-  fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+  FloatingPointExceptionDisabler floatingPointExceptionDisabler;
 #endif
   window = glfwCreateWindow(1, 1, "Penumbra", nullptr, nullptr);
-#ifndef NDEBUG
-#ifdef __unix__
-  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
-#endif
   glfwMakeContextCurrent(window);
   if (!window) {
     throw PenumbraException(
@@ -212,6 +220,9 @@ Context::Context(GLint size_in, Courierr::Courierr *logger_in) : size(size_in), 
 }
 
 Context::~Context() {
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+  FloatingPointExceptionDisabler floatingPointExceptionDisabler;
+#endif
   glDeleteQueries(static_cast<GLsizei>(queries.size()), queries.data());
   glDeleteFramebuffersEXT(1, &framebuffer_object);
   glDeleteRenderbuffersEXT(1, &renderbuffer_object);
@@ -419,39 +430,31 @@ void Context::set_camera_mvp() {
 
 void Context::draw_model() {
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-#ifndef NDEBUG
-#ifdef __unix__
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
   // Temporarily Disable floating point exceptions
   fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
 #endif
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glDepthFunc(GL_LESS);
   model.draw_all();
   glDepthFunc(GL_EQUAL);
-#ifndef NDEBUG
-#ifdef __unix__
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
   feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
 #endif
 }
 
 void Context::draw_except(const std::vector<SurfaceBuffer> &hidden_surfaces) {
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-#ifndef NDEBUG
-#ifdef __unix__
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
   // Temporarily Disable floating point exceptions
   fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
 #endif
   glClear(GL_DEPTH_BUFFER_BIT);
   glDepthFunc(GL_LESS);
   model.draw_except(hidden_surfaces);
   glDepthFunc(GL_EQUAL);
-#ifndef NDEBUG
-#ifdef __unix__
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
   feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
 #endif
 }
 

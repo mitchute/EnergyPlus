@@ -5,10 +5,8 @@
 #include <memory>
 #include <iostream>
 
-#ifndef NDEBUG
-#ifdef __unix__
-#include <cfenv>
-#endif
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+#include <EnergyPlus/fenv_missing.h>
 #endif
 
 // Penumbra
@@ -16,6 +14,24 @@
 #include "penumbra-implementation.h"
 
 namespace Penumbra {
+
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+class FloatingPointExceptionDisabler
+{
+public:
+  FloatingPointExceptionDisabler() : oldExceptions(fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)) {}
+
+  ~FloatingPointExceptionDisabler()
+  {
+    if (oldExceptions >= 0) {
+      feenableexcept(static_cast<unsigned int>(oldExceptions));
+    }
+  }
+
+private:
+  int oldExceptions;
+};
+#endif
 
 Penumbra::Penumbra(unsigned int size, const std::shared_ptr<Courierr::Courierr> &logger)
     : penumbra(std::make_unique<PenumbraImplementation>(static_cast<int>(size), logger)) {}
@@ -26,6 +42,10 @@ Penumbra::Penumbra(const std::shared_ptr<Courierr::Courierr> &logger)
 Penumbra::~Penumbra() = default;
 
 bool Penumbra::is_valid_context() {
+#if defined(DEBUG_ARITHM_GCC_OR_CLANG) && defined(__APPLE__)
+  // AppKit/GLFW performs floating point operations that are not compatible with trapping FP exceptions.
+  return false;
+#endif
   bool invalid(false);
   if (!glfwInit()) {
     invalid = true;
@@ -34,18 +54,10 @@ bool Penumbra::is_valid_context() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-#ifndef NDEBUG
-#ifdef __unix__
-  // Temporarily Disable floating point exceptions
-  fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
+#ifdef DEBUG_ARITHM_GCC_OR_CLANG
+  FloatingPointExceptionDisabler floatingPointExceptionDisabler;
 #endif
   GLFWwindow *window = glfwCreateWindow(1, 1, "Penumbra", nullptr, nullptr);
-#ifndef NDEBUG
-#ifdef __unix__
-  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
-#endif
   glfwMakeContextCurrent(window);
   invalid |= !window;
   glfwDestroyWindow(window);

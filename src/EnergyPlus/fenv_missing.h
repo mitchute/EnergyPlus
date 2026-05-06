@@ -49,6 +49,7 @@
 #define fenv_missing_h_INCLUDED
 
 #include <cfenv>
+#include <cstdint>
 
 // clang-format off
 #ifndef HAVE_FEENABLEEXCEPT
