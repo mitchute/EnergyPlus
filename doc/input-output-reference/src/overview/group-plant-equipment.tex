@@ -220,7 +220,7 @@ These outputs are the evaporator (chilled water) inlet and outlet temperatures a
 
 This output is the coefficient of performance for the chiller during cooling operation. It is calculated as the evaporator heat transfer rate (Chiller Evaporator Cooling Rate) divided by the ``fuel'' consumption rate by the chiller. For the constant COP and electric chillers, the ``fuel'' is electricity so the divisor is Chiller Electricity Rate {[}W{]}. For the absorption chiller, the ``fuel'' is steam so the divisor is Steam Consumption Rate {[}W{]}.
 
-\emph{Note that this variable is reported as zero when the chiller is not operating. When reported for frequencies longer than ``detailed'' (such as timestep, hourly, daily, monthly or environment), this output will only be meaningful when the chiller is operating for the entire reporting period. To determine an average COP for a longer time period, compute the COP based on total evaporator heat transfer divided by total electric or fuel input over the desired period.}
+\emph{This variable is zero when the chiller is not producing cooling. At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values, including zero values while the chiller is off. This value is not the COP for the reporting period. Calculate the reporting-period COP by dividing summed evaporator cooling energy by summed electric or fuel input energy over the same period.}
 
 \subsubsection{Chiller Part Load Ratio}\label{chiller-part-load-ratio}
 
@@ -3690,7 +3690,9 @@ This is the average cooling load (Chiller Evaporator Cooling Rate {[}W{]}) divid
 
 \paragraph{Chiller Heater Cooling COP}\label{chiller-heater-cooling-cop}
 
-This is the average coefficient of performance for the chiller in cooling operation, calculated as the average cooling load (Chiller Evaporator Cooling Rate {[}W{]}) divided by the average fuel consumption during cooling (Direct Fired Absorption Chiller Cooling \textless{}Fuel Type\textgreater{} Consumption Rate {[}W{]}) for the reported time period. If the chiller cooling fuel consumption rate (denominator) is zero, then this output variable is set to zero.
+This is the operating coefficient of performance for the chiller in cooling operation. At each timestep, it is calculated as Chiller Heater Evaporator Cooling Rate divided by Chiller Heater Cooling \textless{}Fuel Type\textgreater{} Rate. If the cooling fuel consumption rate is zero, this output variable is set to zero.
+
+\emph{At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values, including zero values while the chiller is off. This value is not the COP for the reporting period. Calculate the reporting-period COP by dividing summed Chiller Heater Evaporator Cooling Energy by summed Chiller Heater Cooling \textless{}Fuel Type\textgreater{} Consumption over the same period.}
 
 \paragraph{Chiller Heater Heating Rate {[}W{]}}\label{chiller-heater-heating-rate-w}
 
@@ -4059,7 +4061,9 @@ This is the average cooling load (Chiller Heater Evaporator Cooling Rate {[}W{]}
 
 \paragraph{Chiller Heater Cooling Source Heat COP {[}W/W{]}}\label{chiller-heater-cooling-source-heat-cop-ww}
 
-This is the average coefficient of performance for the chiller in cooling operation, calculated as the average cooling load (Chiller Heater Evaporator Cooling Rate {[}W{]}) divided by the average thermal energy use during cooling (Chiller Heater Cooling Source Heat Transfer Rate {[}W{]}) for the reported time period. If the chiller cooling thermal energy use rate (denominator) is zero, then this output variable is set to zero.
+This is the operating coefficient of performance for the chiller in cooling operation. At each timestep, it is calculated as Chiller Heater Evaporator Cooling Rate divided by Chiller Heater Cooling Source Heat Transfer Rate. If the cooling source heat transfer rate is zero, this output variable is set to zero.
+
+\emph{At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values, including zero values while the chiller is off. This value is not the COP for the reporting period. Calculate the reporting-period COP by dividing the reporting-period Chiller Heater Evaporator Cooling Rate by the reporting-period Chiller Heater Cooling Source Heat Transfer Rate.}
 
 \paragraph{Chiller Heater Heating Rate {[}W{]}}\label{chiller-heater-heating-rate-w-2}
 
@@ -6747,8 +6751,14 @@ interpolated EIR PLR modifier between those two speed levels.
 rate of the heat pump crankcase heater in heating mode.
 \paragraph{Heat Pump Crankcase Heater Electricity Energy {[}W{]}} The
 electricity energy of the heat pump crankcase heater in heating mode.
-\paragraph{Heat Pump Heating COP {[}{]}} The coefficient of performance (COP) of
-the heat pump in heating mode.
+\paragraph{Heat Pump Heating COP {[}{]}} The operating coefficient of performance
+(COP) of the heat pump in heating mode, calculated at each timestep.
+At reporting frequencies longer than ``detailed,'' EnergyPlus reports the
+time-weighted average of the timestep COP values, including zero values while
+the heat pump is off. This value is not the COP for the reporting period. Calculate
+the reporting-period heating COP by dividing summed Heat Pump Load Side Heat
+Transfer Energy in Heating Mode by summed Heat Pump Electricity Energy in Heating
+Mode over the same period.
 \paragraph{Heat Pump Part Load Ratio in Cooling Mode {[}{]}} The part load ratio
 of the heat pump in cooling mode.
 \paragraph{Heat Pump Cycling Ratio in Cooling Mode {[}{]}} The cycling ratio of
@@ -6821,8 +6831,14 @@ mode. When the load is between the capacity of two speed levels, if the heat
 pump is fixed-speed, this value is the EIR PLR modifier curve value
 at the higher speed level; if the heat pump is variable-speed, this value is the
 interpolated EIR PLR modifier between those two speed levels.
-\paragraph{Heat Pump Cooling COP {[}{]}} The coefficient of performance (COP) of
-the heat pump in cooling mode.
+\paragraph{Heat Pump Cooling COP {[}{]}} The operating coefficient of performance
+(COP) of the heat pump in cooling mode, calculated at each timestep.
+At reporting frequencies longer than ``detailed,'' EnergyPlus reports the
+time-weighted average of the timestep COP values, including zero values while
+the heat pump is off. This value is not the COP for the reporting period. Calculate
+the reporting-period cooling COP by dividing summed Heat Pump Load Side Heat
+Transfer Energy in Cooling Mode by summed Heat Pump Electricity Energy in Cooling
+Mode over the same period.
 
 \subsection{Steps to specify the Ground Source Heat Pump}\label{steps-to-specify-the-ground-source-heat-pump}
 
@@ -7708,6 +7724,8 @@ These outputs are the condenser water inlet and outlet temperatures and flow rat
 \subsubsection{Chiller Heater COP Unit \textless{}x\textgreater{} {[}C{]}}\label{chiller-heater-cop-unit-x-c}
 
 This output is the coefficient of performance for the chiller-heater. It is calculated as the evaporator heat transfer rate divided by the chiller-heater electric power.
+
+\emph{At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values, including zero values while the chiller-heater is off. This value is not the COP for the reporting period. Calculate reporting-period COP from the corresponding summed cooling and false-load heat transfer energies divided by summed electricity energy over the same period.}
 
 \subsubsection{Chiller Heater Capacity Temperature Modifier Multiplier Unit \textless{}x\textgreater{} {[}C{]}}\label{chiller-heater-capacity-temperature-modifier-multiplier-unit-x-c}
 

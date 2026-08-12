@@ -5868,7 +5868,9 @@ The output variable is the average total source energy rate absorbed or discharg
 
 \paragraph{Integrated Heat Pump COP {[}{]}}\label{Out-Tot-COP-ASIHP}
 
-The output variable is the average total COP (using the total delivered load divided by the electric power) by the integrated heat pump in watts over the timestep being reported. The total delivered load includes all the incurred space cooling, water heating, and space heating loads.
+This output is the operating total COP of the integrated heat pump. At each timestep, it is calculated as the sum of the delivered space cooling, space heating, and water heating rates divided by Integrated Heat Pump Electricity Rate.
+
+\emph{At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values, including zero values while the integrated heat pump is off. This value is not the COP for the reporting period. Calculate reporting-period COP by dividing the sum of Integrated Heat Pump Air Total Cooling Energy, Integrated Heat Pump Air Heating Energy, and Integrated Heat Pump Water Heating Energy by Integrated Heat Pump Electricity Energy over the same period.}
 
 
 \paragraph{Integrated Heat Pump Electricity Energy {[}J{]}}\label{Out-Total-Electric-Energy-ASIHP}

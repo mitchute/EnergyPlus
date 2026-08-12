@@ -367,6 +367,8 @@ This is the total heat transfer of the~ refrigeration compressor rack in Joules 
 
 This field is the~ refrigeration compressor rack coefficient of performance. It is the actual compressor rack COP for the timestep being reported, accounting for the COP variation as a function of temperature. It is calculated as the Design Compressor Rack COP times the Compressor Rack COP as a Function of Temperature Curve evaluated at the effective condenser entering air temperature for the timestep being reported.
 
+\emph{At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values. This value is not the COP for the reporting period. Calculate reporting-period compressor-rack COP by dividing summed Refrigeration Compressor Rack Total Heat Transfer Energy by summed Refrigeration Compressor Rack Electricity Energy over the same period.}
+
 \paragraph{Refrigeration Compressor Rack Evaporative Condenser Pump Electricity Rate {[}W{]}}\label{refrigeration-compressor-rack-evaporative-condenser-pump-electric-power-w}
 
 This is the electrical power requirement in Watts for the timestep being reported for the water pump used with evaporative cooling of the compressor rack condenser.
@@ -440,6 +442,8 @@ This is the total heat transfer of the~ refrigeration compressor rack in Joules 
 \paragraph{Refrigeration Air Chiller Compressor Rack COP {[}W/W{]}}\label{refrigeration-air-chiller-compressor-rack-cop-ww}
 
 This field is the~ refrigeration compressor rack coefficient of performance. It is the actual compressor rack COP for the timestep being reported, accounting for the COP variation as a function of temperature. It is calculated as the Design Compressor Rack COP times the Compressor Rack COP as a Function of Temperature Curve evaluated at the effective condenser entering air temperature for the timestep being reported.
+
+\emph{At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values. This value is not the COP for the reporting period. Calculate reporting-period compressor-rack COP by dividing summed Refrigeration Air Chiller Compressor Rack Total Heat Transfer Energy by summed Refrigeration Air Chiller Compressor Rack Electricity Energy over the same period.}
 
 \paragraph{Refrigeration Air Chiller Compressor Rack Evaporative Condenser Pump Electricity Rate {[}W{]}}\label{refrigeration-air-chiller-compressor-rack-evaporative-condenser-pump-electric-power-w}
 
@@ -1596,7 +1600,9 @@ This is the total electricity consumption of the system's low- and high-stage co
 
 \paragraph{Refrigeration System Average Compressor COP {[}W/W{]}}\label{refrigeration-system-average-compressor-cop-ww}
 
-This output is the system average compressor COP, the total refrigeration effect divided by the total power to the compressors.
+This output is the operating system-average compressor COP, calculated at each simulation timestep as the total refrigeration effect divided by the total power to the compressors.
+
+\emph{At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values, including zero values while the system is inactive. This value is not the compressor COP for the reporting period. Calculate reporting-period compressor COP by dividing summed Refrigeration System Total Compressor Heat Transfer Energy by summed Refrigeration System Total Compressor Electricity Energy over the same period.}
 
 \paragraph{Refrigeration System Total Compressor Heat Transfer Rate {[}W{]}}\label{refrigeration-system-total-compressor-heat-transfer-rate-w}
 
@@ -1734,7 +1740,9 @@ This is the total electricity consumption of the system's low- and high-stage co
 
 \paragraph{Refrigeration Air Chiller System Average Compressor COP {[}W/W{]}}\label{refrigeration-air-chiller-system-average-compressor-cop-ww}
 
-This output is the system average compressor COP, the total refrigeration effect divided by the total power to the compressors
+This output is the operating system-average compressor COP, calculated at each simulation timestep as the total refrigeration effect divided by the total power to the compressors.
+
+\emph{At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values, including zero values while the system is inactive. This value is not the compressor COP for the reporting period. Calculate reporting-period compressor COP by dividing summed Refrigeration Air Chiller System Total Compressor Heat Transfer Energy by summed Refrigeration Air Chiller System Total Compressor Electricity Energy over the same period.}
 
 \paragraph{Refrigeration Air Chiller System Total Compressor Heat Transfer Rate {[}W{]}}\label{refrigeration-air-chiller-system-total-compressor-heat-transfer-rate-w}
 
@@ -2043,7 +2051,9 @@ This output is the total electric power input to all of the system's compressor(
 
 \paragraph{Refrigeration Transcritical System Average COP {[}W/W{]}}\label{refrigeration-transcritical-system-average-cop-ww}
 
-This output is the system average compressor COP, which is the total refrigeration effect divided by the total power to all of the compressors.
+This output is the operating system-average compressor COP, calculated at each simulation timestep as the total refrigeration effect divided by the total power to all of the compressors.
+
+\emph{At reporting frequencies longer than ``detailed,'' EnergyPlus reports the time-weighted average of the timestep COP values, including zero values while the system is inactive. This value is not the compressor COP for the reporting period. Calculate reporting-period compressor COP from the appropriate summed refrigeration-effect energies divided by summed Refrigeration Transcritical System Total Compressor Electricity Energy over the same period.}
 
 \paragraph{Refrigeration Transcritical System Medium Temperature Cases and Walk Ins Heat Transfer Rate {[}W{]}}\label{refrigeration-transcritical-system-medium-temperature-cases-and-walk-ins-heat-transfer-rate-w}
 
