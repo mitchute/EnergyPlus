@@ -882,6 +882,26 @@ TEST_F(EnergyPlusFixture, ConstantSpeedPumpLowFlowFullPower)
     EXPECT_NEAR(state->dataPumps->PumpEquip(1).Power, 0.2778, 0.0001);
     EXPECT_EQ(state->dataErrTracking->NumRecurringErrors, 1);
     EXPECT_EQ(state->dataErrTracking->RecurringErrors[0].Count, 1);
+
+    state->dataPumps->PumpEquip(1).plantLoc.loop->UsePressureForPumpCalcs = false;
+
+    state->dataGlobal->WarmupFlag = true;
+    Pumps::CalcPumps(*state, 1, massflowrate, PumpRunning);
+    EXPECT_EQ(state->dataErrTracking->RecurringErrors[0].Count, 1);
+    state->dataGlobal->WarmupFlag = false;
+
+    state->dataGlobal->DoingSizing = true;
+    Pumps::CalcPumps(*state, 1, massflowrate, PumpRunning);
+    EXPECT_EQ(state->dataErrTracking->RecurringErrors[0].Count, 1);
+    state->dataGlobal->DoingSizing = false;
+
+    state->dataGlobal->KickOffSimulation = true;
+    Pumps::CalcPumps(*state, 1, massflowrate, PumpRunning);
+    EXPECT_EQ(state->dataErrTracking->RecurringErrors[0].Count, 1);
+    state->dataGlobal->KickOffSimulation = false;
+
+    Pumps::CalcPumps(*state, 1, massflowrate, PumpRunning);
+    EXPECT_EQ(state->dataErrTracking->RecurringErrors[0].Count, 2);
 }
 
 } // namespace EnergyPlus
