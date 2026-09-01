@@ -89,7 +89,7 @@ namespace HeatBalanceSurfaceManager {
 
     void ManageSurfaceHeatBalance(EnergyPlusData &state);
 
-    void ResimulateSurfaceHeatBalanceForPV(EnergyPlusData &state);
+    bool ResimulateSurfaceHeatBalanceForPV(EnergyPlusData &state, bool forceResimulation = false, bool requestHVACResimulation = true);
 
     // Beginning Initialization Section of the Module
     //******************************************************************************

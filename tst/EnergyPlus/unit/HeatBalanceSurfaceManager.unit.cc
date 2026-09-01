@@ -3098,10 +3098,12 @@ TEST_F(EnergyPlusFixture, HeatBalanceSurfaceManager_TestSurfTempCalcHeatBalanceA
     auto const sourceHistoryBeforePV = state->dataHeatBalSurf->SurfQsrcHist(1, 1);
     state->dataHeatBalFanSys->QPVSysSource.dimension(state->dataSurface->TotSurfaces, 0.0);
     state->dataHeatBalFanSys->QPVSysSource(1) = -100.0;
+
+    EXPECT_FALSE(ResimulateSurfaceHeatBalanceForPV(*state));
     state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = true;
 
     // The resimulation must consume the request and incorporate the PV sink into the surface balance.
-    ResimulateSurfaceHeatBalanceForPV(*state);
+    EXPECT_TRUE(ResimulateSurfaceHeatBalanceForPV(*state));
 
     EXPECT_FALSE(state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag);
     EXPECT_NE(sourceHistoryBeforePV, state->dataHeatBalSurf->SurfQsrcHist(1, 1));

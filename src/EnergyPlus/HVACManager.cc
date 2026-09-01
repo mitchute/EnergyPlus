@@ -827,12 +827,21 @@ void SimHVAC(EnergyPlusData &state)
     }
 
     if (state.dataGlobal->ZoneSizingCalc) {
-        ZoneEquipmentManager::ManageZoneEquipment(
-            state, FirstHVACIteration, state.dataHVACGlobal->SimZoneEquipmentFlag, state.dataHVACGlobal->SimAirLoopsFlag);
-        // need to call non zone equipment so water use zone gains can be included in sizing calcs
-        NonZoneEquipmentManager::ManageNonZoneEquipment(state, FirstHVACIteration, state.dataHVACGlobal->SimNonZoneEquipmentFlag);
-        state.dataElectPwrSvcMgr->facilityElectricServiceObj->manageElectricPowerService(
-            state, FirstHVACIteration, state.dataHVACGlobal->SimElecCircuitsFlag, false);
+        int pvCouplingIterations = 0;
+        do {
+            if (HeatBalanceSurfaceManager::ResimulateSurfaceHeatBalanceForPV(state)) {
+                ZoneTempPredictorCorrector::PredictSystemLoads(
+                    state, state.dataHVACGlobal->ShortenTimeStepSys, state.dataHVACGlobal->UseZoneTimeStepHistory, state.dataGlobal->TimeStepZone);
+                state.dataHVACGlobal->SimZoneEquipmentFlag = true;
+            }
+            ZoneEquipmentManager::ManageZoneEquipment(
+                state, FirstHVACIteration, state.dataHVACGlobal->SimZoneEquipmentFlag, state.dataHVACGlobal->SimAirLoopsFlag);
+            // need to call non zone equipment so water use zone gains can be included in sizing calcs
+            NonZoneEquipmentManager::ManageNonZoneEquipment(state, FirstHVACIteration, state.dataHVACGlobal->SimNonZoneEquipmentFlag);
+            state.dataElectPwrSvcMgr->facilityElectricServiceObj->manageElectricPowerService(
+                state, FirstHVACIteration, state.dataHVACGlobal->SimElecCircuitsFlag, false);
+            ++pvCouplingIterations;
+        } while (state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag && pvCouplingIterations <= state.dataConvergeParams->MaxIter);
         return;
     }
 
@@ -1807,7 +1816,13 @@ void SimSelectedEquipment(EnergyPlusData &state,
     }
     PlantUtilities::ResetAllPlantInterConnectFlags(state);
 
-    HeatBalanceSurfaceManager::ResimulateSurfaceHeatBalanceForPV(state);
+    if (HeatBalanceSurfaceManager::ResimulateSurfaceHeatBalanceForPV(state)) {
+        // Surface temperatures are part of the predicted zone load. Refresh that load before either air or zone equipment uses it.
+        ZoneTempPredictorCorrector::PredictSystemLoads(
+            state, state.dataHVACGlobal->ShortenTimeStepSys, state.dataHVACGlobal->UseZoneTimeStepHistory, state.dataGlobal->TimeStepZone);
+        SimAirLoops = true;
+        SimZoneEquipment = true;
+    }
 
     if (state.dataGlobal->BeginEnvrnFlag && state.dataHVACMgr->MyEnvrnFlag2) {
         // Following comment is incorrect!  (LKL) Even the first time through this does more than read in data.

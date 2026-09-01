@@ -248,21 +248,49 @@ void ManageSurfaceHeatBalance(EnergyPlusData &state)
     state.dataHeatBalSurfMgr->ManageSurfaceHeatBalancefirstTime = false;
 }
 
-void ResimulateSurfaceHeatBalanceForPV(EnergyPlusData &state)
+bool ResimulateSurfaceHeatBalanceForPV(EnergyPlusData &state, bool const forceResimulation, bool const requestHVACResimulation)
 {
     // Repeat the coupled surface and PV calculations after electric simulation changes the PV heat sink.
-    if (!state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag) {
-        return;
+    if (!forceResimulation && !state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag) {
+        return false;
     }
-
-    state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = false;
-    for (int pass = 1; pass <= 2; ++pass) {
-        CalcHeatBalanceOutsideSurf(state);
-        CalcHeatBalanceInsideSurf(state);
-        for (int PVnum = 1; PVnum <= state.dataPhotovoltaic->NumPVs; ++PVnum) {
-            Photovoltaics::SimSurfaceCoupledPV(state, PVnum);
+    if (forceResimulation) {
+        bool hasSurfaceCoupledPV = false;
+        for (auto const &pv : state.dataPhotovoltaic->PVarray) {
+            if (pv.CellIntegrationMode == DataPhotovoltaics::CellIntegration::SurfaceOutsideFace ||
+                pv.CellIntegrationMode == DataPhotovoltaics::CellIntegration::TranspiredCollector ||
+                pv.CellIntegrationMode == DataPhotovoltaics::CellIntegration::ExteriorVentedCavity ||
+                pv.CellIntegrationMode == DataPhotovoltaics::CellIntegration::PVTSolarCollector) {
+                hasSurfaceCoupledPV = true;
+                break;
+            }
+        }
+        if (!hasSurfaceCoupledPV) {
+            return false;
         }
     }
+
+    constexpr int MaxPVSurfaceHeatBalanceIterations = 10;
+    bool sourceChanged = false;
+    for (int pass = 1; pass <= MaxPVSurfaceHeatBalanceIterations; ++pass) {
+        state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = false;
+        CalcHeatBalanceOutsideSurf(state);
+        CalcHeatBalanceInsideSurf(state);
+        sourceChanged = false;
+        for (int PVnum = 1; PVnum <= state.dataPhotovoltaic->NumPVs; ++PVnum) {
+            sourceChanged = Photovoltaics::SimSurfaceCoupledPV(state, PVnum, requestHVACResimulation) || sourceChanged;
+        }
+        if (!sourceChanged) {
+            break;
+        }
+    }
+
+    // A final material source change needs another HVAC iteration. In the final radiant-system reconciliation there is no subsequent HVAC pass,
+    // so the local fixed-point iteration above consumes the change without raising global resimulation flags.
+    if (!requestHVACResimulation) {
+        state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = false;
+    }
+    return true;
 }
 
 // Beginning Initialization Section of the Module
@@ -5400,6 +5428,10 @@ void UpdateFinalSurfaceHeatBalance(EnergyPlusData &state)
         // Call the outside and inside surface heat balances
         CalcHeatBalanceOutsideSurf(state);
         CalcHeatBalanceInsideSurf(state);
+
+        // The averaged radiant source can change a coupled PV temperature after HVAC convergence. Reconcile the PV sink and surface balance here
+        // without scheduling work for the next zone timestep.
+        ResimulateSurfaceHeatBalanceForPV(state, true, false);
     }
 }
 

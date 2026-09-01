@@ -99,9 +99,9 @@ namespace Photovoltaics {
 
     void CalcSimplePV(EnergyPlusData &state, int const thisPV);
 
-    void SimSurfaceCoupledPV(EnergyPlusData &state, int const PVnum);
+    bool SimSurfaceCoupledPV(EnergyPlusData &state, int const PVnum, bool requestResimulation = true);
 
-    void UpdatePVIntegrationSource(EnergyPlusData &state, int const PVnum);
+    bool UpdatePVIntegrationSource(EnergyPlusData &state, int const PVnum, bool requestResimulation = true);
 
     void ReportPV(EnergyPlusData &state, int const PVnum);
 
@@ -334,8 +334,7 @@ struct PhotovoltaicStateData : BaseGlobalStruct
     Array1D_bool CheckEquipName;
     bool GetInputFlag = true; // one time get input flag
     bool MyOneTimeFlag = true;
-    bool firstTime = true;
-    Real64 PVTimeStep; // internal timestep (in seconds) for cell temperature mode 3
+    Real64 PVTimeStep = 0.0; // internal timestep (in seconds) for cell temperature mode 3
     Array1D_bool MyEnvrnFlag;
 
     void init_constant_state([[maybe_unused]] EnergyPlusData &state) override
@@ -351,7 +350,7 @@ struct PhotovoltaicStateData : BaseGlobalStruct
         CheckEquipName.clear();
         GetInputFlag = true;
         MyOneTimeFlag = true;
-        firstTime = true;
+        PVTimeStep = 0.0;
         MyEnvrnFlag.clear();
     }
 };
