@@ -261,6 +261,7 @@ struct HeatBalSurfMgr : BaseGlobalStruct
     int calcHeatBalInsideSurfErrCount = 0;
     int calcHeatBalInsideSurfErrPointer = 0;
     int calcHeatBalInsideSurfWarmupErrCount = 0;
+    int pvFinalSurfaceReconciliationErrorIndex = 0;
     bool calcHeatBalInsideSurEnvrnFlag = true;
     Array1D<Real64> RefAirTemp; // inside surface convection reference air temperatures
     Array1D<Real64> AbsDiffWin =
@@ -313,6 +314,7 @@ struct HeatBalSurfMgr : BaseGlobalStruct
         calcHeatBalInsideSurfErrCount = 0;
         calcHeatBalInsideSurfErrPointer = 0;
         calcHeatBalInsideSurfWarmupErrCount = 0;
+        pvFinalSurfaceReconciliationErrorIndex = 0;
         calcHeatBalInsideSurEnvrnFlag = true;
         RefAirTemp.clear();
         AbsDiffWin = Array1D<Real64>(DataWindowEquivalentLayer::CFSMAXNL);

@@ -878,7 +878,7 @@ namespace Photovoltaics {
         }
     }
 
-    void SimSurfaceCoupledPV(EnergyPlusData &state, int const PVnum)
+    bool SimSurfaceCoupledPV(EnergyPlusData &state, int const PVnum, bool const requestResimulation)
     {
         // Recalculate PV that depends on a surface or collector temperature before the heat balance uses its current sink.
         auto &pv = state.dataPhotovoltaic->PVarray(PVnum);
@@ -889,7 +889,7 @@ namespace Photovoltaics {
         case CellIntegration::PVTSolarCollector:
             break;
         default:
-            return;
+            return false;
         }
 
         switch (pv.PVModelType) {
@@ -907,10 +907,10 @@ namespace Photovoltaics {
             break;
         }
 
-        UpdatePVIntegrationSource(state, PVnum);
+        return UpdatePVIntegrationSource(state, PVnum, requestResimulation);
     }
 
-    void UpdatePVIntegrationSource(EnergyPlusData &state, int const PVnum)
+    bool UpdatePVIntegrationSource(EnergyPlusData &state, int const PVnum, bool const requestResimulation)
     {
         // Publish the PV sink to its coupled thermal model and request another pass when the sink changes materially.
         auto &pv = state.dataPhotovoltaic->PVarray(PVnum);
@@ -935,7 +935,7 @@ namespace Photovoltaics {
 
         pv.SurfaceCouplingNeedsResim = std::abs(pv.SurfaceSink - previousSource) > 0.1;
         pv.SurfaceCouplingSource = pv.SurfaceSink;
-        if (pv.SurfaceCouplingNeedsResim) {
+        if (pv.SurfaceCouplingNeedsResim && requestResimulation) {
             state.dataHVACGlobal->SimElecCircuitsFlag = true;
             if (pv.CellIntegrationMode == CellIntegration::SurfaceOutsideFace || pv.CellIntegrationMode == CellIntegration::ExteriorVentedCavity ||
                 pv.CellIntegrationMode == CellIntegration::TranspiredCollector) {
@@ -946,6 +946,7 @@ namespace Photovoltaics {
                 state.dataHVACGlobal->SimPlantLoopsFlag = true;
             }
         }
+        return pv.SurfaceCouplingNeedsResim;
     }
 
     // *************

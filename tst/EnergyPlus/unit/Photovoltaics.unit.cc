@@ -172,6 +172,15 @@ TEST_F(EnergyPlusFixture, PV_IntegrationSourceRequestsResimulation)
     EXPECT_FALSE(state->dataHVACGlobal->SimElecCircuitsFlag);
     EXPECT_FALSE(state->dataPhotovoltaic->PVarray(1).SurfaceCouplingNeedsResim);
 
+    // Final radiant reconciliation publishes the changed sink locally without queueing HVAC work for the next timestep.
+    state->dataPhotovoltaic->PVarray(1).SurfaceSink = 125.0;
+    EXPECT_TRUE(Photovoltaics::UpdatePVIntegrationSource(*state, 1, false));
+
+    EXPECT_DOUBLE_EQ(state->dataHeatBalFanSys->QPVSysSource(1), -125.0);
+    EXPECT_FALSE(state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag);
+    EXPECT_FALSE(state->dataHVACGlobal->SimElecCircuitsFlag);
+    EXPECT_TRUE(state->dataPhotovoltaic->PVarray(1).SurfaceCouplingNeedsResim);
+
     // Exterior vented-cavity integration also requests a surface pass, but it
     // does not require the air or plant loops to be repeated.
     state->dataHeatBal->ExtVentedCavity.allocate(1);

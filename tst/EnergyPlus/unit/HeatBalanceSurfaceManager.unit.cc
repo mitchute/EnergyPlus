@@ -76,14 +76,17 @@
 #include <EnergyPlus/HeatBalanceManager.hh>
 #include <EnergyPlus/HeatBalanceSurfaceManager.hh>
 #include <EnergyPlus/IOFiles.hh>
+#include <EnergyPlus/LowTempRadiantSystem.hh>
 #include <EnergyPlus/Material.hh>
 #include <EnergyPlus/OutAirNodeManager.hh>
 #include <EnergyPlus/OutputReportTabular.hh>
+#include <EnergyPlus/PhotovoltaicThermalCollectors.hh>
 #include <EnergyPlus/Photovoltaics.hh>
 #include <EnergyPlus/ScheduleManager.hh>
 #include <EnergyPlus/SolarShading.hh>
 #include <EnergyPlus/SurfaceGeometry.hh>
 #include <EnergyPlus/ThermalComfort.hh>
+#include <EnergyPlus/TranspiredCollector.hh>
 #include <EnergyPlus/WeatherManager.hh>
 #include <EnergyPlus/WindowManager.hh>
 #include <EnergyPlus/ZoneTempPredictorCorrector.hh>
@@ -3127,6 +3130,96 @@ TEST_F(EnergyPlusFixture, HeatBalanceSurfaceManager_TestSurfTempCalcHeatBalanceA
     EXPECT_DOUBLE_EQ(100.0, pv.SurfaceCouplingSource);
     EXPECT_FALSE(pv.SurfaceCouplingNeedsResim);
     EXPECT_FALSE(state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag);
+
+    // Reconfigure the array as a temperature-dependent, surface-integrated one-diode model and
+    // converge its initial surface/PV state at constant irradiance.
+    pv.PVModelType = DataPhotovoltaics::PVModel::TRNSYS;
+    pv.SurfaceCouplingRunFlag = true;
+    pv.NumSeriesNParall = 3.0;
+    pv.NumModNSeries = 6.0;
+    auto &module = pv.TRNSYSPVModule;
+    module.CellsInSeries = 36;
+    module.CellType = DataPhotovoltaics::SiPVCells::Crystalline;
+    module.Area = 0.63;
+    module.TauAlpha = 0.9;
+    module.SemiConductorBandgap = 1.12;
+    module.ShuntResistance = 1.0e6;
+    module.RefIsc = 4.75;
+    module.RefVoc = 21.4;
+    module.RefTemperature = 25.0 + Constant::Kelvin;
+    module.RefInsolation = 1000.0;
+    module.Imp = 4.45;
+    module.Vmp = 17.0;
+    module.TempCoefIsc = 0.00065;
+    module.TempCoefVoc = -0.08;
+    module.NOCTAmbTemp = 20.0 + Constant::Kelvin;
+    module.NOCTCellTemp = 47.0 + Constant::Kelvin;
+    module.NOCTInsolation = 800.0;
+    module.HeatLossCoef = 30.0;
+    module.HeatCapacity = 50000.0;
+
+    constexpr Real64 irradiance = 1000.0;
+    state->dataHeatBal->SurfQRadSWOutIncident(1) = irradiance;
+    pv.SurfaceCouplingSource = 0.0;
+    state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = true;
+    for (int pass = 1; pass <= 10 && state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag; ++pass) {
+        ResimulateSurfaceHeatBalanceForPV(*state);
+    }
+    ASSERT_FALSE(state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag);
+    EXPECT_NEAR(pv.Report.CellTemp, state->dataHeatBalSurf->SurfTempOut(1), 1.0e-10);
+
+    // The post-HVAC radiant averaging pass must reconcile the temperature-dependent PV sink
+    // with its final surface state without changing irradiance or queueing new HVAC work.
+    state->dataLowTempRadSys->NumOfHydrLowTempRadSys = 1;
+    state->dataLowTempRadSys->TotalNumOfRadSystems = 1;
+    state->dataLowTempRadSys->HydrRadSys.allocate(1);
+    auto &radiantSystem = state->dataLowTempRadSys->HydrRadSys(1);
+    radiantSystem.NumOfSurfaces = 1;
+    radiantSystem.SurfacePtr.allocate(1);
+    radiantSystem.SurfacePtr(1) = 1;
+    radiantSystem.QRadSysSrcAvg.allocate(1);
+    radiantSystem.QRadSysSrcAvg(1) = 50.0;
+
+    state->dataHVACGlobal->SimElecCircuitsFlag = false;
+    auto const surfaceTemperatureBeforeFinalPass = state->dataHeatBalSurf->SurfTempOut(1);
+    auto const cellTemperatureBeforeFinalPass = pv.Report.CellTemp;
+    auto const pvSourceBeforeFinalPass = pv.SurfaceCouplingSource;
+
+    UpdateFinalSurfaceHeatBalance(*state);
+
+    EXPECT_DOUBLE_EQ(irradiance, state->dataHeatBal->SurfQRadSWOutIncident(1));
+    EXPECT_NE(surfaceTemperatureBeforeFinalPass, state->dataHeatBalSurf->SurfTempOut(1));
+    EXPECT_NE(cellTemperatureBeforeFinalPass, pv.Report.CellTemp);
+    EXPECT_GT(std::abs(pvSourceBeforeFinalPass - pv.SurfaceCouplingSource), 0.1);
+    EXPECT_NEAR(pv.Report.CellTemp, state->dataHeatBalSurf->SurfTempOut(1), 1.0e-10);
+    EXPECT_DOUBLE_EQ(-pv.SurfaceCouplingSource, state->dataHeatBalFanSys->QPVSysSource(1));
+    EXPECT_FALSE(pv.SurfaceCouplingNeedsResim);
+    EXPECT_FALSE(state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag);
+    EXPECT_FALSE(state->dataHVACGlobal->SimElecCircuitsFlag);
+
+    // Collector temperatures are advanced by their own HVAC/plant models, so a surface-only
+    // final pass must not reevaluate transpired-collector or PVT-coupled arrays against stale data.
+    auto const reconciledPVSource = pv.SurfaceCouplingSource;
+    state->dataTranspiredCollector->UTSC.allocate(1);
+    state->dataTranspiredCollector->UTSC(1).Tcoll = pv.Report.CellTemp + 25.0;
+    pv.CellIntegrationMode = DataPhotovoltaics::CellIntegration::TranspiredCollector;
+    pv.UTSCPtr = 1;
+    UpdateFinalSurfaceHeatBalance(*state);
+    EXPECT_DOUBLE_EQ(reconciledPVSource, pv.SurfaceCouplingSource);
+
+    state->dataPhotovoltaicThermalCollector->PVT.allocate(1);
+    state->dataPhotovoltaicThermalCollector->PVT(1).ModelType = PhotovoltaicThermalCollectors::PVTModelType::BIPVT;
+    state->dataPhotovoltaicThermalCollector->PVT(1).BIPVT.LastCollectorTemp = pv.Report.CellTemp + 25.0;
+    pv.CellIntegrationMode = DataPhotovoltaics::CellIntegration::PVTSolarCollector;
+    pv.PVTPtr = 1;
+    UpdateFinalSurfaceHeatBalance(*state);
+    EXPECT_DOUBLE_EQ(reconciledPVSource, pv.SurfaceCouplingSource);
+
+    // Final reconciliation must not erase work already queued by another coupled mode or
+    // by a previous solve that reached its iteration limit.
+    state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = true;
+    UpdateFinalSurfaceHeatBalance(*state);
+    EXPECT_TRUE(state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag);
 }
 
 TEST_F(EnergyPlusFixture, HeatBalanceSurfaceManager_TestReportIntMovInsInsideSurfTemp)

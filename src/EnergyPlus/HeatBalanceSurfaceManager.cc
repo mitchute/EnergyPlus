@@ -248,6 +248,58 @@ void ManageSurfaceHeatBalance(EnergyPlusData &state)
     state.dataHeatBalSurfMgr->ManageSurfaceHeatBalancefirstTime = false;
 }
 
+constexpr int maxFinalPVSurfaceIterations = 10;
+
+static bool isFinalSurfaceTemperatureCoupledPV(DataPhotovoltaics::PVArrayStruct const &pv)
+{
+    bool const temperatureDependsOnSurface = pv.CellIntegrationMode == DataPhotovoltaics::CellIntegration::SurfaceOutsideFace ||
+                                             pv.CellIntegrationMode == DataPhotovoltaics::CellIntegration::ExteriorVentedCavity;
+    bool const temperatureDependentModel =
+        pv.PVModelType == DataPhotovoltaics::PVModel::TRNSYS || pv.PVModelType == DataPhotovoltaics::PVModel::Sandia;
+    return temperatureDependsOnSurface && temperatureDependentModel;
+}
+
+static bool simulateFinalSurfaceCoupledPV(EnergyPlusData &state)
+{
+    bool sourceChanged = false;
+    for (int PVnum = 1; PVnum <= state.dataPhotovoltaic->NumPVs; ++PVnum) {
+        if (!isFinalSurfaceTemperatureCoupledPV(state.dataPhotovoltaic->PVarray(PVnum))) {
+            continue;
+        }
+        sourceChanged = Photovoltaics::SimSurfaceCoupledPV(state, PVnum, false) || sourceChanged;
+    }
+    return sourceChanged;
+}
+
+static void reconcileFinalSurfaceHeatBalanceForPV(EnergyPlusData &state)
+{
+    // The caller has already solved the final radiant surface balance. Only PV modes whose
+    // temperature is updated by the surface routines participate in this local fixed-point solve.
+    bool sourceChanged = simulateFinalSurfaceCoupledPV(state);
+    if (!sourceChanged) {
+        return;
+    }
+
+    for (int pass = 1; pass <= maxFinalPVSurfaceIterations; ++pass) {
+        CalcHeatBalanceOutsideSurf(state);
+        CalcHeatBalanceInsideSurf(state);
+        sourceChanged = simulateFinalSurfaceCoupledPV(state);
+        if (!sourceChanged) {
+            return;
+        }
+    }
+
+    // The last PV evaluation changed the source after the last surface solve. Apply that source so
+    // the committed thermal state is not one pass behind, and retain a request for the next HVAC solve.
+    CalcHeatBalanceOutsideSurf(state);
+    CalcHeatBalanceInsideSurf(state);
+    state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = true;
+    ShowRecurringWarningErrorAtEnd(
+        state,
+        "Surface-coupled photovoltaic and final radiant surface heat balance calculations did not converge after 10 iterations.",
+        state.dataHeatBalSurfMgr->pvFinalSurfaceReconciliationErrorIndex);
+}
+
 void ResimulateSurfaceHeatBalanceForPV(EnergyPlusData &state)
 {
     // Repeat the coupled surface and PV calculations after electric simulation changes the PV heat sink.
@@ -5403,6 +5455,10 @@ void UpdateFinalSurfaceHeatBalance(EnergyPlusData &state)
         // Call the outside and inside surface heat balances
         CalcHeatBalanceOutsideSurf(state);
         CalcHeatBalanceInsideSurf(state);
+
+        // Averaged radiant sources can change a coupled PV temperature after HVAC convergence. Reconcile the
+        // PV sink and surface balance locally without scheduling work for the next zone timestep.
+        reconcileFinalSurfaceHeatBalanceForPV(state);
     }
 }
 

@@ -15,7 +15,7 @@
 !           There are five detached surfaces with different tilt and shading situations
 !           Each of the five surfaces has three comparable PV arrays.
 ! Internal: None.
-! System:   None.
+! System:   Purchased air and electric low-temperature radiant heating.
 ! Plant:    None.
 !
 ! Note, this file was completely changed from Ver. 1.1.1 to 1.2 to add tests for different PV generators
@@ -24,6 +24,14 @@
   Version,26.2;
 
   Timestep,4;
+
+  ZoneCapacitanceMultiplier:ResearchSpecial,
+    PV Radiant Substep Multiplier,  !- Name
+    ZONE ONE,                !- Zone or ZoneList Name
+    0.1,                     !- Temperature Capacity Multiplier
+    1.0,                     !- Humidity Capacity Multiplier
+    1.0,                     !- Carbon Dioxide Capacity Multiplier
+    1.0;                     !- Generic Contaminant Capacity Multiplier
 
   Building,
     PVtest,                  !- Name
@@ -43,6 +51,18 @@
     Yes,                     !- Run Simulation for Weather File Run Periods
     No,                      !- Do HVAC Sizing Simulation for Sizing Periods
     1;                       !- Maximum Number of HVAC Sizing Simulation Passes
+
+  ConvergenceLimits,
+    1,                       !- Minimum System Timestep {minutes}
+    25;                      !- Maximum HVAC Iterations
+
+  PerformancePrecisionTradeoffs,
+    No,                      !- Use Coil Direct Solutions
+    ScriptF,                 !- Zone Radiant Exchange Algorithm
+    Advanced,                !- Override Mode
+    0.1,                     !- MaxZoneTempDiff
+    ,                        !- MaxAllowedDelTemp
+    No;                      !- Use Representative Surfaces for Calculations
 
   Site:GroundTemperature:BuildingSurface,19.96,19.94,19.99,20.04,20.09,20.17,20.21,20.24,20.23,20.20,20.17,20.12;
 
@@ -601,12 +621,18 @@
   ZoneHVAC:EquipmentList,
     Zone1Equipment,          !- Name
     SequentialLoad,          !- Load Distribution Scheme
-    ZoneHVAC:IdealLoadsAirSystem,  !- Zone Equipment 1 Object Type
-    Zone1Air,                !- Zone Equipment 1 Name
+    ZoneHVAC:LowTemperatureRadiant:Electric,  !- Zone Equipment 1 Object Type
+    PV Surface Radiant Heater,  !- Zone Equipment 1 Name
     1,                       !- Zone Equipment 1 Cooling Sequence
     1,                       !- Zone Equipment 1 Heating or No-Load Sequence
     ,                        !- Zone Equipment 1 Sequential Cooling Fraction Schedule Name
-    ;                        !- Zone Equipment 1 Sequential Heating Fraction Schedule Name
+    ,                        !- Zone Equipment 1 Sequential Heating Fraction Schedule Name
+    ZoneHVAC:IdealLoadsAirSystem,  !- Zone Equipment 2 Object Type
+    Zone1Air,                !- Zone Equipment 2 Name
+    2,                       !- Zone Equipment 2 Cooling Sequence
+    2,                       !- Zone Equipment 2 Heating or No-Load Sequence
+    ,                        !- Zone Equipment 2 Sequential Cooling Fraction Schedule Name
+    ;                        !- Zone Equipment 2 Sequential Heating Fraction Schedule Name
 
   ZoneHVAC:IdealLoadsAirSystem,
     Zone1Air,                !- Name
@@ -624,7 +650,7 @@
     NoLimit,                 !- Cooling Limit
     autosize,                !- Maximum Cooling Air Flow Rate {m3/s}
     ,                        !- Maximum Total Cooling Capacity {W}
-    ,                        !- Heating Availability Schedule Name
+    always Off,              !- Heating Availability Schedule Name
     ,                        !- Cooling Availability Schedule Name
     ConstantSupplyHumidityRatio,  !- Dehumidification Control Type
     ,                        !- Cooling Sensible Heat Ratio {dimensionless}
@@ -636,6 +662,20 @@
     ,                        !- Heat Recovery Type
     ,                        !- Sensible Heat Recovery Effectiveness {dimensionless}
     ;                        !- Latent Heat Recovery Effectiveness {dimensionless}
+
+  ZoneHVAC:LowTemperatureRadiant:Electric,
+    PV Surface Radiant Heater,  !- Name
+    always On,               !- Availability Schedule Name
+    ZONE ONE,                !- Zone Name
+    Zn001:Wall001b,          !- Surface Name or Radiant Surface Group Name
+    HeatingDesignCapacity,   !- Heating Design Capacity Method
+    20000,                   !- Heating Design Capacity {W}
+    ,                        !- Heating Design Capacity Per Floor Area {W/m2}
+    ,                        !- Fraction of Autosized Heating Design Capacity
+    MeanAirTemperature,      !- Temperature Control Type
+    ZeroFlowPower,           !- Setpoint Control Type
+    0.1,                     !- Heating Throttling Range {deltaC}
+    Heating Setpoints;       !- Heating Setpoint Temperature Schedule Name
 
   NodeList,
     Zone1Inlets,             !- Name
@@ -697,6 +737,13 @@
     Through: 12/31,          !- Field 1
     For: AllDays,            !- Field 2
     Until: 24:00,1.0;        !- Field 3
+
+  Schedule:Compact,
+    always Off,              !- Name
+    Fraction,                !- Schedule Type Limits Name
+    Through: 12/31,          !- Field 1
+    For: AllDays,            !- Field 2
+    Until: 24:00,0.0;        !- Field 3
 
   Schedule:Compact,
     PVEfficiency,            !- Name
@@ -1136,6 +1183,16 @@
 
   Output:Variable,*,Generator PV Cell Temperature,hourly;
 
+  Output:Variable,PV Surface Radiant Heater,Zone Radiant HVAC Heating Rate,Detailed;
+
+  Output:Variable,TRNSYSPV INTEGRATED PV,Generator Produced DC Electricity Rate,Detailed;
+
+  Output:Variable,TRNSYSPV INTEGRATED PV,Generator PV Cell Temperature,Detailed;
+
+  Output:Variable,Zn001:Wall001b,Surface Inside Face Temperature,hourly;
+
+  Output:Variable,Zn001:Wall001b,Surface Outside Face Temperature,hourly;
+
   Output:VariableDictionary,Regular;
 
   Output:Meter,Photovoltaic:ElectricityProduced,runperiod;
@@ -1153,4 +1210,3 @@
 !    runperiod;               !- Reporting_Frequency
 
   Output:Surfaces:List,Details;
-
