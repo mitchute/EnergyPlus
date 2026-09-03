@@ -28,7 +28,7 @@
   ZoneCapacitanceMultiplier:ResearchSpecial,
     PV Radiant Substep Multiplier,  !- Name
     ZONE ONE,                !- Zone or ZoneList Name
-    0.1,                     !- Temperature Capacity Multiplier
+    0.01,                    !- Temperature Capacity Multiplier
     1.0,                     !- Humidity Capacity Multiplier
     1.0,                     !- Carbon Dioxide Capacity Multiplier
     1.0;                     !- Generic Contaminant Capacity Multiplier
@@ -650,8 +650,8 @@
     NoLimit,                 !- Cooling Limit
     autosize,                !- Maximum Cooling Air Flow Rate {m3/s}
     ,                        !- Maximum Total Cooling Capacity {W}
-    always Off,              !- Heating Availability Schedule Name
-    ,                        !- Cooling Availability Schedule Name
+    ,                        !- Heating Availability Schedule Name
+    PV Pulse Cooling Availability,  !- Cooling Availability Schedule Name
     ConstantSupplyHumidityRatio,  !- Dehumidification Control Type
     ,                        !- Cooling Sensible Heat Ratio {dimensionless}
     ConstantSupplyHumidityRatio,  !- Humidification Control Type
@@ -672,10 +672,10 @@
     20000,                   !- Heating Design Capacity {W}
     ,                        !- Heating Design Capacity Per Floor Area {W/m2}
     ,                        !- Fraction of Autosized Heating Design Capacity
-    MeanAirTemperature,      !- Temperature Control Type
+    SurfaceFaceTemperature,  !- Temperature Control Type
     ZeroFlowPower,           !- Setpoint Control Type
-    0.1,                     !- Heating Throttling Range {deltaC}
-    Heating Setpoints;       !- Heating Setpoint Temperature Schedule Name
+    2.0,                     !- Heating Throttling Range {deltaC}
+    PV Radiant Surface Setpoints;  !- Heating Setpoint Temperature Schedule Name
 
   NodeList,
     Zone1Inlets,             !- Name
@@ -702,6 +702,24 @@
     Until:  7:00,15.0,       !- Field 3
     Until: 17:00,20.0,       !- Field 5
     Until: 24:00,15.0;       !- Field 7
+
+  Schedule:Compact,
+    PV Radiant Surface Setpoints,  !- Name
+    Temperature,             !- Schedule Type Limits Name
+    Through: 12/31,          !- Field 1
+    For: AllDays,            !- Field 2
+    Until: 12:00,15.0,       !- Field 3
+    Until: 14:15,26.0,       !- Field 5
+    Until: 24:00,15.0;       !- Field 7
+
+  Schedule:Compact,
+    PV Pulse Cooling Availability,  !- Name
+    Fraction,                !- Schedule Type Limits Name
+    Through: 12/31,          !- Field 1
+    For: AllDays,            !- Field 2
+    Until: 12:00,1.0,        !- Field 3
+    Until: 14:00,0.0,        !- Field 5
+    Until: 24:00,1.0;        !- Field 7
 
   Schedule:Compact,
     Cooling Setpoints,       !- Name
@@ -737,13 +755,6 @@
     Through: 12/31,          !- Field 1
     For: AllDays,            !- Field 2
     Until: 24:00,1.0;        !- Field 3
-
-  Schedule:Compact,
-    always Off,              !- Name
-    Fraction,                !- Schedule Type Limits Name
-    Through: 12/31,          !- Field 1
-    For: AllDays,            !- Field 2
-    Until: 24:00,0.0;        !- Field 3
 
   Schedule:Compact,
     PVEfficiency,            !- Name
@@ -978,7 +989,7 @@
     PhotovoltaicPerformance:EquivalentOne-Diode,  !- Photovoltaic Performance Object Type
     Example PV Model Inputs, !- Module Performance Name
     IntegratedSurfaceOutsideFace,  !- Heat Transfer Integration Mode
-    3.0,                     !- Number of Series Strings in Parallel {dimensionless}
+    9.0,                     !- Number of Series Strings in Parallel {dimensionless}
     6.0;                     !- Number of Modules in Series {dimensionless}
 
   PhotovoltaicPerformance:EquivalentOne-Diode,
