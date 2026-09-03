@@ -55,6 +55,7 @@
 #include <EnergyPlus/Data/EnergyPlusData.hh>
 #include <EnergyPlus/DataHVACGlobals.hh>
 #include <EnergyPlus/DataHeatBalFanSys.hh>
+#include <EnergyPlus/DataHeatBalSurface.hh>
 #include <EnergyPlus/DataHeatBalance.hh>
 #include <EnergyPlus/DataPhotovoltaics.hh>
 #include <EnergyPlus/DataSurfaces.hh>
@@ -70,12 +71,12 @@ TEST_F(EnergyPlusFixture, PV_Sandia_AirMassAtHighZenith)
 
     // first check above the degree threshold, compare to side calc
     Real64 zenithAngleDeg = 90.0;
-    Real64 altitude = 1;
+    constexpr Real64 altitude = 1;
     Real64 airMass = Photovoltaics::AbsoluteAirMass(zenithAngleDeg, altitude);
     EXPECT_NE(airMass, 999); // would have been true before fix
     EXPECT_NEAR(airMass, 36.31531, 0.1);
 
-    // now check below the threshold, compare to side calc spreadhsheet result
+    // now check below the threshold, compare to side calc spreadsheet result
     zenithAngleDeg = 89.0;
     airMass = Photovoltaics::AbsoluteAirMass(zenithAngleDeg, altitude);
     EXPECT_NEAR(airMass, 26.24135, 0.1);
@@ -220,4 +221,34 @@ TEST_F(EnergyPlusFixture, PV_IntegrationSourceRequestsResimulation)
     EXPECT_TRUE(state->dataHVACGlobal->SimElecCircuitsFlag);
     EXPECT_TRUE(state->dataHVACGlobal->SimAirLoopsFlag);
     EXPECT_TRUE(state->dataHVACGlobal->SimPlantLoopsFlag);
+}
+
+TEST_F(EnergyPlusFixture, PV_TRNSYSDynamicTimeStepIndependentOfPVOrder)
+{
+    state->dataPhotovoltaic->PVarray.allocate(2);
+    state->dataSurface->SurfOutDryBulbTemp.allocate(2);
+    state->dataHeatBalSurf->SurfTempOut.allocate(2);
+    state->dataGlobal->MinutesInTimeStep = 15;
+
+    // Reproduce the ordering introduced by the surface-coupled PV pass: an integrated TRNSYS array
+    // is evaluated before a decoupled dynamic TRNSYS array.
+    auto &integratedPV = state->dataPhotovoltaic->PVarray(1);
+    integratedPV.CellIntegrationMode = DataPhotovoltaics::CellIntegration::SurfaceOutsideFace;
+    integratedPV.SurfacePtr = 1;
+    state->dataSurface->SurfOutDryBulbTemp(1) = 20.0;
+    state->dataHeatBalSurf->SurfTempOut(1) = 25.0;
+    Photovoltaics::CalcTRNSYSPV(*state, 1, false);
+
+    auto &dynamicPV = state->dataPhotovoltaic->PVarray(2);
+    dynamicPV.CellIntegrationMode = DataPhotovoltaics::CellIntegration::DecoupledUllebergDynamic;
+    dynamicPV.SurfacePtr = 2;
+    dynamicPV.TRNSYSPVModule.HeatLossCoef = 30.0;
+    dynamicPV.TRNSYSPVModule.HeatCapacity = 50000.0;
+    dynamicPV.TRNSYSPVcalc.LastCellTempK = Constant::Kelvin + 40.0;
+    state->dataSurface->SurfOutDryBulbTemp(2) = 20.0;
+    Photovoltaics::CalcTRNSYSPV(*state, 2, false);
+
+    EXPECT_DOUBLE_EQ(900.0, state->dataPhotovoltaicState->PVTimeStep);
+    EXPECT_LT(dynamicPV.Report.CellTemp, 40.0);
+    EXPECT_GT(dynamicPV.Report.CellTemp, 20.0);
 }
