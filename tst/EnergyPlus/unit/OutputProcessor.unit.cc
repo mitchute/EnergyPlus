@@ -5086,12 +5086,6 @@ namespace OutputProcessor {
             "    SPACE1-1,                   !- Key Name 1",
             "    Lights Electricity Energy;  !- Output Variable or Meter Name 1",
             "  Meter:CustomDecrement,",
-            "    SameCustomSourceAndGroup,   !- Name",
-            "    Electricity,                !- Fuel Type",
-            "    MyCustomLights,             !- Source Meter Name",
-            "    ,                           !- Key Name 1",
-            "    MyCustomLights;             !- Output Variable or Meter Name 1",
-            "  Meter:CustomDecrement,",
             "    BadDecrementSource,         !- Name",
             "    Electricity,                !- Fuel Type",
             "    GoodDecrement,              !- Source Meter Name",
@@ -5147,17 +5141,10 @@ namespace OutputProcessor {
         EXPECT_NE(op->meterMap.find("MYCUSTOMLIGHTS"), op->meterMap.end());
         EXPECT_NE(op->meterMap.find("GOODDECREMENT"), op->meterMap.end());
         EXPECT_NE(op->meterMap.find("GOODDECREMENTFROMCUSTOMSOURCE"), op->meterMap.end());
-        auto const sameCustomSourceAndGroup = op->meterMap.find("SAMECUSTOMSOURCEANDGROUP");
-        ASSERT_NE(sameCustomSourceAndGroup, op->meterMap.end());
         EXPECT_EQ(op->meterMap.find("BADDECREMENTSOURCE"), op->meterMap.end());
         EXPECT_EQ(op->meterMap.find("BADDECREMENTGROUP"), op->meterMap.end());
         EXPECT_EQ(op->meterMap.find("BADCUSTOMREFDEC"), op->meterMap.end());
         EXPECT_EQ(op->meterMap.find("BADCUSTOMREFCUSTOM"), op->meterMap.end());
-
-        // Referencing the same custom meter as both the source and an item to subtract is valid.
-        // With a nonzero source value, the resulting decrement meter must be zero.
-        light_consumption = 100.0;
-        EXPECT_DOUBLE_EQ(0.0, GetInstantMeterValue(*state, sameCustomSourceAndGroup->second, TimeStepType::Zone));
 
         std::string errMsg = delimited_string(
             {"   ** Warning ** Meter:Custom=\"BADCUSTOMREFDEC\", contains a reference to another Meter:CustomDecrement in field: Output "
@@ -5175,6 +5162,39 @@ namespace OutputProcessor {
              "   ** Warning ** Meter:CustomDecrement=\"BADDECREMENTGROUP\", contains a reference to another Meter:CustomDecrement in field: "
              "Output Variable or Meter Name=\"GOODDECREMENT\"."});
         compare_err_stream(errMsg);
+    }
+
+    TEST_F(EnergyPlusFixture, OutputProcessor_MeterCustomDecrement_SameCustomMeterAsSourceAndSubtraction)
+    {
+        std::string const idf_objects = delimited_string({
+            "  Meter:Custom,",
+            "    My Custom Meter,           !- Name",
+            "    Generic,                   !- Resource Type",
+            "    Test Key,                  !- Key Name 1",
+            "    Test Energy;               !- Output Variable or Meter Name 1",
+            "  Meter:CustomDecrement,",
+            "    My Decrement Meter,        !- Name",
+            "    Generic,                   !- Resource Type",
+            "    My Custom Meter,           !- Source Meter Name",
+            "    ,                          !- Key Name 1",
+            "    My Custom Meter;           !- Output Variable or Meter Name 1",
+        });
+
+        ASSERT_TRUE(process_idf(idf_objects));
+        state->init_state(*state);
+
+        Real64 testEnergy = 100.0;
+        SetupOutputVariable(*state, "Test Energy", Constant::Units::J, testEnergy, TimeStepType::Zone, StoreType::Sum, "Test Key");
+
+        bool errorsFound = false;
+        GetCustomMeterInput(*state, errorsFound);
+        ASSERT_FALSE(errorsFound);
+
+        int const decrementMeterNum = GetMeterIndex(*state, "MY DECREMENT METER");
+        ASSERT_NE(-1, decrementMeterNum);
+
+        // The same custom meter is the starting value and the value being subtracted, so the result must be zero.
+        EXPECT_DOUBLE_EQ(0.0, GetInstantMeterValue(*state, decrementMeterNum, TimeStepType::Zone));
     }
 
     TEST_F(EnergyPlusFixture, OutputProcessor_unitStringToEnum)
