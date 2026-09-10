@@ -67,16 +67,15 @@ The C++ code that is used to solve for \(T_i\) and \(T_{mi}\) for cases where mo
 \begin{lstlisting}
 F1 = HMovInsul / (HMovInsul + HConvIn_surf + IterDampConst);
 
-SurfTempIn(SurfNum) = (SurfCTFConstInPart(SurfNum) + SurfOpaqQRadSWInAbs(SurfNum) + construct.CTFCross(0) * TH11 +
+SurfTempIn(SurfNum) = (SurfCTFConstInPart(SurfNum) + construct.CTFCross(0) * TH11 +
                        F1 * (SurfQRadThermInAbs(SurfNum) + SurfOpaqQRadSWInAbs(SurfNum) + HConvIn_surf * RefAirTemp(SurfNum) +
                        SurfNetLWRadToSurf(SurfNum) + SurfQdotRadHVACInPerArea(SurfNum) +
                        QAdditionalHeatSourceInside(SurfNum) +
                        IterDampConst * SurfTempInTmpOld(SurfNum)))
                        / (construct.CTFInside(0) + HMovInsul - F1 * HMovInsul);
 
-SurfTempInTmp(SurfNum) = (construct.CTFInside(0) * SurfTempIn(SurfNum) +
-                          HMovInsul * SurfTempIn(SurfNum) -
-                          SurfOpaqQRadSWInAbs(SurfNum) - SurfCTFConstInPart(SurfNum) -
+SurfTempInTmp(SurfNum) = ((construct.CTFInside(0) + HMovInsul) * SurfTempIn(SurfNum) -
+                          SurfCTFConstInPart(SurfNum) -
                           construct.CTFCross(0) * TH11) / (HMovInsul);
 \end{lstlisting}
 
