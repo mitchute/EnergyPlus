@@ -1379,7 +1379,7 @@ namespace HeatBalanceHAMTManager {
             tempmin = minval(s_hbh->cells, &subcell::tempp1);
             if (tempmax > state.dataHeatBalSurf->MaxSurfaceTempLimit) {
                 if (!state.dataGlobal->WarmupFlag) {
-                    ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds)];
+                    IncrementErrorSummaryCount(state, DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds);
                     if (state.dataSurface->SurfHighTempErrCount(sid) == 0) {
                         ShowSevereMessage(state,
                                           std::format("HAMT: Temperature (high) out of bounds ({:.2f}) for surface={}",
@@ -1400,18 +1400,18 @@ namespace HeatBalanceHAMTManager {
             }
             if (tempmax > state.dataHeatBalSurf->MaxSurfaceTempLimitBeforeFatal) {
                 if (!state.dataGlobal->WarmupFlag) {
-                    ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds)];
                     ShowSevereError(state,
                                     std::format("HAMT: HAMT: Temperature (high) out of bounds ( {:.2f}) for surface={}",
                                                 tempmax,
-                                                state.dataSurface->Surface(sid).Name));
+                                                state.dataSurface->Surface(sid).Name),
+                                    DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds);
                     ShowContinueErrorTimeStamp(state, "");
                     ShowFatalError(state, "Program terminates due to preceding condition.");
                 }
             }
             if (tempmin < MinSurfaceTempLimit) {
                 if (!state.dataGlobal->WarmupFlag) {
-                    ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds)];
+                    IncrementErrorSummaryCount(state, DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds);
                     if (state.dataSurface->SurfHighTempErrCount(sid) == 0) {
                         ShowSevereMessage(state,
                                           std::format("HAMT: Temperature (low) out of bounds ({:.2f}) for surface={}",
@@ -1432,11 +1432,11 @@ namespace HeatBalanceHAMTManager {
             }
             if (tempmin < MinSurfaceTempLimitBeforeFatal) {
                 if (!state.dataGlobal->WarmupFlag) {
-                    ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds)];
                     ShowSevereError(state,
                                     std::format("HAMT: HAMT: Temperature (low) out of bounds ( {:.2f}) for surface={}",
                                                 tempmin,
-                                                state.dataSurface->Surface(sid).Name));
+                                                state.dataSurface->Surface(sid).Name),
+                                    DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds);
                     ShowContinueErrorTimeStamp(state, "");
                     ShowFatalError(state, "Program terminates due to preceding condition.");
                 }

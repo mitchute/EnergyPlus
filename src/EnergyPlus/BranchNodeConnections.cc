@@ -935,12 +935,12 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             IsValid = true;
         }
         if (!IsValid) {
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             ShowSevereError(
                 state,
                 std::format("Node Connection Error, Node=\"{}\", Sensor node did not find a matching node of appropriate type (other than "
                             "Actuator or Sensor).",
-                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
             ShowContinueError(
                 state,
@@ -975,12 +975,12 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             IsValid = true;
         }
         if (!IsValid) {
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             ShowSevereError(
                 state,
                 std::format("Node Connection Error, Node=\"{}\", Actuator node did not find a matching node of appropriate type (other than "
                             "Actuator, Sensor, OutsideAir).",
-                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
             ShowContinueError(
                 state,
@@ -1022,12 +1022,12 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             IsValid = true;
         }
         if (!IsValid) {
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             ShowSevereError(
                 state,
                 std::format("Node Connection Error, Node=\"{}\", Setpoint node did not find a matching node of appropriate type (other than "
                             "Setpoint, OutsideAir).",
-                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
             ShowContinueError(
                 state,
@@ -1038,10 +1038,10 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             ErrorsFound = true;
         }
         if (!IsInlet && !IsOutlet) {
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             ShowSevereError(state,
                             std::format("Node Connection Error, Node=\"{}\", Setpoint node did not find a matching node of type Inlet or Outlet.",
-                                        state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                                        state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                            DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
             ShowContinueError(state, "It appears this node is not part of the HVAC system.");
 
             ShowContinueError(
@@ -1075,10 +1075,10 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             IsValid = true;
         }
         if (!IsValid) {
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             ShowSevereError(state,
                             std::format("Node Connection Error, Node=\"{}\", ZoneInlet node did not find an outlet node.",
-                                        state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                                        state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                            DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
             ShowContinueError(
                 state,
@@ -1109,10 +1109,10 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             IsValid = true;
         }
         if (!IsValid) {
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             ShowSevereError(state,
                             std::format("Node Connection Error, Node=\"{}\", ZoneExhaust node did not find a matching inlet node.",
-                                        state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                                        state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                            DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
             ShowContinueError(
                 state,
@@ -1143,11 +1143,11 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             IsValid = true;
         }
         if (!IsValid) {
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             ShowSevereError(
                 state,
                 std::format("Node Connection Error, Node=\"{}\", Return plenum induced air outlet node did not find a matching inlet node.",
-                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
             ShowContinueError(
                 state,
@@ -1203,12 +1203,12 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             IsValid = false;
         }
         if (!IsValid && !MatchedAtLeastOne) {
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             ShowSevereError(state,
                             std::format("{}{}{}",
                                         "Node Connection Error, Node=\"",
                                         state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName,
-                                        R"(", Inlet node did not find an appropriate matching "outlet" node.)"));
+                                        R"(", Inlet node did not find an appropriate matching "outlet" node.)"),
+                            DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
             ShowContinueError(state, "If this is an outdoor air inlet node, it must be listed in an OutdoorAir:Node or OutdoorAir:NodeList object.");
 
             ShowContinueError(
@@ -1241,10 +1241,10 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             }
             if (state.dataBranchNodeConnections->NodeConnections(Loop2).NodeNumber ==
                 state.dataBranchNodeConnections->NodeConnections(Loop1).NodeNumber) {
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
                 ShowSevereError(state,
                                 std::format("Node Connection Error, Node=\"{}\", The same node appears as a non-parent Inlet node more than once.",
-                                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                                DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
                 ShowContinueError(
                     state,
@@ -1286,10 +1286,10 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             if (state.dataBranchNodeConnections->NodeConnections(Loop2).NodeNumber ==
                 state.dataBranchNodeConnections->NodeConnections(Loop1).NodeNumber) {
                 // Skip if one of the
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
                 ShowSevereError(state,
                                 std::format("Node Connection Error, Node=\"{}\", The same node appears as a non-parent Outlet node more than once.",
-                                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                                DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
                 ShowContinueError(
                     state,
@@ -1330,12 +1330,12 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             break;
         }
         if (!IsValid) {
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             ShowSevereError(state,
                             std::format("{}{}{}",
                                         "Node Connection Error, Node=\"",
                                         state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName,
-                                        R"(", Outdoor Air Reference did not find an appropriate "outdoor air" node.)"));
+                                        R"(", Outdoor Air Reference did not find an appropriate "outdoor air" node.)"),
+                            DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
             ShowContinueError(state, "This node must be listed in an OutdoorAir:Node or OutdoorAir:NodeList object in order to set its conditions.");
 
             ShowContinueError(
@@ -1414,12 +1414,12 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
             }
             if (!IsValid) {
 
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
                 ShowSevereError(
                     state,
                     std::format("(Developer) Node Connection Error, Object={}:{}",
                                 ConnectionObjectTypeNames[static_cast<int>(state.dataBranchNodeConnections->NodeConnections(Loop1).ObjectType)],
-                                state.dataBranchNodeConnections->NodeConnections(Loop1).ObjectName));
+                                state.dataBranchNodeConnections->NodeConnections(Loop1).ObjectName),
+                    DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
                 ShowContinueError(state, "Object has multiple connections on both inlet and outlet fluid streams.");
                 for (int Loop2 = 1; Loop2 <= MaxFluidStream; ++Loop2) {
@@ -1456,10 +1456,10 @@ void CheckNodeConnections(EnergyPlusData &state, bool &ErrorsFound)
                     continue;
                 }
 
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
                 ShowSevereError(state,
                                 std::format("Node Connection Error, Node Name=\"{}\", The same zone node appears more than once.",
-                                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName));
+                                            state.dataBranchNodeConnections->NodeConnections(Loop1).NodeName),
+                                DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
 
                 ShowContinueError(
                     state,

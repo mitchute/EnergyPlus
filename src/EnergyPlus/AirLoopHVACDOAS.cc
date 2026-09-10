@@ -624,8 +624,6 @@ namespace AirLoopHVACDOAS {
                                     thisDOAS.m_exhaustFanTypeNum = SimAirServingZones::CompType::Fan_ComponentModel;
                                 }
                             } else {
-                                ++state.dataErrTracking
-                                      ->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
                                 ShowSevereError(
                                     state,
                                     std::format("getAirLoopMixer: Node Connection Error in AirLoopHVAC:DedicatedOutdoorAirSystem = {}. Inlet node "
@@ -633,7 +631,8 @@ namespace AirLoopHVACDOAS {
                                                 "{} as previous component",
                                                 thisDOAS.Name,
                                                 thisOutsideAirSys.ComponentName(CompNum),
-                                                thisOutsideAirSys.ComponentName(CompNum - 1)));
+                                                thisOutsideAirSys.ComponentName(CompNum - 1)),
+                                    DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
                                 ShowContinueError(state,
                                                   std::format("The inlet node name = {}, and the outlet node name = {}.",
                                                               state.dataLoopNodes->NodeID(thisOutsideAirSys.InletNodeNum(CompNum)),

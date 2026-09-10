@@ -5711,7 +5711,6 @@ void CalcZoneComponentLoadSums(EnergyPlusData &state,
                                            pow_2(thisAirRpt.CzdTdt));
         if ((std::abs(thisAirRpt.imBalance) > Threshold) && (!state.dataGlobal->WarmupFlag) &&
             (!state.dataGlobal->DoingSizing)) { // air balance is out by more than threshold
-            ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::ZoneAirHeatBalanceWarnings)];
             if (thisZone.AirHBimBalanceErrIndex == 0) {
                 ShowWarningMessage(state, std::format("Zone Air Heat Balance is out of balance for zone named {}", thisZone.Name));
                 ShowContinueError(state, std::format("Zone Air Heat Balance Deviation Rate is more than {:.1f} {{W}}", Threshold));
@@ -5723,6 +5722,7 @@ void CalcZoneComponentLoadSums(EnergyPlusData &state,
             }
             ShowRecurringWarningErrorAtEnd(state,
                                            std::format("Zone Air Heat Balance is out of balance ... zone named {}", thisZone.Name),
+                                           DataErrorTracking::ErrorSummaryType::ZoneAirHeatBalanceWarnings,
                                            thisZone.AirHBimBalanceErrIndex,
                                            std::abs(thisAirRpt.imBalance) - Threshold,
                                            std::abs(thisAirRpt.imBalance) - Threshold,

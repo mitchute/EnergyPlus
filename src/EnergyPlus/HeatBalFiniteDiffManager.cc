@@ -719,12 +719,12 @@ namespace HeatBalFiniteDiffManager {
                     Alpha = kt / (mat->Density * mat->SpecHeat);
                     mAlpha = 0.0;
                 } else if (thisConstruct.TypeIsIRT) { // make similar to air? (that didn't seem to work well)
-                    ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::InfraredTransparentUsage)];
                     ShowSevereError(
                         state,
                         std::format("InitHeatBalFiniteDiff: Construction =\"{}\" uses Material:InfraredTransparent. Cannot be used currently "
                                     "with finite difference calculations.",
-                                    thisConstruct.Name));
+                                    thisConstruct.Name),
+                        DataErrorTracking::ErrorSummaryType::InfraredTransparentUsage);
                     if (thisConstruct.IsUsed) {
                         ShowContinueError(state, "...since this construction is used in a surface, the simulation is not allowed.");
                     } else {
@@ -2574,12 +2574,12 @@ namespace HeatBalFiniteDiffManager {
         if (!state.dataGlobal->WarmupFlag || s_hbfd->WarmupSurfTemp > 10 || state.dataGlobal->DisplayExtraWarnings) {
             if (CheckTemperature < DataHeatBalSurface::MinSurfaceTempLimit) {
                 if (state.dataSurface->SurfLowTempErrCount(SurfNum) == 0) {
-                    ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds)];
                     ShowSevereMessage(state,
                                       std::format("Temperature (low) out of bounds [{:.2f}] for zone=\"{}\", for surface=\"{}\"",
                                                   CheckTemperature,
                                                   state.dataHeatBal->Zone(ZoneNum).Name,
-                                                  state.dataSurface->Surface(SurfNum).Name));
+                                                  state.dataSurface->Surface(SurfNum).Name),
+                                      DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds);
                     ShowContinueErrorTimeStamp(state, "");
                     if (!state.dataHeatBal->Zone(ZoneNum).TempOutOfBoundsReported) {
                         ShowContinueError(state, std::format("Zone=\"{}\", Diagnostic Details:", state.dataHeatBal->Zone(ZoneNum).Name));
@@ -2630,12 +2630,12 @@ namespace HeatBalFiniteDiffManager {
                 }
             } else {
                 if (state.dataSurface->SurfHighTempErrCount(SurfNum) == 0) {
-                    ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds)];
                     ShowSevereMessage(state,
                                       std::format("Temperature (high) out of bounds ({:.2f}] for zone=\"{}\", for surface=\"{}\"",
                                                   CheckTemperature,
                                                   state.dataHeatBal->Zone(ZoneNum).Name,
-                                                  state.dataSurface->Surface(SurfNum).Name));
+                                                  state.dataSurface->Surface(SurfNum).Name),
+                                      DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds);
                     ShowContinueErrorTimeStamp(state, "");
                     if (!state.dataHeatBal->Zone(ZoneNum).TempOutOfBoundsReported) {
                         ShowContinueError(state, std::format("Zone=\"{}\", Diagnostic Details:", state.dataHeatBal->Zone(ZoneNum).Name));

@@ -68,6 +68,9 @@ namespace EnergyPlus {
 // Forward declarations
 class InputOutputFile;
 struct EnergyPlusData;
+namespace DataErrorTracking {
+    enum class ErrorSummaryType;
+}
 
 int AbortEnergyPlus(EnergyPlusData &state);
 
@@ -170,8 +173,20 @@ void ShowSevereError(EnergyPlusData &state,
                      OptionalOutputFileRef OutUnit1 = {},
                      OptionalOutputFileRef OutUnit2 = {});
 
+void ShowSevereError(EnergyPlusData &state,
+                     std::string const &ErrorMessage,
+                     DataErrorTracking::ErrorSummaryType errorSummaryType,
+                     OptionalOutputFileRef OutUnit1 = {},
+                     OptionalOutputFileRef OutUnit2 = {});
+
 void ShowSevereMessage(EnergyPlusData &state,
                        std::string const &ErrorMessage,
+                       OptionalOutputFileRef OutUnit1 = {},
+                       OptionalOutputFileRef OutUnit2 = {});
+
+void ShowSevereMessage(EnergyPlusData &state,
+                       std::string const &ErrorMessage,
+                       DataErrorTracking::ErrorSummaryType errorSummaryType,
                        OptionalOutputFileRef OutUnit1 = {},
                        OptionalOutputFileRef OutUnit2 = {});
 
@@ -189,15 +204,36 @@ void ShowWarningError(EnergyPlusData &state,
                       OptionalOutputFileRef OutUnit1 = {},
                       OptionalOutputFileRef OutUnit2 = {});
 
+void ShowWarningError(EnergyPlusData &state,
+                      std::string const &ErrorMessage,
+                      DataErrorTracking::ErrorSummaryType errorSummaryType,
+                      OptionalOutputFileRef OutUnit1 = {},
+                      OptionalOutputFileRef OutUnit2 = {});
+
 void ShowWarningMessage(EnergyPlusData &state,
                         std::string const &ErrorMessage,
                         OptionalOutputFileRef OutUnit1 = {},
                         OptionalOutputFileRef OutUnit2 = {});
 
+void ShowWarningMessage(EnergyPlusData &state,
+                        std::string const &ErrorMessage,
+                        DataErrorTracking::ErrorSummaryType errorSummaryType,
+                        OptionalOutputFileRef OutUnit1 = {},
+                        OptionalOutputFileRef OutUnit2 = {});
+
+void IncrementErrorSummaryCount(EnergyPlusData &state, DataErrorTracking::ErrorSummaryType errorSummaryType);
+
 void ShowRecurringSevereErrorAtEnd(EnergyPlusData &state,
                                    std::string const &Message, // Message automatically written to "error file" at end of simulation
                                    int &MsgIndex,              // Recurring message index, if zero, next available index is assigned
                                    Real64 const val,           // Track and report the max of the values passed to this argument
+                                   std::string const &units);
+
+void ShowRecurringSevereErrorAtEnd(EnergyPlusData &state,
+                                   std::string const &Message,
+                                   DataErrorTracking::ErrorSummaryType errorSummaryType,
+                                   int &MsgIndex,
+                                   Real64 const val,
                                    std::string const &units);
 
 void ShowRecurringSevereErrorAtEnd(
@@ -212,12 +248,30 @@ void ShowRecurringSevereErrorAtEnd(
     std::string const &ReportSumUnits = ""             // optional char string (<=15 length) of units for sum value
 );
 
+void ShowRecurringSevereErrorAtEnd(EnergyPlusData &state,
+                                   std::string const &Message,
+                                   DataErrorTracking::ErrorSummaryType errorSummaryType,
+                                   int &MsgIndex,
+                                   ObjexxFCL::Optional<Real64 const> ReportMaxOf = _,
+                                   ObjexxFCL::Optional<Real64 const> ReportMinOf = _,
+                                   ObjexxFCL::Optional<Real64 const> ReportSumOf = _,
+                                   std::string const &ReportMaxUnits = "",
+                                   std::string const &ReportMinUnits = "",
+                                   std::string const &ReportSumUnits = "");
+
 void ShowRecurringWarningErrorAtEnd(EnergyPlusData &state,
                                     std::string const &Message, // Message automatically written to "error file" at end of simulation
                                     int &MsgIndex,              // Recurring message index, if zero, next available index is assigned
                                     Real64 const val,
                                     std::string const &units // optional char string (<=15 length) of units for sum value
 );
+
+void ShowRecurringWarningErrorAtEnd(EnergyPlusData &state,
+                                    std::string const &Message,
+                                    DataErrorTracking::ErrorSummaryType errorSummaryType,
+                                    int &MsgIndex,
+                                    Real64 const val,
+                                    std::string const &units);
 
 void ShowRecurringWarningErrorAtEnd(
     EnergyPlusData &state,
@@ -230,6 +284,17 @@ void ShowRecurringWarningErrorAtEnd(
     std::string const &ReportMinUnits = "",            // optional char string (<=15 length) of units for min value
     std::string const &ReportSumUnits = ""             // optional char string (<=15 length) of units for sum value
 );
+
+void ShowRecurringWarningErrorAtEnd(EnergyPlusData &state,
+                                    std::string const &Message,
+                                    DataErrorTracking::ErrorSummaryType errorSummaryType,
+                                    int &MsgIndex,
+                                    ObjexxFCL::Optional<Real64 const> ReportMaxOf = _,
+                                    ObjexxFCL::Optional<Real64 const> ReportMinOf = _,
+                                    ObjexxFCL::Optional<Real64 const> ReportSumOf = _,
+                                    std::string const &ReportMaxUnits = "",
+                                    std::string const &ReportMinUnits = "",
+                                    std::string const &ReportSumUnits = "");
 
 void ShowRecurringContinueErrorAtEnd(
     EnergyPlusData &state,

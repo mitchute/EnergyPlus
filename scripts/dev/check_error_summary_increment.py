@@ -64,14 +64,17 @@
   excluded), in the same order, each starting with `// EnumName` followed by a
   `{"Summary", "MoreDetails"}` entry. That .Summary text is what gets printed in the
   "Final Error Summary"; it is not expected to match the call site's message.
-- Every "live" entry must have, somewhere in the .cc sources, a
-  `++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::X)];`
-  near a ShowXXX() call whose message contains X's search string (order between the two
-  varies, and there's sometimes a block of unrelated ShowContinueError() calls in between).
-- An enum entry with no such increment anywhere is dead: it should be removed from both
+- Every "live" entry must have, somewhere in the .cc sources, either a summary-aware
+  `ShowXXX(state, message, DataErrorTracking::ErrorSummaryType::X, ...)` call, or an
+  `IncrementErrorSummaryCount(state, DataErrorTracking::ErrorSummaryType::X)` call near
+  a ShowXXX() message containing X's search string. Typed reporting calls are checked
+  atomically, except for Message/recurring calls that form one logical report. Explicit
+  tracking calls retain the proximity check needed by suppressed and aggregated reports.
+- Direct `++ErrorSummaryCount[...]` access is forbidden outside the centralized helper.
+- An enum entry with no such tracking site anywhere is dead: it should be removed from both
   the enum (DataErrorTracking.hh) and the ErrorSummaries array (UtilityRoutines.cc).
-- A ShowXXX() call whose message contains a search string but has no matching increment
-  nearby is suspicious: either the increment was forgotten, or the search string is
+- A ShowXXX() call whose message contains a search string but has no matching tracking site
+  nearby is suspicious: either the tracking was forgotten, or the search string is
   stale/coincidental.
 """
 
@@ -106,15 +109,19 @@ INCREMENT_RE = re.compile(
     r"DataErrorTracking::ErrorSummaryType::(\w+)\s*\)\s*\]\s*;"
 )
 
+SUMMARY_TYPE_RE = re.compile(r"\bDataErrorTracking::ErrorSummaryType::(\w+)\b")
+
 SHOW_CALL_RE = re.compile(r"\bShow\w*\s*\(")
+
+TRACKING_CALL_RE = re.compile(r"\bIncrementErrorSummaryCount\s*\(")
 
 STRIP_RE = re.compile(r'"(?:\\.|[^"\\])*"|/\*.*?\*/|//[^\n]*', re.DOTALL)
 
-# How far apart (in characters, either direction) an ErrorSummaryCount increment and the
+# How far apart (in characters, either direction) an explicit summary tracking call and the
 # ShowXXX() call it belongs to are allowed to be. Generous because a call is sometimes
 # followed by a block of unrelated ShowContinueError() diagnostics before a final
 # ShowRecurringXXXErrorAtEnd() call that repeats the same search string, and the
-# increment itself sometimes precedes and sometimes follows the call.
+# tracking call itself sometimes precedes and sometimes follows the message.
 WINDOW_CHARS = 4000
 
 
@@ -145,10 +152,10 @@ class SummaryEntry:
 
 
 @dataclass
-class IncrementSite:
+class TrackingSite:
     enum_name: str
     line_number: int
-    matched: bool  # whether a nearby ShowXXX() call was found containing the search string
+    matched: bool  # whether the tracking site is associated with the expected search string
 
 
 def line_of(text: str, index: int) -> int:
@@ -190,26 +197,49 @@ def parse_error_summaries(cc_path: Path) -> list[SummaryEntry]:
     return [SummaryEntry(name=name, summary=summary) for name, summary in SUMMARIES_ENTRY_RE.findall(block)]
 
 
-def find_show_call_spans(text: str) -> list[tuple[int, int]]:
-    """Return (start, end) spans of every ShowXXX(...) call in `text`, end being just past
-    the call's closing paren (found by paren-balancing from the opening one)."""
+def find_call_spans(text: str, call_re: re.Pattern[str]) -> list[tuple[int, int]]:
+    """Return spans of calls matched by call_re, balancing only code parentheses."""
     spans: list[tuple[int, int]] = []
-    for m in SHOW_CALL_RE.finditer(text):
+    for match in call_re.finditer(text):
         depth = 1
-        pos = m.end()
+        pos = match.end()
         end = len(text)
         while pos < len(text):
-            c = text[pos]
-            if c == "(":
+            if text.startswith('R"', pos):
+                delimiter_end = text.find("(", pos + 2)
+                if delimiter_end != -1:
+                    delimiter = text[pos + 2 : delimiter_end]
+                    raw_end = text.find(")" + delimiter + '"', delimiter_end + 1)
+                    if raw_end != -1:
+                        pos = raw_end + len(delimiter) + 2
+                        continue
+            char = text[pos]
+            if char in {'"', "'"}:
+                quote = char
+                pos += 1
+                while pos < len(text):
+                    if text[pos] == chr(92):
+                        pos += 2
+                    elif text[pos] == quote:
+                        pos += 1
+                        break
+                    else:
+                        pos += 1
+                continue
+            if char == "(":
                 depth += 1
-            elif c == ")":
+            elif char == ")":
                 depth -= 1
                 if depth == 0:
                     end = pos + 1
                     break
             pos += 1
-        spans.append((m.start(), end))
+        spans.append((match.start(), end))
     return spans
+
+
+def find_show_call_spans(text: str) -> list[tuple[int, int]]:
+    return find_call_spans(text, SHOW_CALL_RE)
 
 
 def find_key_occurrences(text: str, search_string: str, show_call_spans: list[tuple[int, int]]) -> list[int]:
@@ -223,58 +253,133 @@ def find_key_occurrences(text: str, search_string: str, show_call_spans: list[tu
     return occurrences
 
 
+def find_summary_aware_show_calls(text: str, show_call_spans: list[tuple[int, int]]) -> list[tuple[int, int, str]]:
+    """Return (start, end, enum name) for ShowXXX calls carrying an ErrorSummaryType."""
+    calls: list[tuple[int, int, str]] = []
+    for call_start, call_end in show_call_spans:
+        enum_match = SUMMARY_TYPE_RE.search(text, call_start, call_end)
+        if enum_match is not None:
+            calls.append((call_start, call_end, enum_match.group(1)))
+    return calls
+
+
+def find_summary_tracking_calls(text: str) -> list[tuple[int, int, str]]:
+    """Return explicit IncrementErrorSummaryCount calls carrying a concrete enum value."""
+    calls: list[tuple[int, int, str]] = []
+    for call_start, call_end in find_call_spans(text, TRACKING_CALL_RE):
+        enum_match = SUMMARY_TYPE_RE.search(text, call_start, call_end)
+        if enum_match is not None:
+            calls.append((call_start, call_end, enum_match.group(1)))
+    return calls
+
+
 def check_text(
     raw_text: str, filepath: Path, enum_entries_by_name: dict[str, EnumEntry]
-) -> tuple[list[IncrementSite], list[LogMessage]]:
-    """Scan one .cc file's text: collect every ErrorSummaryCount increment, and flag ShowXXX
-    calls whose message contains a search string with no ErrorSummaryCount increment nearby
-    (or vice versa). Proximity is checked in both directions since the increment sometimes
-    precedes and sometimes follows the ShowXXX() call it belongs to."""
+) -> tuple[list[TrackingSite], list[LogMessage]]:
+    """Scan one .cc file for typed ShowXXX and explicit summary-tracking calls, then
+    flag raw counter access and messages that are not tracked."""
     text = strip_comments(raw_text)
     log_messages: list[LogMessage] = []
-    sites: list[IncrementSite] = []
+    sites: list[TrackingSite] = []
 
-    increment_spans = list(INCREMENT_RE.finditer(text))
+    direct_increments = list(INCREMENT_RE.finditer(text))
     show_call_spans = find_show_call_spans(text)
+    summary_aware_calls = find_summary_aware_show_calls(text, show_call_spans)
+    summary_tracking_calls = find_summary_tracking_calls(text)
     key_occurrences_by_name = {
         entry.name: find_key_occurrences(text, entry.search_string, show_call_spans)
         for entry in enum_entries_by_name.values()
         if entry.search_string is not None
     }
 
-    for m in increment_spans:
-        enum_name = m.group(1)
+    proximity_positions_by_name: dict[str, list[int]] = {}
+    for call_start, call_end, enum_name in summary_aware_calls:
         entry = enum_entries_by_name.get(enum_name)
-        matched = False
-        if entry is not None and entry.search_string is not None:
-            matched = any(abs(occ - m.start()) <= WINDOW_CHARS for occ in key_occurrences_by_name.get(enum_name, []))
-        sites.append(IncrementSite(enum_name=enum_name, line_number=line_of(text, m.start()), matched=matched))
+        matched = (
+            entry is not None
+            and entry.search_string is not None
+            and text.find(entry.search_string, call_start, call_end) != -1
+        )
+        sites.append(TrackingSite(enum_name=enum_name, line_number=line_of(text, call_start), matched=matched))
+        call_name = text[call_start : text.find("(", call_start)].strip()
+        if call_name in {"ShowSevereMessage", "ShowWarningMessage"} or call_name.startswith("ShowRecurring"):
+            proximity_positions_by_name.setdefault(enum_name, []).append(call_start)
         if entry is not None and entry.search_string is not None and not matched:
             log_messages.append(
                 ErrorMessage(
                     tool="check_error_summary_increment",
                     filepath=filepath,
-                    line_number=line_of(text, m.start()),
-                    line=raw_text.splitlines()[line_of(text, m.start()) - 1].strip(),
+                    line_number=line_of(text, call_start),
+                    line=raw_text.splitlines()[line_of(text, call_start) - 1].strip(),
                     message=(
-                        f"++ErrorSummaryCount[...ErrorSummaryType::{enum_name}] has no nearby ShowXXX() call containing "
+                        f"summary-aware ShowXXX(..., ErrorSummaryType::{enum_name}, ...) does not contain "
                         f"the expected search string {entry.search_string!r} (see DataErrorTracking.hh:{entry.line_number})"
                     ),
                 )
             )
 
-    # Reverse direction: a ShowXXX() call containing a search string with no matching
-    # increment nearby likely means the increment was forgotten.
-    increment_positions_by_name: dict[str, list[int]] = {}
-    for m in increment_spans:
-        increment_positions_by_name.setdefault(m.group(1), []).append(m.start())
+    for call_start, _call_end, enum_name in summary_tracking_calls:
+        entry = enum_entries_by_name.get(enum_name)
+        matched = (
+            entry is not None
+            and entry.search_string is not None
+            and any(abs(occ - call_start) <= WINDOW_CHARS for occ in key_occurrences_by_name.get(enum_name, []))
+        )
+        sites.append(TrackingSite(enum_name=enum_name, line_number=line_of(text, call_start), matched=matched))
+        proximity_positions_by_name.setdefault(enum_name, []).append(call_start)
+        if entry is not None and entry.search_string is not None and not matched:
+            log_messages.append(
+                ErrorMessage(
+                    tool="check_error_summary_increment",
+                    filepath=filepath,
+                    line_number=line_of(text, call_start),
+                    line=raw_text.splitlines()[line_of(text, call_start) - 1].strip(),
+                    message=(
+                        f"IncrementErrorSummaryCount(..., ErrorSummaryType::{enum_name}) has no nearby ShowXXX() call containing "
+                        f"the expected search string {entry.search_string!r} (see DataErrorTracking.hh:{entry.line_number})"
+                    ),
+                )
+            )
 
+    for increment in direct_increments:
+        enum_name = increment.group(1)
+        proximity_positions_by_name.setdefault(enum_name, []).append(increment.start())
+        log_messages.append(
+            ErrorMessage(
+                tool="check_error_summary_increment",
+                filepath=filepath,
+                line_number=line_of(text, increment.start()),
+                line=raw_text.splitlines()[line_of(text, increment.start()) - 1].strip(),
+                message=(
+                    f"direct ErrorSummaryCount access for ErrorSummaryType::{enum_name} is not allowed; "
+                    "use a summary-aware ShowXXX overload or IncrementErrorSummaryCount"
+                ),
+            )
+        )
+
+    # Reverse direction: a ShowXXX() call containing a search string with no matching
+    # summary-aware call or explicit tracking call likely means tracking was forgotten.
     for enum_name, occurrences in key_occurrences_by_name.items():
         entry = enum_entries_by_name[enum_name]
-        increment_positions = increment_positions_by_name.get(enum_name, [])
+        proximity_positions = proximity_positions_by_name.get(enum_name, [])
         for occ in occurrences:
-            if any(abs(occ - pos) <= WINDOW_CHARS for pos in increment_positions):
-                continue
+            enclosing_summary_call = next(
+                (
+                    (call_start, call_end, tracked_enum)
+                    for call_start, call_end, tracked_enum in summary_aware_calls
+                    if call_start <= occ < call_end
+                ),
+                None,
+            )
+            if enclosing_summary_call is not None:
+                tracked_enum = enclosing_summary_call[2]
+                if tracked_enum == enum_name:
+                    continue
+                detail = f"; the call tracks ErrorSummaryType::{tracked_enum} instead"
+            else:
+                detail = ""
+                if any(abs(occ - pos) <= WINDOW_CHARS for pos in proximity_positions):
+                    continue
             log_messages.append(
                 ErrorMessage(
                     tool="check_error_summary_increment",
@@ -284,7 +389,7 @@ def check_text(
                     message=(
                         f"ShowXXX() call contains {entry.search_string!r}, the search string for "
                         f"ErrorSummaryType::{enum_name} (see DataErrorTracking.hh:{entry.line_number}), "
-                        "but has no ++ErrorSummaryCount[...] increment nearby - forgot to add it?"
+                        f"but does not track that summary type{detail} - forgot to add it?"
                     ),
                 )
             )
@@ -294,7 +399,7 @@ def check_text(
 
 def check_file(
     filepath: Path, enum_entries_by_name: dict[str, EnumEntry]
-) -> tuple[list[IncrementSite], list[LogMessage]]:
+) -> tuple[list[TrackingSite], list[LogMessage]]:
     """Read and scan a single .cc file. See `check_text` for the actual logic."""
     return check_text(filepath.read_text(encoding="utf-8"), filepath, enum_entries_by_name)
 
@@ -308,9 +413,9 @@ class TestCheckErrorSummaryIncrement(unittest.TestCase):
             "BarError": EnumEntry(name="BarError", line_number=11, search_string="Bar happened"),
         }
 
-    def test_valid_increment_immediately_before_call(self) -> None:
+    def test_valid_tracking_call_immediately_before_message(self) -> None:
         text = """
-        ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::FooError)];
+        IncrementErrorSummaryCount(state, DataErrorTracking::ErrorSummaryType::FooError);
         ShowSevereError(state, "Foo happened here");
         """
         sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
@@ -318,26 +423,92 @@ class TestCheckErrorSummaryIncrement(unittest.TestCase):
         self.assertTrue(sites[0].matched)
         self.assertEqual(log_messages, [])
 
-    def test_valid_increment_after_call(self) -> None:
-        # The increment comes after the ShowXXX() call it belongs to (eg SimulationManager.cc's
-        # NodeConnectionErrors), which must be accepted just like the more common order.
+    def test_valid_summary_aware_severe_error(self) -> None:
         text = """
-        ShowWarningError(state, std::format("Foo happened for object {}", CType));
-        ShowContinueError(state, "some detail");
-        ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::FooError)];
+        ShowSevereError(state, "Foo happened here", DataErrorTracking::ErrorSummaryType::FooError);
+        """
+        sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
+        self.assertEqual(len(sites), 1)
+        self.assertEqual(sites[0].enum_name, "FooError")
+        self.assertTrue(sites[0].matched)
+        self.assertEqual(log_messages, [])
+
+    def test_valid_summary_aware_warning_error(self) -> None:
+        text = """
+        ShowWarningError(state, "Foo happened here", DataErrorTracking::ErrorSummaryType::FooError);
+        """
+        sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
+        self.assertEqual(len(sites), 1)
+        self.assertEqual(sites[0].enum_name, "FooError")
+        self.assertTrue(sites[0].matched)
+        self.assertEqual(log_messages, [])
+
+    def test_summary_aware_recurring_call_covers_initial_message(self) -> None:
+        text = """
+        ShowSevereMessage(state, "Foo happened initially");
+        ShowRecurringSevereErrorAtEnd(
+            state, "Foo happened again", DataErrorTracking::ErrorSummaryType::FooError, index);
         """
         sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
         self.assertEqual(len(sites), 1)
         self.assertTrue(sites[0].matched)
         self.assertEqual(log_messages, [])
 
-    def test_valid_increment_several_lines_above(self) -> None:
+    def test_raw_string_parentheses_do_not_expand_call_span(self) -> None:
+        text = """
+        ShowSevereError(
+            state, std::format(R"(Foo happened (])", value), DataErrorTracking::ErrorSummaryType::FooError);
+        ShowWarningError(state, "Bar happened without tracking");
+        """
+        sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
+        self.assertEqual(len(sites), 1)
+        self.assertTrue(sites[0].matched)
+        self.assertEqual(len(log_messages), 1)
+        self.assertIn("BarError", log_messages[0].message)
+
+    def test_summary_aware_call_does_not_cover_neighboring_untracked_call(self) -> None:
+        text = """
+        ShowSevereError(state, "Foo happened first", DataErrorTracking::ErrorSummaryType::FooError);
+        ShowSevereError(state, "Foo happened again without tracking");
+        """
+        sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
+        self.assertEqual(len(sites), 1)
+        self.assertTrue(sites[0].matched)
+        self.assertEqual(len(log_messages), 1)
+        self.assertIn("does not track that summary type", log_messages[0].message)
+
+    def test_summary_aware_call_with_wrong_enum_is_flagged(self) -> None:
+        text = """
+        ShowSevereError(state, "Bar happened here", DataErrorTracking::ErrorSummaryType::FooError);
+        """
+        sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
+        self.assertEqual(len(sites), 1)
+        self.assertEqual(sites[0].enum_name, "FooError")
+        self.assertFalse(sites[0].matched)
+        self.assertEqual(len(log_messages), 2)
+        self.assertTrue(any("does not contain" in msg.message for msg in log_messages))
+        self.assertTrue(any("tracks ErrorSummaryType::FooError instead" in msg.message for msg in log_messages))
+
+    def test_valid_tracking_call_after_message(self) -> None:
+        # The increment comes after the ShowXXX() call it belongs to (eg SimulationManager.cc's
+        # NodeConnectionErrors), which must be accepted just like the more common order.
+        text = """
+        ShowWarningError(state, std::format("Foo happened for object {}", CType));
+        ShowContinueError(state, "some detail");
+        IncrementErrorSummaryCount(state, DataErrorTracking::ErrorSummaryType::FooError);
+        """
+        sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
+        self.assertEqual(len(sites), 1)
+        self.assertTrue(sites[0].matched)
+        self.assertEqual(log_messages, [])
+
+    def test_valid_tracking_call_several_lines_above(self) -> None:
         # A ShowSevereMessage() followed by several unrelated ShowContinueError() diagnostics
         # before a final ShowRecurringSevereErrorAtEnd() that repeats the search string (eg
         # HeatBalanceSurfaceManager.cc's TemperatureLowOutOfBounds) must not be flagged.
         filler = "\n".join(f'ShowContinueError(state, "...filler detail {i}");' for i in range(20))
         text = f"""
-        ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::FooError)];
+        IncrementErrorSummaryCount(state, DataErrorTracking::ErrorSummaryType::FooError);
         ShowSevereMessage(state, "Foo happened here");
         {filler}
         ShowRecurringSevereErrorAtEnd(state, "Foo happened for zone=X", count, low, high, _, "C", "C");
@@ -347,12 +518,12 @@ class TestCheckErrorSummaryIncrement(unittest.TestCase):
         self.assertTrue(sites[0].matched)
         self.assertEqual(log_messages, [])
 
-    def test_dead_entry_has_no_increment_site(self) -> None:
+    def test_dead_entry_has_no_tracking_site(self) -> None:
         # BarError's search string never shows up at all: check_text should report neither
         # an increment site nor a missing-increment warning for it - dead-entry detection
         # itself happens one level up, across all files, once no site is found anywhere.
         text = """
-        ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::FooError)];
+        IncrementErrorSummaryCount(state, DataErrorTracking::ErrorSummaryType::FooError);
         ShowSevereError(state, "Foo happened here");
         """
         sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
@@ -370,9 +541,19 @@ class TestCheckErrorSummaryIncrement(unittest.TestCase):
         self.assertIn("BarError", log_messages[0].message)
         self.assertIn("forgot to add it", log_messages[0].message)
 
-    def test_increment_without_nearby_call_is_flagged(self) -> None:
+    def test_direct_increment_is_rejected(self) -> None:
         text = """
         ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::FooError)];
+        ShowSevereError(state, "Foo happened here");
+        """
+        sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
+        self.assertEqual(sites, [])
+        self.assertEqual(len(log_messages), 1)
+        self.assertIn("direct ErrorSummaryCount access", log_messages[0].message)
+
+    def test_tracking_call_without_nearby_message_is_flagged(self) -> None:
+        text = """
+        IncrementErrorSummaryCount(state, DataErrorTracking::ErrorSummaryType::FooError);
         // the ShowXXX() call was removed but the increment was left behind
         """
         sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
@@ -382,13 +563,13 @@ class TestCheckErrorSummaryIncrement(unittest.TestCase):
         self.assertEqual(log_messages[0].loglevel, LogLevel.ERROR)
         self.assertIn("has no nearby ShowXXX() call", log_messages[0].message)
 
-    def test_wrong_enum_used_is_flagged(self) -> None:
+    def test_wrong_enum_used_by_tracking_call_is_flagged(self) -> None:
         # The increment uses FooError, but the ShowXXX() call right next to it is actually
         # BarError's message - a copy/paste mistake picking the wrong enum value. This must
-        # surface as two separate Errors: FooError's increment has no matching call nearby,
-        # and BarError's call has no matching increment nearby - both real, silent counting bugs.
+        # surface as two separate Errors: FooError's tracking call has no matching message nearby,
+        # and BarError's message has no matching tracking call nearby - both real, silent counting bugs.
         text = """
-        ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::FooError)];
+        IncrementErrorSummaryCount(state, DataErrorTracking::ErrorSummaryType::FooError);
         ShowSevereError(state, "Bar happened here, not Foo");
         """
         sites, log_messages = check_text(text, self.dummy_file, self.enum_entries_by_name)
@@ -429,7 +610,7 @@ if __name__ == "__main__":
         unittest.main(exit=True, verbosity=0)
 
     parser = get_base_parser(
-        description="Check DataErrorTracking::ErrorSummaryType entries against their ErrorSummaryCount call sites",
+        description="Check DataErrorTracking::ErrorSummaryType entries against their summary tracking call sites",
         include_files_arg=False,
     )
     args = parser.parse_args()
@@ -472,7 +653,7 @@ if __name__ == "__main__":
         print(f"Checking {len(files)} .cc files under {SRC_DIR}")
 
     results = parallel_apply(func=check_file, filepaths=files, enum_entries_by_name=enum_entries_by_name)
-    all_sites: list[IncrementSite] = flatten_list_of_lists([sites for sites, _ in results])
+    all_sites: list[TrackingSite] = flatten_list_of_lists([sites for sites, _ in results])
     log_messages += flatten_list_of_lists([msgs for _, msgs in results])
 
     live_enum_names = {site.enum_name for site in all_sites}
@@ -484,7 +665,8 @@ if __name__ == "__main__":
                     filepath=DATA_ERROR_TRACKING_HH,
                     line_number=entry.line_number,
                     message=(
-                        f"ErrorSummaryType::{entry.name} has no ++ErrorSummaryCount[...] call site anywhere under {SRC_DIR}; "
+                        f"ErrorSummaryType::{entry.name} has no summary-aware ShowXXX or IncrementErrorSummaryCount "
+                        f"call site anywhere under {SRC_DIR}; "
                         "it is dead and should be removed from the ErrorSummaryType enum and the ErrorSummaries array"
                     ),
                 )

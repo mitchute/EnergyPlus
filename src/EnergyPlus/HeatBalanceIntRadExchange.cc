@@ -1732,11 +1732,11 @@ namespace HeatBalanceIntRadExchange {
                             std::format("FixViewFactors: View factors convergence has failed and will lead to heat balance errors in zone=\"{}\".",
                                         enclName));
                     }
-                    ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::IncompleteViewFactors)];
                     ShowWarningError(
                         state,
                         std::format("FixViewFactors: View factors not complete. Check for bad surface descriptions or unenclosed zone=\"{}\".",
-                                    enclName));
+                                    enclName),
+                        DataErrorTracking::ErrorSummaryType::IncompleteViewFactors);
                     ShowContinueError(state,
                                       std::format("Enforced reciprocity has tolerance (ideal is "
                                                   "0)=[{:#G}], Row Sum (ideal is {})=[{:#G}].",
@@ -1776,11 +1776,10 @@ namespace HeatBalanceIntRadExchange {
                 F = FixedF;
                 FinalCheckValue = FixedCheckValue;
             } else {
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::IncompleteViewFactors)];
                 ShowWarningError(
                     state,
-                    std::format("FixViewFactors: View factors not complete. Check for bad surface descriptions or unenclosed zone=\"{}\".",
-                                enclName));
+                    std::format("FixViewFactors: View factors not complete. Check for bad surface descriptions or unenclosed zone=\"{}\".", enclName),
+                    DataErrorTracking::ErrorSummaryType::IncompleteViewFactors);
             }
         }
         if (severeErrorPresent) {

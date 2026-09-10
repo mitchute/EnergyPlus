@@ -1762,8 +1762,9 @@ namespace SimulationManager {
                  state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, "Output:Meter:Cumulative:MeterFileOnly") > 0);
             // Not testing for : Output:SQLite or Output:EnvironmentalImpactFactors
             if (!ReportingRequested) {
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NoReportingElementsRequested)];
-                ShowWarningError(state, "No reporting elements have been requested. No simulation results produced.");
+                ShowWarningError(state,
+                                 "No reporting elements have been requested. No simulation results produced.",
+                                 DataErrorTracking::ErrorSummaryType::NoReportingElementsRequested);
                 ShowContinueError(state,
                                   "...Review requirements such as \"Output:Table:SummaryReports\", \"Output:Table:Monthly\", \"Output:Variable\", "
                                   "\"Output:Meter\" and others.");
@@ -2322,14 +2323,14 @@ namespace SimulationManager {
                                      "been retrieved.");
                     state.dataSimulationManager->WarningOut = false;
                 }
-                ShowWarningError(
-                    state, std::format("Node Connection Error for object {}={}", CType, state.dataBranchNodeConnections->CompSets(Count).CName));
+                ShowWarningError(state,
+                                 std::format("Node Connection Error for object {}={}", CType, state.dataBranchNodeConnections->CompSets(Count).CName),
+                                 DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
                 ShowContinueError(
                     state, std::format("  {} not on any Branch or Parent Object", state.dataBranchNodeConnections->CompSets(Count).Description));
                 ShowContinueError(state, std::format("  Inlet Node : {}", state.dataBranchNodeConnections->CompSets(Count).InletNodeName));
                 ShowContinueError(state, std::format("  Outlet Node: {}", state.dataBranchNodeConnections->CompSets(Count).OutletNodeName));
                 ++state.dataBranchNodeConnections->NumNodeConnectionErrors;
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
                 if (state.dataBranchNodeConnections->CompSets(Count).ComponentObjectType ==
                     Node::ConnectionObjectType::SolarCollectorUnglazedTranspired) {
                     ShowContinueError(state, "This report does not necessarily indicate a problem for a MultiSystem Transpired Collector");
@@ -2345,13 +2346,13 @@ namespace SimulationManager {
                 ShowSevereError(state,
                                 std::format("Potential Node Connection Error for object {}, name={}",
                                             CType,
-                                            state.dataBranchNodeConnections->CompSets(Count).CName));
+                                            state.dataBranchNodeConnections->CompSets(Count).CName),
+                                DataErrorTracking::ErrorSummaryType::NodeConnectionErrors);
                 ShowContinueError(state, "  Node Types are still UNDEFINED -- See Branch/Node Details file for further information");
                 ShowContinueError(state, std::format("  Inlet Node : {}", state.dataBranchNodeConnections->CompSets(Count).InletNodeName));
                 ShowContinueError(state, std::format("  Outlet Node: {}", state.dataBranchNodeConnections->CompSets(Count).OutletNodeName));
                 nodeConnectionErrorFlag = true;
                 ++state.dataBranchNodeConnections->NumNodeConnectionErrors;
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::NodeConnectionErrors)];
             }
         }
 

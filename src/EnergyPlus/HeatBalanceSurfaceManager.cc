@@ -9478,7 +9478,6 @@ void TestSurfTempCalcHeatBalanceInsideSurf(EnergyPlusData &state, Real64 TH12, i
         }
         if (!state.dataGlobal->WarmupFlag || WarmupSurfTemp > 10 || state.dataGlobal->DisplayExtraWarnings) {
             if (TH12 < DataHeatBalSurface::MinSurfaceTempLimit) {
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds)];
                 if (state.dataSurface->SurfLowTempErrCount(SurfNum) == 0) {
                     ShowSevereMessage(
                         state, std::format(R"(Temperature (low) out of bounds [{:.2f}] for zone="{}", for surface="{}")", TH12, zone.Name, surfName));
@@ -9505,6 +9504,7 @@ void TestSurfTempCalcHeatBalanceInsideSurf(EnergyPlusData &state, Real64 TH12, i
                     }
                     ShowRecurringSevereErrorAtEnd(state,
                                                   "Temperature (low) out of bounds for zone=" + zone.Name + " for surface=" + surfName,
+                                                  DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds,
                                                   state.dataSurface->SurfLowTempErrCount(SurfNum),
                                                   TH12,
                                                   TH12,
@@ -9514,6 +9514,7 @@ void TestSurfTempCalcHeatBalanceInsideSurf(EnergyPlusData &state, Real64 TH12, i
                 } else {
                     ShowRecurringSevereErrorAtEnd(state,
                                                   "Temperature (low) out of bounds for zone=" + zone.Name + " for surface=" + surfName,
+                                                  DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds,
                                                   state.dataSurface->SurfLowTempErrCount(SurfNum),
                                                   TH12,
                                                   TH12,
@@ -9522,7 +9523,6 @@ void TestSurfTempCalcHeatBalanceInsideSurf(EnergyPlusData &state, Real64 TH12, i
                                                   "C");
                 }
             } else {
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds)];
                 if (state.dataSurface->SurfHighTempErrCount(SurfNum) == 0) {
                     ShowSevereMessage(
                         state,
@@ -9550,6 +9550,7 @@ void TestSurfTempCalcHeatBalanceInsideSurf(EnergyPlusData &state, Real64 TH12, i
                     }
                     ShowRecurringSevereErrorAtEnd(state,
                                                   "Temperature (high) out of bounds for zone=" + zone.Name + " for surface=" + surfName,
+                                                  DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds,
                                                   state.dataSurface->SurfHighTempErrCount(SurfNum),
                                                   TH12,
                                                   TH12,
@@ -9559,6 +9560,7 @@ void TestSurfTempCalcHeatBalanceInsideSurf(EnergyPlusData &state, Real64 TH12, i
                 } else {
                     ShowRecurringSevereErrorAtEnd(state,
                                                   "Temperature (high) out of bounds for zone=" + zone.Name + " for surface=" + surfName,
+                                                  DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds,
                                                   state.dataSurface->SurfHighTempErrCount(SurfNum),
                                                   TH12,
                                                   TH12,
@@ -9581,9 +9583,9 @@ void TestSurfTempCalcHeatBalanceInsideSurf(EnergyPlusData &state, Real64 TH12, i
     if ((TH12 > state.dataHeatBalSurf->MaxSurfaceTempLimitBeforeFatal) || (TH12 < DataHeatBalSurface::MinSurfaceTempLimitBeforeFatal)) {
         if (!state.dataGlobal->WarmupFlag) {
             if (TH12 < DataHeatBalSurface::MinSurfaceTempLimitBeforeFatal) {
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds)];
-                ShowSevereError(
-                    state, std::format(R"(Temperature (low) out of bounds [{:.2f}] for zone="{}", for surface="{}")", TH12, zone.Name, surfName));
+                ShowSevereError(state,
+                                std::format(R"(Temperature (low) out of bounds [{:.2f}] for zone="{}", for surface="{}")", TH12, zone.Name, surfName),
+                                DataErrorTracking::ErrorSummaryType::TemperatureLowOutOfBounds);
                 ShowContinueErrorTimeStamp(state, "");
                 if (!zone.TempOutOfBoundsReported) {
                     ShowContinueError(state, std::format("Zone=\"{}\", Diagnostic Details:", zone.Name));
@@ -9607,9 +9609,10 @@ void TestSurfTempCalcHeatBalanceInsideSurf(EnergyPlusData &state, Real64 TH12, i
                 }
                 ShowFatalError(state, "Program terminates due to preceding condition.");
             } else {
-                ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds)];
                 ShowSevereError(
-                    state, std::format(R"(Temperature (high) out of bounds [{:.2f}] for zone="{}", for surface="{}")", TH12, zone.Name, surfName));
+                    state,
+                    std::format(R"(Temperature (high) out of bounds [{:.2f}] for zone="{}", for surface="{}")", TH12, zone.Name, surfName),
+                    DataErrorTracking::ErrorSummaryType::TemperatureHighOutOfBounds);
                 ShowContinueErrorTimeStamp(state, "");
                 if (!zone.TempOutOfBoundsReported) {
                     ShowContinueError(state, std::format("Zone=\"{}\", Diagnostic Details:", zone.Name));

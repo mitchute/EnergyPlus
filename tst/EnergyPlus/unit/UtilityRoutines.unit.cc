@@ -65,6 +65,43 @@
 
 using namespace EnergyPlus;
 
+TEST_F(EnergyPlusFixture, ErrorReportingRoutinesTrackErrorSummary)
+{
+    auto const summaryType = DataErrorTracking::ErrorSummaryType::NodeConnectionErrors;
+    auto const summaryIndex = static_cast<size_t>(summaryType);
+
+    EXPECT_EQ(0, state->dataErrTracking->ErrorSummaryCount[summaryIndex]);
+
+    ShowSevereError(*state, "Node Connection Error severe", summaryType);
+    EXPECT_EQ(1, state->dataErrTracking->ErrorSummaryCount[summaryIndex]);
+    EXPECT_EQ(1, state->dataErrTracking->TotalSevereErrors);
+
+    ShowSevereMessage(*state, "Node Connection Error severe message", summaryType);
+    EXPECT_EQ(2, state->dataErrTracking->ErrorSummaryCount[summaryIndex]);
+    EXPECT_EQ(1, state->dataErrTracking->TotalSevereErrors);
+
+    ShowWarningError(*state, "Node Connection Error warning", summaryType);
+    EXPECT_EQ(3, state->dataErrTracking->ErrorSummaryCount[summaryIndex]);
+    EXPECT_EQ(1, state->dataErrTracking->TotalWarningErrors);
+
+    ShowWarningMessage(*state, "Node Connection Error warning message", summaryType);
+    EXPECT_EQ(4, state->dataErrTracking->ErrorSummaryCount[summaryIndex]);
+    EXPECT_EQ(1, state->dataErrTracking->TotalWarningErrors);
+
+    int recurringSevereIndex = 0;
+    ShowRecurringSevereErrorAtEnd(*state, "Node Connection Error recurring severe", summaryType, recurringSevereIndex);
+    EXPECT_EQ(5, state->dataErrTracking->ErrorSummaryCount[summaryIndex]);
+    EXPECT_EQ(2, state->dataErrTracking->TotalSevereErrors);
+
+    int recurringWarningIndex = 0;
+    ShowRecurringWarningErrorAtEnd(*state, "Node Connection Error recurring warning", summaryType, recurringWarningIndex);
+    EXPECT_EQ(6, state->dataErrTracking->ErrorSummaryCount[summaryIndex]);
+    EXPECT_EQ(2, state->dataErrTracking->TotalWarningErrors);
+
+    IncrementErrorSummaryCount(*state, summaryType);
+    EXPECT_EQ(7, state->dataErrTracking->ErrorSummaryCount[summaryIndex]);
+}
+
 TEST_F(EnergyPlusFixture, RecurringWarningTest)
 {
 

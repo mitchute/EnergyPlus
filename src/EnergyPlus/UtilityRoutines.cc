@@ -901,6 +901,21 @@ void ShowSevereError(EnergyPlusData &state, std::string const &ErrorMessage, Opt
     }
 }
 
+void IncrementErrorSummaryCount(EnergyPlusData &state, DataErrorTracking::ErrorSummaryType errorSummaryType)
+{
+    ++state.dataErrTracking->ErrorSummaryCount[static_cast<size_t>(errorSummaryType)];
+}
+
+void ShowSevereError(EnergyPlusData &state,
+                     std::string const &ErrorMessage,
+                     DataErrorTracking::ErrorSummaryType errorSummaryType,
+                     OptionalOutputFileRef OutUnit1,
+                     OptionalOutputFileRef OutUnit2)
+{
+    IncrementErrorSummaryCount(state, errorSummaryType);
+    ShowSevereError(state, ErrorMessage, OutUnit1, OutUnit2);
+}
+
 void ShowSevereMessage(EnergyPlusData &state, std::string const &ErrorMessage, OptionalOutputFileRef OutUnit1, OptionalOutputFileRef OutUnit2)
 {
 
@@ -926,6 +941,16 @@ void ShowSevereMessage(EnergyPlusData &state, std::string const &ErrorMessage, O
     if (state.dataGlobal->errorCallback) {
         state.dataGlobal->errorCallback(Error::Severe, ErrorMessage);
     }
+}
+
+void ShowSevereMessage(EnergyPlusData &state,
+                       std::string const &ErrorMessage,
+                       DataErrorTracking::ErrorSummaryType errorSummaryType,
+                       OptionalOutputFileRef OutUnit1,
+                       OptionalOutputFileRef OutUnit2)
+{
+    IncrementErrorSummaryCount(state, errorSummaryType);
+    ShowSevereMessage(state, ErrorMessage, OutUnit1, OutUnit2);
 }
 
 void ShowContinueError(EnergyPlusData &state, std::string const &Message, OptionalOutputFileRef OutUnit1, OptionalOutputFileRef OutUnit2)
@@ -1078,6 +1103,16 @@ void ShowWarningError(EnergyPlusData &state, std::string const &ErrorMessage, Op
     }
 }
 
+void ShowWarningError(EnergyPlusData &state,
+                      std::string const &ErrorMessage,
+                      DataErrorTracking::ErrorSummaryType errorSummaryType,
+                      OptionalOutputFileRef OutUnit1,
+                      OptionalOutputFileRef OutUnit2)
+{
+    IncrementErrorSummaryCount(state, errorSummaryType);
+    ShowWarningError(state, ErrorMessage, OutUnit1, OutUnit2);
+}
+
 void ShowWarningMessage(EnergyPlusData &state, std::string const &ErrorMessage, OptionalOutputFileRef OutUnit1, OptionalOutputFileRef OutUnit2)
 {
 
@@ -1101,6 +1136,16 @@ void ShowWarningMessage(EnergyPlusData &state, std::string const &ErrorMessage, 
     if (state.dataGlobal->errorCallback) {
         state.dataGlobal->errorCallback(Error::Warning, ErrorMessage);
     }
+}
+
+void ShowWarningMessage(EnergyPlusData &state,
+                        std::string const &ErrorMessage,
+                        DataErrorTracking::ErrorSummaryType errorSummaryType,
+                        OptionalOutputFileRef OutUnit1,
+                        OptionalOutputFileRef OutUnit2)
+{
+    IncrementErrorSummaryCount(state, errorSummaryType);
+    ShowWarningMessage(state, ErrorMessage, OutUnit1, OutUnit2);
 }
 
 void DetectIncorrectMsgIndex(EnergyPlusData &state, std::string const &lookup, int &MsgIndex)
@@ -1260,6 +1305,58 @@ void ShowRecurringWarningErrorAtEnd(EnergyPlusData &state,
 
     ++state.dataErrTracking->TotalWarningErrors;
     StoreRecurringErrorMessage(state, lookup, MsgIndex, val, val, _, units, units, "");
+}
+
+void ShowRecurringSevereErrorAtEnd(EnergyPlusData &state,
+                                   std::string const &Message,
+                                   DataErrorTracking::ErrorSummaryType errorSummaryType,
+                                   int &MsgIndex,
+                                   ObjexxFCL::Optional<Real64 const> ReportMaxOf,
+                                   ObjexxFCL::Optional<Real64 const> ReportMinOf,
+                                   ObjexxFCL::Optional<Real64 const> ReportSumOf,
+                                   std::string const &ReportMaxUnits,
+                                   std::string const &ReportMinUnits,
+                                   std::string const &ReportSumUnits)
+{
+    IncrementErrorSummaryCount(state, errorSummaryType);
+    ShowRecurringSevereErrorAtEnd(state, Message, MsgIndex, ReportMaxOf, ReportMinOf, ReportSumOf, ReportMaxUnits, ReportMinUnits, ReportSumUnits);
+}
+
+void ShowRecurringSevereErrorAtEnd(EnergyPlusData &state,
+                                   std::string const &Message,
+                                   DataErrorTracking::ErrorSummaryType errorSummaryType,
+                                   int &MsgIndex,
+                                   Real64 const val,
+                                   std::string const &units)
+{
+    IncrementErrorSummaryCount(state, errorSummaryType);
+    ShowRecurringSevereErrorAtEnd(state, Message, MsgIndex, val, units);
+}
+
+void ShowRecurringWarningErrorAtEnd(EnergyPlusData &state,
+                                    std::string const &Message,
+                                    DataErrorTracking::ErrorSummaryType errorSummaryType,
+                                    int &MsgIndex,
+                                    ObjexxFCL::Optional<Real64 const> ReportMaxOf,
+                                    ObjexxFCL::Optional<Real64 const> ReportMinOf,
+                                    ObjexxFCL::Optional<Real64 const> ReportSumOf,
+                                    std::string const &ReportMaxUnits,
+                                    std::string const &ReportMinUnits,
+                                    std::string const &ReportSumUnits)
+{
+    IncrementErrorSummaryCount(state, errorSummaryType);
+    ShowRecurringWarningErrorAtEnd(state, Message, MsgIndex, ReportMaxOf, ReportMinOf, ReportSumOf, ReportMaxUnits, ReportMinUnits, ReportSumUnits);
+}
+
+void ShowRecurringWarningErrorAtEnd(EnergyPlusData &state,
+                                    std::string const &Message,
+                                    DataErrorTracking::ErrorSummaryType errorSummaryType,
+                                    int &MsgIndex,
+                                    Real64 const val,
+                                    std::string const &units)
+{
+    IncrementErrorSummaryCount(state, errorSummaryType);
+    ShowRecurringWarningErrorAtEnd(state, Message, MsgIndex, val, units);
 }
 
 void ShowRecurringContinueErrorAtEnd(EnergyPlusData &state,

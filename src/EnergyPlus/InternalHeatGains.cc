@@ -1286,10 +1286,10 @@ namespace InternalHeatGains {
                 if (state.dataHeatBal->Zone(Loop).TotOccupants > 0.0) {
                     if (state.dataHeatBal->Zone(Loop).FloorArea > 0.0 &&
                         state.dataHeatBal->Zone(Loop).FloorArea / state.dataHeatBal->Zone(Loop).TotOccupants < 0.1) {
-                        ++state.dataErrTracking
-                              ->ErrorSummaryCount[static_cast<size_t>(DataErrorTracking::ErrorSummaryType::OccupantDensityExtremelyHigh)];
                         ShowWarningError(
-                            state, std::format("{}Zone=\"{}\" occupant density is extremely high.", RoutineName, state.dataHeatBal->Zone(Loop).Name));
+                            state,
+                            std::format("{}Zone=\"{}\" occupant density is extremely high.", RoutineName, state.dataHeatBal->Zone(Loop).Name),
+                            DataErrorTracking::ErrorSummaryType::OccupantDensityExtremelyHigh);
                         if (state.dataHeatBal->Zone(Loop).FloorArea > 0.0) {
                             ShowContinueError(state,
                                               std::format("Occupant Density=[{:.0f}] person/m2.",
