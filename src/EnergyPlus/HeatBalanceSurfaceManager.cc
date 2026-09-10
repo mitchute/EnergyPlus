@@ -5812,25 +5812,30 @@ void CalculateZoneMRT(EnergyPlusData &state,
     if (state.dataHeatBalSurfMgr->CalculateZoneMRTfirstTime) {
         state.dataHeatBalSurfMgr->SurfaceAE.allocate(state.dataSurface->TotSurfaces);
         state.dataHeatBalSurfMgr->ZoneAESum.allocate(state.dataGlobal->NumOfZones);
-        state.dataHeatBalSurfMgr->SurfaceAE = 0.0;
-        state.dataHeatBalSurfMgr->ZoneAESum = 0.0;
-        for (auto &encl : state.dataViewFactor->EnclRadInfo) {
-            encl.sumAE = 0.0;
-        }
-        for (int SurfNum = 1; SurfNum <= state.dataSurface->TotSurfaces; ++SurfNum) {
-            auto const &surface = state.dataSurface->Surface(SurfNum);
-            if (surface.HeatTransSurf) {
-                auto &thisSurfAE = state.dataHeatBalSurfMgr->SurfaceAE(SurfNum);
-                thisSurfAE = surface.Area * state.dataConstruction->Construct(surface.Construction).InsideAbsorpThermal;
-                int ZoneNum = surface.Zone;
-                if (ZoneNum > 0) {
-                    state.dataHeatBalSurfMgr->ZoneAESum(ZoneNum) += thisSurfAE;
-                }
-                if (surface.RadEnclIndex > 0) {
-                    state.dataViewFactor->EnclRadInfo(surface.RadEnclIndex).sumAE += thisSurfAE;
-                }
+    }
+
+    // Recalculate area-emissivity weights because interior shades, movable insulation, and EMS can change the
+    // zone-facing thermal absorptance during the simulation.
+    state.dataHeatBalSurfMgr->SurfaceAE = 0.0;
+    state.dataHeatBalSurfMgr->ZoneAESum = 0.0;
+    for (auto &encl : state.dataViewFactor->EnclRadInfo) {
+        encl.sumAE = 0.0;
+    }
+    for (int surfNum = 1; surfNum <= state.dataSurface->TotSurfaces; ++surfNum) {
+        auto const &surface = state.dataSurface->Surface(surfNum);
+        if (surface.HeatTransSurf) {
+            auto &thisSurfAE = state.dataHeatBalSurfMgr->SurfaceAE(surfNum);
+            thisSurfAE = surface.Area * state.dataHeatBalSurf->SurfAbsThermalInt(surfNum);
+            int const zoneNum = surface.Zone;
+            if (zoneNum > 0) {
+                state.dataHeatBalSurfMgr->ZoneAESum(zoneNum) += thisSurfAE;
+            }
+            if (surface.RadEnclIndex > 0) {
+                state.dataViewFactor->EnclRadInfo(surface.RadEnclIndex).sumAE += thisSurfAE;
             }
         }
+    }
+    if (state.dataHeatBalSurfMgr->CalculateZoneMRTfirstTime) {
         HeatBalanceManager::getZoneMRTCalculationData(state);
     }
 
@@ -5856,7 +5861,7 @@ void CalculateZoneMRT(EnergyPlusData &state,
             for (int spaceNum : state.dataHeatBal->Zone(ZoneNum).spaceIndexes) {
                 auto const &thisSpace = state.dataHeatBal->space(spaceNum);
                 for (int SurfNum = thisSpace.HTSurfaceFirst; SurfNum <= thisSpace.HTSurfaceLast; ++SurfNum) {
-                    Real64 surfAET = state.dataHeatBalSurfMgr->SurfaceAE(SurfNum) * state.dataHeatBalSurf->SurfTempIn(SurfNum);
+                    Real64 surfAET = state.dataHeatBalSurfMgr->SurfaceAE(SurfNum) * state.dataHeatBalSurf->SurfTempInTmp(SurfNum);
                     zoneSumAET += surfAET;
                     state.dataViewFactor->EnclRadInfo(state.dataSurface->Surface(SurfNum).RadEnclIndex).sumAET += surfAET;
                 }
@@ -5881,7 +5886,7 @@ void CalculateZoneMRT(EnergyPlusData &state,
         if (thisEnclosure.sumAE > 0.01) {
             thisEnclosure.sumAET = 0.0;
             for (int surfNum : thisEnclosure.SurfacePtr) {
-                Real64 surfAET = state.dataHeatBalSurfMgr->SurfaceAE(surfNum) * state.dataHeatBalSurf->SurfTempIn(surfNum);
+                Real64 surfAET = state.dataHeatBalSurfMgr->SurfaceAE(surfNum) * state.dataHeatBalSurf->SurfTempInTmp(surfNum);
                 thisEnclosure.sumAET += surfAET;
             }
             thisEnclosure.MRT = thisEnclosure.sumAET / thisEnclosure.sumAE;
