@@ -5213,7 +5213,7 @@ void UpdateIntermediateSurfaceHeatBalanceResults(EnergyPlusData &state, ObjexxFC
             for (int surfNum = firstSurf; surfNum <= lastSurf; ++surfNum) {
                 state.dataHeatBalSurf->SurfQdotConvInPerArea(surfNum) =
                     -state.dataHeatBalSurf->SurfHConvInt(surfNum) *
-                    (state.dataHeatBalSurf->SurfTempIn(surfNum) - state.dataHeatBalSurfMgr->RefAirTemp(surfNum));
+                    (state.dataHeatBalSurf->SurfTempInTmp(surfNum) - state.dataHeatBalSurfMgr->RefAirTemp(surfNum));
             }
         }
     }
