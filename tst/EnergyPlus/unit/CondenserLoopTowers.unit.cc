@@ -509,6 +509,32 @@ TEST_F(EnergyPlusFixture, CondenserLoopTowers_MerkelNoCooling)
 
     // test that tower is really not cooling with no load so temp in and out is the same issue #4927
     EXPECT_DOUBLE_EQ(state->dataLoopNodes->Node(9).Temp, state->dataLoopNodes->Node(10).Temp);
+    // Established branch flow takes precedence over design flow so parallel tower capacity reflects the resolved flow split.
+    auto &tower = state->dataCondenserLoopTowers->towers(1);
+    auto &waterInletNode = state->dataLoopNodes->Node(tower.WaterInletNodeNum);
+    waterInletNode.Temp = 35.0;
+    state->dataEnvrn->OutDryBulbTemp = 35.0;
+    state->dataEnvrn->OutWetBulbTemp = 25.5;
+    state->dataEnvrn->OutBaroPress = 99063.0;
+    state->dataEnvrn->OutHumRat =
+        Psychrometrics::PsyWFnTdbTwbPb(*state, state->dataEnvrn->OutDryBulbTemp, state->dataEnvrn->OutWetBulbTemp, state->dataEnvrn->OutBaroPress);
+
+    waterInletNode.MassFlowRate = 0.0;
+    auto const [capacityAtStartup, capacityAtStartupIsKnown] = tower.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(capacityAtStartupIsKnown);
+    EXPECT_GT(capacityAtStartup, 0.0);
+
+    waterInletNode.MassFlowRate = 0.5 * tower.DesWaterMassFlowRate;
+    auto const [capacityAtEstablishedFlow, capacityAtEstablishedFlowIsKnown] = tower.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(capacityAtEstablishedFlowIsKnown);
+    EXPECT_GT(capacityAtEstablishedFlow, 0.0);
+    EXPECT_LT(capacityAtEstablishedFlow, capacityAtStartup);
+
+    // Zero branch flow uses design flow as a startup fallback, allowing an inactive tower to become dispatchable.
+    waterInletNode.MassFlowRate = 0.0;
+    auto const [capacityWithFallback, capacityWithFallbackIsKnown] = tower.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(capacityWithFallbackIsKnown);
+    EXPECT_DOUBLE_EQ(capacityAtStartup, capacityWithFallback);
 }
 
 TEST_F(EnergyPlusFixture, CondenserLoopTowers_SingleSpeedSizing)
@@ -3913,6 +3939,13 @@ TEST_F(EnergyPlusFixture, VSCoolingTowers_WaterOutletTempTest)
     state->dataPlnt->PlantLoop(VSTower.plantLoc.loopNum).LoopSide(VSTower.plantLoc.loopSideNum).FlowLock = DataPlant::FlowLock::Locked;
     state->dataPlnt->PlantLoop(VSTower.plantLoc.loopNum).LoopSide(VSTower.plantLoc.loopSideNum).TempSetPoint = 30.0;
     VSTower.WaterMassFlowRate = VSTower.DesWaterMassFlowRate * WaterFlowRateRatio;
+    auto &waterInletNode = state->dataLoopNodes->Node(VSTower.WaterInletNodeNum);
+    waterInletNode.MassFlowRate = VSTower.WaterMassFlowRate;
+
+    auto const [dynamicMaxCapacity, dynamicMaxCapacityIsKnown] = VSTower.getDynamicMaxCapacity(*state);
+    Real64 const CpWater = VSTower.plantLoc.loop->glycol->getSpecificHeat(*state, waterInletNode.Temp, "VSCoolingTowers_WaterOutletTempTest");
+    EXPECT_TRUE(dynamicMaxCapacityIsKnown);
+    EXPECT_NEAR(VSTower.WaterMassFlowRate * CpWater * (waterInletNode.Temp - 30.0), dynamicMaxCapacity, 0.1);
 
     Real64 myLoad = -1000.0;
     bool RunFlag = true;

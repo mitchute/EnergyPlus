@@ -6290,9 +6290,11 @@ namespace CondenserLoopTowers {
         Real64 constexpr ratedAirFlowRateRatio = 1.0;
         Real64 const inletWaterTemp = state.dataLoopNodes->Node(this->WaterInletNodeNum).Temp;
         Real64 const CpWater = this->plantLoc.loop->glycol->getSpecificHeat(state, inletWaterTemp, routineName);
-        // use operating max (i.e., at current plant flow rates, could be 0 if plant is off) or max available capacity?
-        // Real64 waterMassFlowRate = state.dataLoopNodes->Node(this->WaterInletNodeNum).MassFlowRateMaxAvail;
-        Real64 waterMassFlowRate = this->DesWaterMassFlowRate;
+        auto const &waterInletNode = state.dataLoopNodes->Node(this->WaterInletNodeNum);
+        // Once plant flow is established, calculate capacity at the flow the tower will actually receive. Retain design flow as a
+        // startup fallback so an inactive tower with zero node flow can still be dispatched.
+        Real64 const waterMassFlowRate =
+            waterInletNode.MassFlowRate > DataBranchAirLoopPlant::MassFlowTolerance ? waterInletNode.MassFlowRate : this->DesWaterMassFlowRate;
         this->AirWetBulb = (this->OutdoorAirInletNodeNum > 0) ? state.dataLoopNodes->Node(this->OutdoorAirInletNodeNum).OutAirWetBulb
                                                               : state.dataEnvrn->OutWetBulbTemp;
 
@@ -6335,6 +6337,9 @@ namespace CondenserLoopTowers {
             this->checkModelBounds(state, Twb, Tr, Ta, waterFlowRateRatio, TwbCapped, TrCapped, TaCapped, waterFlowRateRatioCapped);
             outletWaterTemp =
                 this->calculateVariableTowerOutletTemp(state, waterFlowRateRatioCapped, ratedAirFlowRateRatio, TwbCapped, inletWaterTemp);
+            // The variable-speed tower modulates toward the outlet setpoint. Full-speed cooling below that setpoint is
+            // the physical capacity, but it is not dispatchable load.
+            outletWaterTemp = max(outletWaterTemp, TempSetPoint);
         } break;
         case DataPlant::PlantEquipmentType::CoolingTower_VarSpdMerkel: {
             // only needed for calculateSimpleTowerOutletTemp
