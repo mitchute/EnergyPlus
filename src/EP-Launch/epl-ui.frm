@@ -4359,7 +4359,7 @@ If firstUse = "True" Then
   'update checking
   updateLastAnchor = ""
   updateLastDate = "1/1/2008"
-  updatePageURL = "http://natlabrockies.github.io/EnergyPlus/epupdate.htm"
+  updatePageURL = "https://energyplus.net/epupdate.htm"
   updateAutoCheck = True
   Call SaveAllSettings
 Else
@@ -4528,12 +4528,13 @@ Else
   updateLastDate = GetSetting("EP-Launch", "UpdateCheck", "LastDate")
   If updateLastDate = "" Then updateLastDate = "1/1/2008"
   updatePageURL = GetSetting("EP-Launch", "UpdateCheck", "CheckURL")
-  newURL = "http://natlabrockies.github.io/EnergyPlus/epupdate.htm"
+  newURL = "https://energyplus.net/epupdate.htm"
   If updatePageURL = "" Then updatePageURL = newURL
   If updatePageURL = "http://gard.com/ep/epupdate.htm" Then updatePageURL = newURL
   If updatePageURL = "http://nrel.github.io/EnergyPlus/epupdate.htm" Then updatePageURL = newURL
   If updatePageURL = "http://energyplus.net/epupdate.htm" Then updatePageURL = newURL
   If updatePageURL = "http://eeredevapps1.nrel.gov/buildings/energyplus/update/epupdate.htm" Then updatePageURL = newURL
+  If updatePageURL = "http://natlabrockies.github.io/EnergyPlus/epupdate.htm" Then updatePageURL = newURL
   If Left(GetSetting("EP-Launch", "UpdateCheck", "AutoCheck"), 1) = "F" Then
     updateAutoCheck = False
   Else
@@ -6899,6 +6900,7 @@ lblCheckingUpdates.Visible = True
 'updatePageURL = "http://eeredevapps1.nrel.gov/buildings/energyplus/update/epupdate.htm"
 'updatePageURL = "http://energyplus.net/epupdate.htm"
 'updatePageURL = "http://natlabrockies.github.io/EnergyPlus/epupdate.htm"
+'updatePageURL = "https://energyplus.net/epupdate.htm"
 'updateLastDate = "9/2/2009 12:47:47 AM"
 '-----------------------------------------
 
