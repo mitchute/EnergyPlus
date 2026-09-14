@@ -5410,6 +5410,7 @@ void UpdateFinalSurfaceHeatBalance(EnergyPlusData &state)
     // SUBROUTINE INFORMATION:
     //       AUTHOR         Rick Strand
     //       DATE WRITTEN   December 2000
+    //       MODIFIED       Sept. 2026 Joe Robertson (surface-coupled PV)
 
     // PURPOSE OF THIS SUBROUTINE:
     // If a radiant system is present and was on for part of the time step, or a surface-coupled
