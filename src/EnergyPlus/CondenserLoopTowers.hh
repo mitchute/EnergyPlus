@@ -396,7 +396,8 @@ namespace CondenserLoopTowers {
         Real64 calculateVariableTowerOutletTemp(EnergyPlusData &state,
                                                 Real64 WaterFlowRateRatio,    // current water flow rate ratio (capped if applicable)
                                                 Real64 airFlowRateRatioLocal, // current air flow rate ratio
-                                                Real64 Twb                    // current inlet air wet-bulb temperature (C, capped if applicable)
+                                                Real64 Twb,                   // current inlet air wet-bulb temperature (C, capped if applicable)
+                                                Real64 inletWaterTemp         // current inlet water temperature (C)
         );
 
         void calculateWaterUsage(EnergyPlusData &state);

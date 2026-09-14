@@ -3919,7 +3919,8 @@ TEST_F(EnergyPlusFixture, VSCoolingTowers_WaterOutletTempTest)
     VSTower.calculateVariableSpeedTower(*state, myLoad, RunFlag);
     EXPECT_DOUBLE_EQ(30.0, VSTower.OutletWaterTemp);
     EXPECT_DOUBLE_EQ(1.0, VSTower.FanCyclingRatio);
-    Real64 TowerOutletWaterTemp = VSTower.calculateVariableTowerOutletTemp(*state, WaterFlowRateRatio, VSTower.airFlowRateRatio, AirWetBulbTemp);
+    Real64 TowerOutletWaterTemp =
+        VSTower.calculateVariableTowerOutletTemp(*state, WaterFlowRateRatio, VSTower.airFlowRateRatio, AirWetBulbTemp, VSTower.WaterTemp);
     EXPECT_NEAR(30.0, TowerOutletWaterTemp, 0.0001);
 
     // test case 2:
@@ -3938,7 +3939,8 @@ TEST_F(EnergyPlusFixture, VSCoolingTowers_WaterOutletTempTest)
     EXPECT_DOUBLE_EQ(30.0, VSTower.OutletWaterTemp);
     EXPECT_NEAR(0.5424, VSTower.FanCyclingRatio, 0.0001);
     // outside air condition is favorable that fan only needs to cycle at min flow to meet the setpoint
-    TowerOutletWaterTemp = VSTower.calculateVariableTowerOutletTemp(*state, WaterFlowRateRatio, VSTower.MinimumVSAirFlowFrac, AirWetBulbTemp);
+    TowerOutletWaterTemp =
+        VSTower.calculateVariableTowerOutletTemp(*state, WaterFlowRateRatio, VSTower.MinimumVSAirFlowFrac, AirWetBulbTemp, VSTower.WaterTemp);
     // this is tower outlet temperature at continuous minimum fan flow
     EXPECT_NEAR(26.9537, TowerOutletWaterTemp, 0.0001);
 }
@@ -4251,13 +4253,14 @@ TEST_F(EnergyPlusFixture, CondenserLoopTowers_CalculateVariableTowerOutletTemp)
     index = Util::FindItemInList("COOLINGTOWER-PLANT_LOOPS-170", state->dataCondenserLoopTowers->towers);
     auto &tower = state->dataCondenserLoopTowers->towers(index);
 
-    // set node temperature
-    state->dataLoopNodes->Node(tower.WaterInletNodeNum).Temp = 40;
-    tower.WaterTemp = 40;
+    // The capacity probe runs before the tower is initialized, so WaterTemp can still contain a previous value.
+    Real64 constexpr inletWaterTemp = 40.0;
+    state->dataLoopNodes->Node(tower.WaterInletNodeNum).Temp = inletWaterTemp;
+    tower.WaterTemp = 30.0;
 
     // calculate outlet temperature
-    Real64 tOutlet = tower.calculateVariableTowerOutletTemp(*state, 0.25, 1.0, 14.1);
-    EXPECT_NEAR(tower.WaterTemp - 22.2222, tOutlet, 0.01);
+    Real64 tOutlet = tower.calculateVariableTowerOutletTemp(*state, 0.25, 1.0, 14.1, inletWaterTemp);
+    EXPECT_NEAR(inletWaterTemp - 22.2222, tOutlet, 0.01);
 }
 
 TEST_F(EnergyPlusFixture, CondenserLoopTowers_checkMassFlowAndLoadTest)
