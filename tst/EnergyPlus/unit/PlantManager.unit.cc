@@ -48,6 +48,7 @@
 // EnergyPlus::PlantManager Unit Tests
 
 // Google Test Headers
+#include <algorithm>
 #include <gtest/gtest.h>
 
 // ObjexxFCL Headers
@@ -296,20 +297,24 @@ namespace PlantManager {
 
     TEST_F(EnergyPlusFixture, PlantManager_RevisePlantCallingOrderKeepsDemandBeforeSupply)
     {
+        // Verify demand-before-supply for all 720 initial orderings of connected plant loop sides.
+        // For example, supply 1, demand 2, demand 1, supply 2, supply 3, demand 3 becomes
+        // an order where demand 1 precedes supply 1, demand 2 precedes supply 2, and demand 3 precedes supply 3.
         state->init_state(*state);
         state->dataPlnt->TotNumLoops = 3;
         state->dataPlnt->TotNumHalfLoops = 6;
         state->dataPlnt->PlantLoop.allocate(3);
         state->dataPlnt->PlantCallingOrderInfo.allocate(6);
 
-        auto connectLoopSides = [&](int loopNum, LoopSideLocation loopSide, int connectedLoopNum, LoopSideLocation connectedLoopSide, bool loopDemandsOnRemote) {
-            auto &connected = state->dataPlnt->PlantLoop(loopNum).LoopSide(loopSide);
-            connected.TotalConnected = 1;
-            connected.Connected.allocate(1);
-            connected.Connected(1).LoopNum = connectedLoopNum;
-            connected.Connected(1).LoopSideNum = connectedLoopSide;
-            connected.Connected(1).LoopDemandsOnRemote = loopDemandsOnRemote;
-        };
+        auto connectLoopSides =
+            [&](int loopNum, LoopSideLocation loopSide, int connectedLoopNum, LoopSideLocation connectedLoopSide, bool loopDemandsOnRemote) {
+                auto &connected = state->dataPlnt->PlantLoop(loopNum).LoopSide(loopSide);
+                connected.TotalConnected = 1;
+                connected.Connected.allocate(1);
+                connected.Connected(1).LoopNum = connectedLoopNum;
+                connected.Connected(1).LoopSideNum = connectedLoopSide;
+                connected.Connected(1).LoopDemandsOnRemote = loopDemandsOnRemote;
+            };
         connectLoopSides(1, LoopSideLocation::Demand, 2, LoopSideLocation::Supply, true);
         connectLoopSides(2, LoopSideLocation::Demand, 3, LoopSideLocation::Supply, true);
         connectLoopSides(3, LoopSideLocation::Supply, 1, LoopSideLocation::Demand, false);
@@ -318,19 +323,23 @@ namespace PlantManager {
             state->dataPlnt->PlantCallingOrderInfo(order).LoopIndex = loopNum;
             state->dataPlnt->PlantCallingOrderInfo(order).LoopSide = loopSide;
         };
-        setOrder(1, 1, LoopSideLocation::Supply);
-        setOrder(2, 2, LoopSideLocation::Demand);
-        setOrder(3, 1, LoopSideLocation::Demand);
-        setOrder(4, 2, LoopSideLocation::Supply);
-        setOrder(5, 3, LoopSideLocation::Supply);
-        setOrder(6, 3, LoopSideLocation::Demand);
+        std::array<std::pair<int, LoopSideLocation>, 6> halfLoops = {
+            {{1, LoopSideLocation::Demand}, {1, LoopSideLocation::Supply}, {2, LoopSideLocation::Demand},
+             {2, LoopSideLocation::Supply}, {3, LoopSideLocation::Demand}, {3, LoopSideLocation::Supply}}};
+        std::array<int, 6> permutation = {0, 1, 2, 3, 4, 5};
+        do {
+            for (int order = 1; order <= state->dataPlnt->TotNumHalfLoops; ++order) {
+                auto const &[loopNum, loopSide] = halfLoops[permutation[order - 1]];
+                setOrder(order, loopNum, loopSide);
+            }
 
-        RevisePlantCallingOrder(*state);
+            RevisePlantCallingOrder(*state);
 
-        for (int loopNum = 1; loopNum <= state->dataPlnt->TotNumLoops; ++loopNum) {
-            EXPECT_LT(FindLoopSideInCallingOrder(*state, loopNum, LoopSideLocation::Demand),
-                      FindLoopSideInCallingOrder(*state, loopNum, LoopSideLocation::Supply));
-        }
+            for (int loopNum = 1; loopNum <= state->dataPlnt->TotNumLoops; ++loopNum) {
+                EXPECT_LT(FindLoopSideInCallingOrder(*state, loopNum, LoopSideLocation::Demand),
+                          FindLoopSideInCallingOrder(*state, loopNum, LoopSideLocation::Supply));
+            }
+        } while (std::next_permutation(permutation.begin(), permutation.end()));
     }
 
     TEST_F(EnergyPlusFixture, PlantManager_CheckPlantEquipmentCtrlType)
