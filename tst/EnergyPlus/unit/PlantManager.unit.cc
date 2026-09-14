@@ -302,6 +302,18 @@ namespace PlantManager {
         state->dataPlnt->PlantLoop.allocate(3);
         state->dataPlnt->PlantCallingOrderInfo.allocate(6);
 
+        auto connectLoopSides = [&](int loopNum, LoopSideLocation loopSide, int connectedLoopNum, LoopSideLocation connectedLoopSide, bool loopDemandsOnRemote) {
+            auto &connected = state->dataPlnt->PlantLoop(loopNum).LoopSide(loopSide);
+            connected.TotalConnected = 1;
+            connected.Connected.allocate(1);
+            connected.Connected(1).LoopNum = connectedLoopNum;
+            connected.Connected(1).LoopSideNum = connectedLoopSide;
+            connected.Connected(1).LoopDemandsOnRemote = loopDemandsOnRemote;
+        };
+        connectLoopSides(1, LoopSideLocation::Demand, 2, LoopSideLocation::Supply, true);
+        connectLoopSides(2, LoopSideLocation::Demand, 3, LoopSideLocation::Supply, true);
+        connectLoopSides(3, LoopSideLocation::Supply, 1, LoopSideLocation::Demand, false);
+
         auto setOrder = [&](int order, int loopNum, LoopSideLocation loopSide) {
             state->dataPlnt->PlantCallingOrderInfo(order).LoopIndex = loopNum;
             state->dataPlnt->PlantCallingOrderInfo(order).LoopSide = loopSide;
