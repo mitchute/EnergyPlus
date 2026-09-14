@@ -5445,8 +5445,8 @@ void UpdateFinalSurfaceHeatBalance(EnergyPlusData &state)
     bool const PVSurfaceHeatBalanceResim = state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag;
     state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = false;
 
-    if (LowTempRadSysOn || HighTempRadSysOn || HWBaseboardSysOn || SteamBaseboardSysOn || ElecBaseboardSysOn || CoolingPanelSysOn ||
-        SwimmingPoolOn || PVSurfaceHeatBalanceResim) {
+    if (LowTempRadSysOn || HighTempRadSysOn || HWBaseboardSysOn || SteamBaseboardSysOn || ElecBaseboardSysOn || CoolingPanelSysOn || SwimmingPoolOn ||
+        PVSurfaceHeatBalanceResim) {
         // Solve the zone heat balance 'Detailed' solution
         // Call the outside and inside surface heat balances
         CalcHeatBalanceOutsideSurf(state);
