@@ -24,6 +24,9 @@
     <!-- Bootstrap Icon -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
 
+    <!-- Match the typography used by the Sphinx Read the Docs theme -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&amp;family=Roboto+Slab:wght@400;700&amp;display=swap">
+
     <!-- Highlight.js Styles -->
     <link rel="stylesheet" id="highlight-style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-light.min.css">
 
@@ -42,7 +45,7 @@
   $endif$
 
   </head>
-  <body class="d-flex flex-column h-100">
+  <body class="d-flex flex-column h-100$if(doc-class)$ doc-$doc-class$$endif$">
     <header id="header">
       <!-- Before body contents -->
       $for(include-before)$
@@ -53,8 +56,9 @@
         <div class="container-xxl bd-gutter flex-wrap flex-lg-nowrap">
           <!-- Brand -->
           <a class="navbar-brand" href="../../index.html">
-            <img src="media/ep_nobg.png" alt="EnergyPlus Documentation" width="300" height="216"
+            <img src="media/ep_nobg.png" alt="" width="300" height="216"
                  style="height: 30px; width: 100%;">
+            <span>EnergyPlus</span>
           </a>
 
           <!-- Toggler -->
@@ -66,7 +70,7 @@
           <div class="collapse navbar-collapse scrollable-navbar" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="../../index.html">Home</a>
+                <a class="nav-link" href="../../index.html">Home</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="https://github.com/NatLabRockies/EnergyPlus">GitHub</a>
@@ -100,33 +104,6 @@
               <kbd class="d-none d-lg-inline ms-auto opacity-75">Ctrl K</kbd>
             </button>
 
-            <!-- Divider for larger screens -->
-            <div class="vr d-none d-lg-flex mx-2 my-1 nav-line"></div>
-
-            <!-- Divider for smaller screens -->
-            <hr class="d-lg-none nav-line">
-
-            <!-- Theme Dropdown -->
-            <ul class="navbar-nav">
-              <li class="nav-item dropdown">
-                <button class="btn btn-link nav-link dropdown-toggle" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="bi bi-circle-half"></i>
-                  <span class="d-lg-none ms-2">Toggle theme</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
-                  <li>
-                    <a class="dropdown-item align-items-center" data-theme="light">
-                      <i class="bi bi-sun-fill me-2 opacity-50"></i> Light
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item align-items-center" data-theme="dark">
-                      <i class="bi bi-moon-stars-fill me-2 opacity-50"></i> Dark
-                    </a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
           </div>
         </div>
       </nav>
@@ -178,7 +155,7 @@
     $if(toc)$
     <!-- Table of Contents -->
     <div class="bd-toc mt-lg-0 mb-lg-5 mt-3 mb-5 px-sm-1 text-body-secondary">
-      <h2 id="toc-header">Table Of Content</h2>
+      <h2 id="toc-header">Table of contents</h2>
       <nav id="TableOfContents">
         $table-of-contents$
       </nav>
@@ -235,38 +212,8 @@
     <!-- Custom Scripts -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const htmlElement = document.documentElement;
-        const highlightStyle = document.getElementById("highlight-style");
-
-        // Function to update Highlight.js style based on theme
-        const updateHighlightStyle = (theme) => {
-          const lightTheme = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-light.min.css";
-          const darkTheme = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css";
-          highlightStyle.href = theme === "dark" ? darkTheme : lightTheme;
-        };
-
-        // Function to set the theme
-        const setTheme = (theme) => {
-          htmlElement.setAttribute("data-bs-theme", theme);
-          localStorage.setItem("theme", theme); // Save the theme to localStorage
-          updateHighlightStyle(theme);
-        };
-
-        // Get saved theme from localStorage or fallback to default ("light")
-        const savedTheme = localStorage.getItem("theme") || "light";
-        setTheme(savedTheme);
-
-        // Event listener for theme dropdown
-        document.querySelectorAll(".dropdown-item").forEach((item) => {
-          item.addEventListener("click", (e) => {
-            e.preventDefault();
-            const selectedTheme = item.getAttribute("data-theme");
-            setTheme(selectedTheme);
-          });
-        });
-
         // Classify h4 headings as inputs/outputs for color-coded badges
-        document.querySelectorAll(".bd-content h4").forEach((h4) => {
+        document.querySelectorAll(".doc-input-output-reference .bd-content h4").forEach((h4) => {
           const text = h4.textContent.trim().toLowerCase();
           if (text.startsWith("input")) h4.classList.add("heading-inputs");
           else if (text.startsWith("output")) h4.classList.add("heading-outputs");

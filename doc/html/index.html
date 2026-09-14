@@ -11,6 +11,9 @@
     <!-- Bootstrap Icon -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
 
+    <!-- Match the typography used by the Sphinx Read the Docs theme -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&amp;family=Roboto+Slab:wght@400;700&amp;display=swap">
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css" />
 
@@ -23,8 +26,9 @@
         <div class="container-xxl bd-gutter flex-wrap flex-lg-nowrap">
           <!-- Brand -->
           <a class="navbar-brand" href="index.html">
-            <img src="media/ep_nobg.png" alt="EnergyPlus Documentation" width="300" height="216"
+            <img src="media/ep_nobg.png" alt="" width="300" height="216"
                  style="height: 30px; width: 100%;">
+            <span>EnergyPlus</span>
           </a>
 
           <!-- Toggler -->
@@ -43,33 +47,6 @@
               </li>
             </ul>
 
-            <!-- Divider for larger screens -->
-            <div class="vr d-none d-lg-flex mx-2 my-1 nav-line"></div>
-
-            <!-- Divider for smaller screens -->
-            <hr class="d-lg-none nav-line">
-
-            <!-- Theme Dropdown -->
-            <ul class="navbar-nav">
-              <li class="nav-item dropdown">
-                <button class="btn btn-link nav-link dropdown-toggle" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="bi bi-circle-half"></i>
-                  <span class="d-lg-none ms-2">Toggle theme</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
-                  <li>
-                    <a class="dropdown-item align-items-center" data-theme="light">
-                      <i class="bi bi-sun-fill me-2 opacity-50"></i> Light
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item align-items-center" data-theme="dark">
-                      <i class="bi bi-moon-stars-fill me-2 opacity-50"></i> Dark
-                    </a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
           </div>
         </div>
       </nav>
@@ -129,7 +106,7 @@
 
     <!-- After body contents -->
     <footer class="footer bd-footer bg-body-tertiary mt-auto py-md-3 py-4">
-      <div class="container text-body-secondary py-md-3 py-4" align="center">
+      <div class="container text-body-secondary text-center py-md-3 py-4">
         EnergyPlus is funded by the U.S. Department of Energy and managed by the National Laboratory of the Rockies
         (NLR).<br>
         EnergyPlus is developed in collaboration with NLR, various DOE National Laboratories, academic institutions, and private firms.<br>
@@ -140,30 +117,5 @@
     <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
-    <!-- Custom Scripts -->
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const htmlElement = document.documentElement;
-
-        // Function to set the theme
-        const setTheme = (theme) => {
-          htmlElement.setAttribute("data-bs-theme", theme);
-          localStorage.setItem("theme", theme); // Save the theme to localStorage
-        };
-
-        // Get saved theme from localStorage or fallback to default ("light")
-        const savedTheme = localStorage.getItem("theme") || "light";
-        setTheme(savedTheme);
-
-        // Event listener for theme dropdown
-        document.querySelectorAll(".dropdown-item").forEach((item) => {
-          item.addEventListener("click", (e) => {
-            e.preventDefault();
-            const selectedTheme = item.getAttribute("data-theme");
-            setTheme(selectedTheme);
-          });
-        });
-      });
-    </script>
   </body>
 </html>

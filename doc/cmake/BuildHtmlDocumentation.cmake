@@ -27,6 +27,7 @@ execute_process(
           --standalone
           --table-of-contents
           --split-level=2
+          --metadata=doc-class:${OUTNAME}
           --output=${HTML_OUT_DIR}
           --template=${HTML_ASSETS_DIR}/template_chunked.html
           --css=style.css
