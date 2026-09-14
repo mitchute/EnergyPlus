@@ -3101,15 +3101,15 @@ TEST_F(EnergyPlusFixture, HeatBalanceSurfaceManager_TestSurfTempCalcHeatBalanceA
     state->dataHeatBalFanSys->QPVSysSource(1) = -100.0;
     state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = true;
 
-    // The resimulation must consume the request and incorporate the PV sink into the surface balance.
-    ResimulateSurfaceHeatBalanceForPV(*state);
+    // UpdateFinalSurfaceHeatBalance must consume the request and incorporate the PV sink into the surface balance.
+    UpdateFinalSurfaceHeatBalance(*state);
 
     EXPECT_FALSE(state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag);
     EXPECT_NE(sourceHistoryBeforePV, state->dataHeatBalSurf->SurfQsrcHist(1, 1));
     EXPECT_NE(surfaceTemperatureBeforePV, state->dataHeatBalSurf->SurfTempOut(1));
 
-    // A source change on the first coupled pass followed by a stable second pass is converged and
-    // must not leave a stale request for another outer HVAC iteration.
+    // A source change that isn't yet converged leaves a request for the next zone time step's
+    // final surface heat balance update rather than looping within this call.
     state->dataPhotovoltaic->PVarray.allocate(1);
     state->dataPhotovoltaic->NumPVs = 1;
     auto &pv = state->dataPhotovoltaic->PVarray(1);
@@ -3123,7 +3123,15 @@ TEST_F(EnergyPlusFixture, HeatBalanceSurfaceManager_TestSurfTempCalcHeatBalanceA
     state->dataHeatBal->SurfQRadSWOutIncident(1) = 1000.0;
     state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag = true;
 
-    ResimulateSurfaceHeatBalanceForPV(*state);
+    // The first update consumes the resim request, but the PV sink changes from its initial value,
+    // so another update is requested for a later pass.
+    UpdateFinalSurfaceHeatBalance(*state);
+
+    EXPECT_TRUE(state->dataHVACGlobal->PVSurfaceHeatBalanceResimFlag);
+
+    // A subsequent update under the same conditions converges: the PV output is stable and no
+    // further resimulation is requested.
+    UpdateFinalSurfaceHeatBalance(*state);
 
     EXPECT_DOUBLE_EQ(100.0, pv.SurfaceCouplingSource);
     EXPECT_FALSE(pv.SurfaceCouplingNeedsResim);

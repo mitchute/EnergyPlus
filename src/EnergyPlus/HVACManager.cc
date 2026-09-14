@@ -882,8 +882,7 @@ void SimHVAC(EnergyPlusData &state)
     // Main iteration loop for HVAC.  If any of the simulation flags are
     // true, then specific components must be resimulated.
     while ((state.dataHVACGlobal->SimAirLoopsFlag || state.dataHVACGlobal->SimZoneEquipmentFlag || state.dataHVACGlobal->SimNonZoneEquipmentFlag ||
-            state.dataHVACGlobal->SimPlantLoopsFlag || state.dataHVACGlobal->SimElecCircuitsFlag ||
-            state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag) &&
+            state.dataHVACGlobal->SimPlantLoopsFlag || state.dataHVACGlobal->SimElecCircuitsFlag) &&
            (state.dataHVACMgr->HVACManageIteration <= state.dataConvergeParams->MaxIter)) {
 
         if (state.dataGlobal->stopSimulation) {
@@ -1806,15 +1805,6 @@ void SimSelectedEquipment(EnergyPlusData &state,
         PlantUtilities::SetAllFlowLocks(state, DataPlant::FlowLock::Unlocked);
     }
     PlantUtilities::ResetAllPlantInterConnectFlags(state);
-
-    if (state.dataHVACGlobal->PVSurfaceHeatBalanceResimFlag) {
-        HeatBalanceSurfaceManager::ResimulateSurfaceHeatBalanceForPV(state);
-        ZoneTempPredictorCorrector::PredictSystemLoads(
-            state, state.dataHVACGlobal->ShortenTimeStepSys, state.dataHVACGlobal->UseZoneTimeStepHistory, state.dataGlobal->TimeStepZone);
-        // The updated demand must be consumed during this HVAC iteration, even when the PV surface request
-        // was the only flag keeping the iteration loop active.
-        SimZoneEquipment = true;
-    }
 
     if (state.dataGlobal->BeginEnvrnFlag && state.dataHVACMgr->MyEnvrnFlag2) {
         // Following comment is incorrect!  (LKL) Even the first time through this does more than read in data.
