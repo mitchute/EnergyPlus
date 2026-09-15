@@ -20,10 +20,26 @@ set(HTML_OUT_DIR "${ORIGINAL_CMAKE_BINARY_DIR}/html/${OUTNAME}")
 
 file(REMOVE_RECURSE "${HTML_OUT_DIR}")
 
+# Pandoc versions used by local development and Read the Docs do not expose the
+# same MathML option. Prefer the current spelling when available, while retaining
+# compatibility with older Pandoc releases.
+execute_process(
+  COMMAND "${PANDOC}" --help
+  OUTPUT_VARIABLE PANDOC_HELP
+  ERROR_QUIET
+  RESULT_VARIABLE PANDOC_HELP_RESULT
+)
+
+if(PANDOC_HELP_RESULT EQUAL 0 AND PANDOC_HELP MATCHES "--math-method")
+  set(PANDOC_MATHML_OPTION "--math-method=mathml")
+else()
+  set(PANDOC_MATHML_OPTION "--mathml")
+endif()
+
 execute_process(
   COMMAND "${PANDOC}"
           --to=chunkedhtml
-          --math-method=mathml
+          ${PANDOC_MATHML_OPTION}
           --standalone
           --table-of-contents
           --split-level=2
