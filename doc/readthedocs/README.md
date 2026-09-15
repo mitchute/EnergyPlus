@@ -1,7 +1,11 @@
-# ReadTheDocs Stuff
+# Read the Docs development guide
 
-OK, so we are going to start pushing a little of the more dynamic documentation out into ReadTheDocs.
-We have a bit of a mixed bag of stuff to document, including Python, C, and Freeform documentation.
+This README covers building, contributing to, and publishing the EnergyPlus documentation site.
+For the reader-facing documentation, visit the
+[EnergyPlus documentation home](https://energyplus.readthedocs.io/en/latest/).
+
+The site combines Sphinx documentation, Doxygen-generated C API documentation, and LaTeX user
+guides converted to HTML with Pandoc.
 
 ## Building the Doxygen (C) Documentation
 The C documentation is built with Doxygen, which is available on Debian with `apt install doxygen`.
