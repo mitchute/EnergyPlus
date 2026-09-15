@@ -93,10 +93,17 @@ function Div(el)
   end
 
   return pandoc.Table(
-    pandoc.Caption(text_blocks(caption)),
+    { long = text_blocks(caption) },
     colspecs,
     pandoc.TableHead({}),
-    { pandoc.TableBody(rows) },
+    {
+      {
+        attr = pandoc.Attr(),
+        head = {},
+        body = rows,
+        row_head_columns = 0,
+      },
+    },
     pandoc.TableFoot({}),
     pandoc.Attr(identifier, { "table", "table-bordered", "table-striped", "table-sm" })
   )
