@@ -1,12 +1,15 @@
--- Add the table and equation numbering that Pandoc's LaTeX reader does not
--- preserve completely in HTML.  The report document class resets both
--- counters at every chapter, so the HTML numbers use chapter.counter too.
+-- Add the table, figure, and equation numbering that Pandoc's LaTeX reader
+-- does not preserve completely in HTML.  The report document class resets
+-- all three counters at every chapter, so the HTML numbers use
+-- chapter.counter too.
 
 local chapter = 0
 local table_counter = 0
+local figure_counter = 0
 local equation_counter = 0
 local references = {}
 local source_table_numbers = {}
+local source_figure_numbers = {}
 
 local numbered_environments = {
   equation = "single",
@@ -104,7 +107,7 @@ local function next_source_structure(source, position)
   if chapter_start then
     candidates[#candidates + 1] = { chapter_start, chapter_end, "chapter" }
   end
-  for _, environment in ipairs({ "table", "longtable" }) do
+  for _, environment in ipairs({ "table", "longtable", "figure" }) do
     local start_at, end_at = source:find("\\begin%s*{" .. environment .. "}", position)
     if start_at then
       candidates[#candidates + 1] = { start_at, end_at, environment }
@@ -114,7 +117,7 @@ local function next_source_structure(source, position)
   return candidates[1]
 end
 
-local function collect_source_table_numbers()
+local function collect_source_object_numbers()
   local input_file = PANDOC_STATE.input_files[1]
   if not input_file or input_file == "-" then
     return
@@ -124,6 +127,7 @@ local function collect_source_table_numbers()
   local source = expanded_source(input_file, document_directory, {})
   local source_chapter = 0
   local source_table_counter = 0
+  local source_figure_counter = 0
   local position = 1
 
   while true do
@@ -135,6 +139,7 @@ local function collect_source_table_numbers()
     if item[3] == "chapter" then
       source_chapter = source_chapter + 1
       source_table_counter = 0
+      source_figure_counter = 0
       position = item[2] + 1
     else
       local environment = item[3]
@@ -144,11 +149,22 @@ local function collect_source_table_numbers()
       else
         local body = source:sub(item[2] + 1, environment_end)
         local has_numbered_caption = body:find("\\caption%s*[%[{]") ~= nil
-        if environment == "longtable" or has_numbered_caption then
-          source_table_counter = source_table_counter + 1
-        end
-        for label in body:gmatch("\\label%s*{(table:[^}]+)}") do
-          source_table_numbers[label] = tostring(source_chapter) .. "." .. tostring(source_table_counter)
+        if environment == "figure" then
+          if has_numbered_caption then
+            source_figure_counter = source_figure_counter + 1
+          end
+          for label in body:gmatch("\\label%s*{([^}]+)}") do
+            source_figure_numbers[label] = tostring(source_chapter) .. "." .. tostring(source_figure_counter)
+          end
+        else
+          if environment == "longtable" or has_numbered_caption then
+            source_table_counter = source_table_counter + 1
+          end
+          for label in body:gmatch("\\label%s*{([^}]+)}") do
+            if label:match("^table:") or label:match("^tab:") then
+              source_table_numbers[label] = tostring(source_chapter) .. "." .. tostring(source_table_counter)
+            end
+          end
         end
         position = environment_end + 1
       end
@@ -156,11 +172,11 @@ local function collect_source_table_numbers()
   end
 end
 
-collect_source_table_numbers()
+collect_source_object_numbers()
 
-local function prepend_caption_number(caption, number)
+local function prepend_caption_number(caption, kind, number)
   local prefix = pandoc.Inlines({
-    pandoc.Str("Table"),
+    pandoc.Str(kind),
     pandoc.Space(),
     pandoc.Str(number .. ":"),
     pandoc.Space(),
@@ -328,6 +344,7 @@ local numbering_filter = {
     if el.level == 1 and not has_class(el, "unnumbered") then
       chapter = chapter + 1
       table_counter = 0
+      figure_counter = 0
       equation_counter = 0
     end
   end,
@@ -348,10 +365,40 @@ local numbering_filter = {
       number = number_string(table_counter)
     end
     el.attributes["data-number"] = number
-    prepend_caption_number(el.caption, number)
+    prepend_caption_number(el.caption, "Table", number)
 
     if el.identifier ~= "" then
       references[el.identifier] = { number = number, kind = "table" }
+    end
+    return el
+  end,
+
+  Figure = function(el)
+    if pandoc.utils.stringify(el.caption) == "" then
+      return nil
+    end
+
+    local number = source_figure_numbers[el.identifier]
+    if number then
+      figure_counter = tonumber(number:match("%.(%d+)$")) or figure_counter
+    else
+      figure_counter = figure_counter + 1
+      number = number_string(figure_counter)
+    end
+    el.attributes["data-number"] = number
+    prepend_caption_number(el.caption, "Figure", number)
+
+    if el.identifier ~= "" then
+      references[el.identifier] = { number = number, kind = "figure" }
+      local remove_duplicate_anchor = {
+        Span = function(span)
+          if span.identifier == el.identifier then
+            return {}
+          end
+        end,
+      }
+      el.caption.long = el.caption.long:walk(remove_duplicate_anchor)
+      el.content = el.content:walk(remove_duplicate_anchor)
     end
     return el
   end,
