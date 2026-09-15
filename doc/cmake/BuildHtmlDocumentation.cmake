@@ -76,4 +76,4 @@ endif()
 # Copy assets that pandoc doesn't copy for chunked output
 file(COPY "${HTML_ASSETS_DIR}/style.css" DESTINATION "${HTML_OUT_DIR}")
 file(MAKE_DIRECTORY "${HTML_OUT_DIR}/media")
-file(COPY "${ORIGINAL_CMAKE_SOURCE_DIR}/../release/ep_nobg.png" DESTINATION "${HTML_OUT_DIR}/media")
+file(COPY "${ORIGINAL_CMAKE_SOURCE_DIR}/../release/ep_nobg.svg" DESTINATION "${HTML_OUT_DIR}/media")

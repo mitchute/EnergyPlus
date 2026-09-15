@@ -30,4 +30,4 @@ python3 "../cmake/build_search_index.py" chunked/sitemap.json chunked/search-ind
 # Copy assets that pandoc doesn't copy for chunked output
 cp "$ASSETS/style.css" chunked/
 mkdir -p chunked/media
-cp ../../release/ep_nobg.png chunked/media/
+cp ../../release/ep_nobg.svg chunked/media/
