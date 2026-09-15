@@ -23,7 +23,7 @@ file(REMOVE_RECURSE "${HTML_OUT_DIR}")
 execute_process(
   COMMAND "${PANDOC}"
           --to=chunkedhtml
-          --mathml
+          --math-method=mathml
           --standalone
           --table-of-contents
           --split-level=2
@@ -34,6 +34,7 @@ execute_process(
           --include-in-header=${HTML_ASSETS_DIR}/header.html
           --include-after-body=${HTML_ASSETS_DIR}/footer.html
           --lua-filter=${HTML_ASSETS_DIR}/bootstrap-tables.lua
+          --lua-filter=${HTML_ASSETS_DIR}/numbered-cross-references.lua
           --lua-filter=${HTML_ASSETS_DIR}/object-index.lua
           ${INNAME}.tex
   RESULT_VARIABLE ERRCODE

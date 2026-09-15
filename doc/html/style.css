@@ -161,6 +161,50 @@ blockquote {
     border-left: 3px solid var(--bs-secondary-border-subtle);
 }
 
+/* Numbered display equations */
+.equation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: stretch;
+    column-gap: 1rem;
+    margin: 1rem 0;
+}
+
+.equation-math {
+    align-self: center;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 0.25rem;
+    text-align: center;
+}
+
+.equation-math math[display="block"] {
+    margin: 0 auto;
+}
+
+.equation-numbers {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    min-width: max-content;
+}
+
+.equation-numbers > p {
+    margin: 0;
+}
+
+.equation-number:target {
+    background-color: rgba(var(--bs-warning-rgb), 0.35);
+}
+
+.equation-inline {
+    display: grid;
+    margin: 1rem 0;
+    text-align: initial;
+    width: 100%;
+}
+
 /* Pagination Styles */
 .pagination {
     margin-top: 3rem;

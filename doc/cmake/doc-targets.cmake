@@ -41,6 +41,15 @@ macro( CREATE_HTML_DOC_TARGET SOURCE_FILENAME OUTPUT_DIRNAME )
             -P ${PROJECT_SOURCE_DIR}/cmake/BuildHtmlDocumentation.cmake
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/${SOURCE_FILENAME}
     DEPENDS ${INCLUDED_TEX} ${INCLUDED_IMAGES}
+            ${PROJECT_SOURCE_DIR}/cmake/BuildHtmlDocumentation.cmake
+            ${PROJECT_SOURCE_DIR}/cmake/build_search_index.py
+            ${PROJECT_SOURCE_DIR}/html/bootstrap-tables.lua
+            ${PROJECT_SOURCE_DIR}/html/numbered-cross-references.lua
+            ${PROJECT_SOURCE_DIR}/html/object-index.lua
+            ${PROJECT_SOURCE_DIR}/html/template_chunked.html
+            ${PROJECT_SOURCE_DIR}/html/header.html
+            ${PROJECT_SOURCE_DIR}/html/footer.html
+            ${PROJECT_SOURCE_DIR}/html/style.css
     )
 
   add_custom_target( zHTML_${OUTPUT_DIRNAME}

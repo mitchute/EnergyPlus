@@ -109,18 +109,6 @@ function Span(el)
   end
 end
 
-function Link(el)
-  local table_number = {
-    ["#table:solar-spectral-irradiance-function"] = "7.7",
-    ["#table:photopic-response-function"] = "7.8",
-  }
-  local number = table_number[el.target]
-  if number then
-    el.content = pandoc.Inlines({ pandoc.Str(number) })
-    return el
-  end
-end
-
 function Table(el)
   el.attr.classes:insert("table")
   el.attr.classes:insert("table-bordered")
