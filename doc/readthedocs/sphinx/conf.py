@@ -39,7 +39,7 @@ pygments_style = None
 
 # -- Options for HTML output -------------------------------------------------
 html_theme = "sphinx_rtd_theme"
-html_logo = "../../../release/favicon_white_plus.png"
+html_logo = "../../../release/ep_nobg.svg"
 html_show_sphinx = False
 html_show_copyright = True
 html_extra_path = ["_build_c"]
