@@ -323,9 +323,12 @@ namespace PlantManager {
             state->dataPlnt->PlantCallingOrderInfo(order).LoopIndex = loopNum;
             state->dataPlnt->PlantCallingOrderInfo(order).LoopSide = loopSide;
         };
-        std::array<std::pair<int, LoopSideLocation>, 6> halfLoops = {
-            {{1, LoopSideLocation::Demand}, {1, LoopSideLocation::Supply}, {2, LoopSideLocation::Demand},
-             {2, LoopSideLocation::Supply}, {3, LoopSideLocation::Demand}, {3, LoopSideLocation::Supply}}};
+        std::array<std::pair<int, LoopSideLocation>, 6> halfLoops = {{{1, LoopSideLocation::Demand},
+                                                                      {1, LoopSideLocation::Supply},
+                                                                      {2, LoopSideLocation::Demand},
+                                                                      {2, LoopSideLocation::Supply},
+                                                                      {3, LoopSideLocation::Demand},
+                                                                      {3, LoopSideLocation::Supply}}};
         std::array<int, 6> permutation = {0, 1, 2, 3, 4, 5};
         do {
             for (int order = 1; order <= state->dataPlnt->TotNumHalfLoops; ++order) {
