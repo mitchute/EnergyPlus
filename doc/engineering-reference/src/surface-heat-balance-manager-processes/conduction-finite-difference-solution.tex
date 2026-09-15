@@ -145,7 +145,7 @@ less than 10.
 EnergyPlus also uses a separate, outer iteration loop across all the different
 inside surface heat balances so that internal long-wave radiation exchange can
 be properly solved. For CTF formulations, this iteration is controlled by a
-maximum allowable temperature difference of \SI{0.002}\celsius\ for inside face
+maximum allowable temperature difference of \SI{0.002}{\celsius} for inside face
 surface temperatures from one iteration to the next (or a limit of 100 iterations).
 CondFD uses the same default value for allowable temperature difference as CTF.
 However, this parameter was found to often need to be smaller for stability and
@@ -206,9 +206,9 @@ example only.  Using smaller or larger temperature differences would shrink or
 expand the freezing or melting regions accordingly.
 \item The total latent heat transferred during the phase transition process is
 set to 25000 J/kg
-\item The peak freezing temperature is set to \SI{23}\celsius, where the
+\item The peak freezing temperature is set to \SI{23}{\celsius}, where the
 freezing curve transition is centered.
-\item The peak melting temperature is set to \SI{27}\celsius, where the
+\item The peak melting temperature is set to \SI{27}{\celsius}, where the
 melting curve transition is centered.
 \end{itemize}
 
@@ -234,10 +234,10 @@ k = k_o + k_1\left( T_i - 20 \right)
 %
 where:
 \begin{wherelist}
-\item[k_o] is the \SI{20}\celsius\ value of thermal conductivity (normal IDF
+\item[k_o] is the \SI{20}{\celsius} value of thermal conductivity (normal IDF
 input)
 \item[k_1] is the change in conductivity per degree temperature difference from
-\SI{20}\celsius
+\SI{20}{\celsius}
 \end{wherelist}
 
 As of Version 7, the CondFD implementation was changed to evaluate the thermal
@@ -276,7 +276,7 @@ value for k1 and set of enthalpy temperature pairs that describe the enthalpy of
 the phase change material in straight line segments with respect to temperature.
 
 A graph showing the effect of a large PCM on the outside surface of a zone is
-shown below. The phase change temperature was \SI{30}\celsius, and the flat
+shown below. The phase change temperature was \SI{30}{\celsius}, and the flat
 temperature response during the phase change is obvious. This example was run
 with a zone time step of one minute to show that such small time steps can be
 done with the finite difference solution technique. It is more efficient to set
