@@ -1212,7 +1212,7 @@ PMV_{vr} = PMV(t_{a}, t_{r}, v_{r}, *)
 \end{equation}
 
 \begin{equation}
-PPD_{ad} = \frac{exp⁡(-2.58 + 3.05 * v_{ankle} - 1.06 * PMV_{vr})}{1 + exp⁡(-2.58 + 3.05 * v_{ankle} - 1.06 * PMV_{vr}} * 100
+PPD_{ad} = 100 \frac{\exp(-2.58 + 3.05 v_{ankle} - 1.06 PMV_{vr})}{1 + \exp(-2.58 + 3.05 v_{ankle} - 1.06 PMV_{vr})}
 \end{equation}
 
 Where \(v_{r}\) is the relative air velocity caused by body movement, and \(v_{ankle}\) is the air speed at 0.1 m above the floor.

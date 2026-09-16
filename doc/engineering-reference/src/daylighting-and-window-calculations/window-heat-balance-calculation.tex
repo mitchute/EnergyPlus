@@ -1065,7 +1065,7 @@ The pressure balance equation for airflow through the gap is:
 \label{eq:PressureBalanceEquationAirflow}
 \end{equation}
 
-Here, \emph{Δp\(_{T}\)} is the driving pressure difference between room air and gap air. It is given by:
+Here, \(\Delta p_T\) is the driving pressure difference between room air and gap air. It is given by:
 
 \begin{equation}
 \Delta {p_T} = {\rho_0}{T_0}gH\sin \phi \frac{{\left| {{T_{gap}} - {T_{gap,in}}} \right|}}{{{T_{gap}}{T_{gap,in}}}}
@@ -1087,7 +1087,7 @@ where
 
 \emph{T\(_{gap,in}\)} = gap inlet temperature ( = zone air temperature for interior shading) (K)
 
-The \emph{Δp\(_{B}\)} term is due to the acceleration of air to velocity \emph{v} (Bernoulli's law). It is given by:
+The \(\Delta p_B\) term is due to the acceleration of air to velocity \emph{v} (Bernoulli's law). It is given by:
 
 \begin{equation}
 \Delta {p_B} = \frac{\rho }{2}{v^2}{\mathrm{    (Pa)}}
@@ -1095,7 +1095,7 @@ The \emph{Δp\(_{B}\)} term is due to the acceleration of air to velocity \emph{
 
 where \emph{$\rho$}~is the gap air density evaluated at \emph{T\(_{gap}\)} (kg/m\(^{3}\)).
 
-The \emph{Δp\(_{HP}\)} term represents the pressure drop due to friction with the shading layer and glass surfaces as the air moves through the gap. Assuming steady laminar flow, it is given by the Hagen-Poiseuille law for flow between parallel plates {[}Munson et al. 1998{]}:
+The \(\Delta p_{HP}\) term represents the pressure drop due to friction with the shading layer and glass surfaces as the air moves through the gap. Assuming steady laminar flow, it is given by the Hagen-Poiseuille law for flow between parallel plates {[}Munson et al. 1998{]}:
 
 \begin{equation}
 \Delta {p_{HP}} = 12\mu \frac{H}{{{s^2}}}{v^{}}{\mathrm{    (Pa)}}
@@ -1103,7 +1103,7 @@ The \emph{Δp\(_{HP}\)} term represents the pressure drop due to friction with t
 
 where \emph{$\mu$} is the viscosity of air at temperature \emph{T\(_{gap}\)} (Pa-s).
 
-The \emph{Δp\(_{Z}\)} term is the sum of the pressure drops at the inlet and outlet openings:
+The \(\Delta p_Z\) term is the sum of the pressure drops at the inlet and outlet openings:
 
 \begin{equation}
 \Delta {p_Z} = \frac{{\rho {v^2}}}{2}\left( {{Z_{in}} + {Z_{out}}} \right){\mathrm{    (Pa)}}
@@ -1156,7 +1156,7 @@ A\(_{r}\) = area of the right-side opening (m\(^{2}\))
 
 A\(_{h}\) = air permeability of the shading device expressed as the total area of openings (``holes'') in the shade surface (these openings are assumed to be uniformly distributed over the shade) (m\(^{2}\))
 
-Figure~\ref{fig:examples-of-openings-for-an-interior-shading} shows examples of A\(_{bot}\), A\(_{top}\), A\(_{l}\) and A\(_{r}\) for different shading device configurations.~ These areas range from zero to a maximum value equal to the associated shade/screen/blind-to-glass cross-sectional area; i.e., A\(_{bot}\) and A\(_{top}\) ≤ sW,~ A\(_{l}\) and A\(_{r}\) ≤ sH.
+Figure~\ref{fig:examples-of-openings-for-an-interior-shading} shows examples of \(A_{bot}\), \(A_{top}\), \(A_l\), and \(A_r\) for different shading device configurations.~ These areas range from zero to a maximum value equal to the associated shade/screen/blind-to-glass cross-sectional area; i.e., \(A_{bot}, A_{top} \le sW\) and \(A_l, A_r \le sH\).
 
 \begin{figure}[hbtp] % fig 103
 \centering
@@ -1883,7 +1883,7 @@ Adding conductance of the air at 0.001 torr (\emph{C}\(_{COND}\) = 0.08 W/(m\(^{
 
 \emph{Soft Coat Low-e:~~~~~ U = 0.27 W/(m\(^{2}\)·K) {[}0.048 Btu/(hr·ft\(^{2}\)·ºF){]}}
 
-In contrast, the U-factor of the same configuration with the air at atmospheric pressure will be (For the space width of 50 mm, C\(_{COND}\) ≈ 450 W/m\(^{2}\)K):
+In contrast, the U-factor of the same configuration with the air at atmospheric pressure will be (for the space width of 50 mm, \(C_{COND} \approx 450\ \mathrm{W/(m^2 K)}\)):
 
 \emph{Clear Glass: ~~~~~~~~~~ U = 5.52 W/(m\(^{2}\)·K) {[}0.468 Btu/(hr·ft\(^{2}\)·ºF){]}}
 

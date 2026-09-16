@@ -81,11 +81,11 @@ $\varphi$' & Relative azimuth angle (angle between screen surface normal and ver
 $\alpha$' & Relative altitude angle (angle between screen surface horizontal normal plane and direction of incident beam radiation, Ref. Figure 87) & Rad & SunAltitudeToScreenNormal \tabularnewline
 $\rho$\(_{sc}\) & Beam-to-diffuse solar reflectance of screen material & - & Screens.ReflectCylinder \tabularnewline
 $\gamma$ & Screen material aspect ratio & - & Screens.ScreenDiameterTo SpacingRatio \tabularnewline
-Α & Spectral absorption coefficient & m\(^{-1}\) & - \tabularnewline
+\(\alpha\) & Spectral absorption coefficient & m\(^{-1}\) & - \tabularnewline
 D & Glass thickness & M & Material.Thickness \tabularnewline
 N & Index of refraction & - & ngf, ngb \tabularnewline
-Κ & Extinction coefficient & - & - \tabularnewline
-Β & Intermediate variable & - & betaf, betab \tabularnewline
+\(\kappa\) & Extinction coefficient & - & - \tabularnewline
+\(\beta\) & Intermediate variable & - & betaf, betab \tabularnewline
 P, p & A general property, such as transmittance & - & - \tabularnewline
 \bottomrule
 \end{longtable}
@@ -575,7 +575,7 @@ Calculation of optical properties is divided into two categories: uncoated glass
 
 \subsubsection{Angular Properties for Uncoated Glass}\label{angular-properties-for-uncoated-glass}
 
-The following discussion assumes that optical quantities such as transmissivity, reflectivity, absorptivity, and index of refraction are a function of wavelength, λ. If there are no spectral data the angular dependence is calculated based on the single values for transmittance and reflectance in the visible and solar range. In the visible range an average wavelength of 0.575 microns is used in the calculations. In the solar range an average wavelength of 0.898 microns is used.
+The following discussion assumes that optical quantities such as transmissivity, reflectivity, absorptivity, and index of refraction are a function of wavelength, \(\lambda\). If there are no spectral data the angular dependence is calculated based on the single values for transmittance and reflectance in the visible and solar range. In the visible range an average wavelength of 0.575 microns is used in the calculations. In the solar range an average wavelength of 0.898 microns is used.
 
 The spectral data include the transmittance, \emph{T}, and the reflectance, \emph{R}. For uncoated glass the reflectance is the same for the front and back surfaces. For angle of incidence, \(\phi\) , the transmittance and reflectance are related to the transmissivity, \(\tau\), and reflectivity, \(\rho\), by the following relationships:
 
@@ -1561,7 +1561,7 @@ The first component of the window screen transmittance model is a geometric repr
 \caption{Schematic of a vertical window screen facing due South \protect \label{fig:schematic-of-a-vertical-window-screen-facing}}
 \end{figure}
 
-Given the diffuse reflectance \(\rho_sc\) and the screen aspect ratio \(\gamma\), the model takes the direction of solar incidence, the relative solar altitude angle α' and the relative solar azimuth angle \(\phi\)', illustrated in Figure~\ref{fig:schematic-of-a-vertical-window-screen-facing}, and calculates the direct beam transmittance \emph{T\(_{beam}\)} (\(\alpha\)', \(\varphi\)') as follows. Since the direct beam transmittance is only a function of the incident angle and the screen material aspect ratio, the following applies to both solar and visible radiation.
+Given the diffuse reflectance \(\rho_{sc}\) and the screen aspect ratio \(\gamma\), the model takes the direction of solar incidence, the relative solar altitude angle \(\alpha'\) and the relative solar azimuth angle \(\phi'\), illustrated in Figure~\ref{fig:schematic-of-a-vertical-window-screen-facing}, and calculates the direct beam transmittance \(T_{beam}\) (\(\alpha'\), \(\varphi'\)) as follows. Since the direct beam transmittance is only a function of the incident angle and the screen material aspect ratio, the following applies to both solar and visible radiation.
 
 \begin{equation}
 \alpha '' = {\mathrm{arctan}}\left( {\tan \alpha '\sec \varphi '} \right)
@@ -2181,7 +2181,7 @@ The LBNL method, which focuses on glazing systems consisting of plane-parallel l
 Equations~\ref{eq:ScriptLx2pj2x1pi1S1pi1Integral} (without the delta distribution in \textbf{\emph{x}}) and~\ref{eq:lambdaspjEquation} are then considered to define the components of a diagonal matrix:
 
 \begin{equation}
-\begin{array}{ccc}{{\mathbf{\Lambda }^{{\mathrm{(s)}}}} = \left( {{\Lambda ^{{\mathrm{(s)}}}}_{ij}} \right)}&{{\mathrm{where}}}&{\Lambda_{ij}^{{\mathrm{(s)}}} = \left( {{{\mathbf{p}}_j}\cdot {{\mathbf{n}}^{{\mathrm{(s)}}}}} \right)\Delta {\Omega_j}{\delta_{ij}}}\end{array}
+\begin{array}{ccc}{{\boldsymbol{\Lambda}^{{\mathrm{(s)}}}} = \left( {{\Lambda ^{{\mathrm{(s)}}}}_{ij}} \right)}&{{\mathrm{where}}}&{\Lambda_{ij}^{{\mathrm{(s)}}} = \left( {{{\mathbf{p}}_j}\cdot {{\mathbf{n}}^{{\mathrm{(s)}}}}} \right)\Delta {\Omega_j}{\delta_{ij}}}\end{array}
 \label{eq:LambdasEquation}
 \end{equation}
 
@@ -2233,11 +2233,11 @@ and Equations~\ref{eq:SofptotheTDiffEq} -~\ref{eq:dEpIdAEquation} can be rewritt
 \end{equation}
 
 \begin{equation}
-{{\mathbf{E}}^{{\mathrm{(I)}}}}{\mathbf{ = }}{\mathbf{\Lambda }^{{\mathrm{(I)}}}} \cdot {{\mathbf{S}}^{{\mathrm{(I)}}}}
+{{\mathbf{E}}^{{\mathrm{(I)}}}}{\mathbf{ = }}{\boldsymbol{\Lambda}^{{\mathrm{(I)}}}} \cdot {{\mathbf{S}}^{{\mathrm{(I)}}}}
 \end{equation}
 
 \begin{equation}
-{{\mathbf{S}}^{{\mathrm{(T)}}}}{\mathbf{ = T}} \cdot {\mathbf{\Lambda }^{{\mathrm{(I)}}}} \cdot {{\mathbf{S}}^{{\mathrm{(I)}}}}
+{{\mathbf{S}}^{{\mathrm{(T)}}}}{\mathbf{ = T}} \cdot {\boldsymbol{\Lambda}^{{\mathrm{(I)}}}} \cdot {{\mathbf{S}}^{{\mathrm{(I)}}}}
 \end{equation}
 
 (These are for radiation incident on the front surface of the fenestration; there is a similar set of equations for radiation incident on the back surface and propagating in an opposite sense to that in the above equations.)
@@ -2810,7 +2810,7 @@ AISurf\left(SurfNum\right) =& \frac{AbsIntSurf\left(SurfNum\right)}{A\left(SurfN
 
 \emph{TBm\(_{k,j}\)} = beam-to-beam transmittance of exterior window i at incidence direction k outgoing direction j
 
-\emph{Λ\(_{k,j}\)} = lambda value of exterior window i at incidence direction k for outgoing direction j
+\(\Lambda_{k,j}\) = lambda value of exterior window i at incidence direction k for outgoing direction j
 
 \emph{Aoverlap\(_{k,j}\)(SurfNum)} = beam solar irradiated area of surface \emph{SurfNum} projected back onto the plane of exterior window i for incoming direction k and outgoing direction j (the \emph{Aoverlap}'s for an exterior window sum up to the glazed area of the window)
 
