@@ -25,6 +25,7 @@
 \usepackage{multirow}
 \usepackage{listings}
 \usepackage{enumitem}
+\usepackage{fancyhdr}
 \PassOptionsToPackage{hyphens}{url}\usepackage[breaklinks=true]{hyperref}
 
 % Background Color for Note/Admonition Boxes
@@ -61,7 +62,15 @@
 
 \graphicspath{{media/}}
 
-\pagestyle{headings}
+% Keep long chapter and section marks clear of the page number.  The standard
+% headings page style lets marks grow into the number on narrow pages.
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\parbox[b]{0.82\headwidth}{\raggedright\small\slshape\nouppercase{\rightmark}}}
+\fancyhead[RE]{\parbox[b]{0.82\headwidth}{\raggedleft\small\slshape\nouppercase{\leftmark}}}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{28pt}
 
 % Define custom commands from Pandoc
 \setlength{\emergencystretch}{3em}  % prevent overfull lines

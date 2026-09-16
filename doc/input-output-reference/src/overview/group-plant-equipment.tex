@@ -7642,7 +7642,7 @@ ChillerHeaterPerformance:Electric:EIR,
 
 Note that much of these output variables are adapted from the definitions above under ``Generic Chiller Outputs'' and ``Electric EIR Chiller Outputs.'' The following outputs are repeated up to the maximum of individual chiller-heater module objects. The maximum number may be different from the number of object defined in this object when users define two or more identical chiller-heater modules for a single chiller heater object in the central heat pump system.
 
-\subsubsection{Chiller Heater Operation Mode Unit \textless{}x\textgreater{} \protect\hyperlink{section-1}{~}}\label{chiller-heater-operation-mode-unit-x}
+\subsubsection{Chiller Heater Operation Mode Unit \textless{}x\textgreater{}}\label{chiller-heater-operation-mode-unit-x}
 
 This output represents the operating mode of the chiller-heater module. Two single mode outputs and three simultaneous cooling-heating mode outputs are possible:
 
@@ -7667,11 +7667,11 @@ The first mode 0 is reported when the chiller-heater is turned off. The next two
 
 Note that the decision to operate individual chiller-heater modules is solely dependent on the chiller-heater schedule and loads. A fraction may appear in case the chiller-heater mode varies within a zone time step. In this particular case, users may define a detailed reporting frequency for this output variable.
 
-\subsubsection{Chiller Heater Part Load Ratio Unit \textless{}x\textgreater{} \protect\hyperlink{section-1}{~}}\label{chiller-heater-part-load-ratio-unit-x}
+\subsubsection{Chiller Heater Part Load Ratio Unit \textless{}x\textgreater{}}\label{chiller-heater-part-load-ratio-unit-x}
 
 This output is the ratio of the evaporator heat transfer rate plus the false load heat transfer rate (if applicable) to the available chiller-heater capacity. This value is used to determine ChillerEIRFPLR.
 
-\subsubsection{Chiller Heater Cycling Ratio Unit \textless{}x\textgreater{} \protect\hyperlink{section-1}{~}}\label{chiller-heater-cycling-ratio-unit-x}
+\subsubsection{Chiller Heater Cycling Ratio Unit \textless{}x\textgreater{}}\label{chiller-heater-cycling-ratio-unit-x}
 
 The cycling ratio is the amount of time the chiller-heater operates during each simulation time step. If the chiller-heater part-load ratio falls below the minimum part-load ratio, the chiller-heater cycles on and off to meet the loads.
 

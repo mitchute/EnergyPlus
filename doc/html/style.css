@@ -82,11 +82,27 @@ a:focus {
 }
 
 /* Code Block Styles */
-.hljs {
-    padding: 1.25rem 1em !important;
+.bd-content pre {
+    margin: 1rem 0;
+    padding: 1.25rem 1em;
+    overflow-x: auto;
     border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
     background-color: var(--bd-pre-bg);
+    font-size: 0.875em;
+    line-height: 1.45;
+}
+
+.bd-content pre code,
+.bd-content pre code.hljs {
+    display: block;
+    padding: 0 !important;
+    border: 0;
+    border-radius: 0;
+    color: inherit;
+    background: transparent;
+    font-size: inherit;
+    white-space: pre;
 }
 
 /* Heading Anchor Links */

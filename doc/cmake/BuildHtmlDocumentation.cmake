@@ -61,6 +61,19 @@ if(NOT ERRCODE EQUAL 0)
   message(FATAL_ERROR "pandoc failed to build the HTML documentation for ${INNAME} (error code ${ERRCODE})")
 endif()
 
+# Resolve cross-references whose destinations are in other chunked pages, and
+# remove invalid or duplicate identifiers introduced by the LaTeX conversion.
+execute_process(
+  COMMAND "${Python_EXECUTABLE}" "${ORIGINAL_CMAKE_SOURCE_DIR}/cmake/fix_chunked_html.py"
+          "${HTML_OUT_DIR}"
+  RESULT_VARIABLE ERRCODE
+  COMMAND_ECHO ${COMMAND_ECHO_MODE}
+)
+
+if(NOT ERRCODE EQUAL 0)
+  message(FATAL_ERROR "Failed to clean generated HTML for ${INNAME} (error code ${ERRCODE})")
+endif()
+
 # Build search index from sitemap (levels 2, 3 & 5: groups, objects, field names)
 execute_process(
   COMMAND "${Python_EXECUTABLE}" "${ORIGINAL_CMAKE_SOURCE_DIR}/cmake/build_search_index.py"
