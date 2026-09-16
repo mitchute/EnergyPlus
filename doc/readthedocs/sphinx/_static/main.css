@@ -9,3 +9,11 @@
     margin-bottom: 10px;
     background: transparent;
 }
+
+/* Keep documentation figures readable without allowing them to dominate wide screens. */
+figure img {
+    width: auto !important;
+    height: auto !important;
+    max-width: min(100%, 7in);
+    max-height: 7in;
+}
