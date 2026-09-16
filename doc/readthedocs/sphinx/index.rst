@@ -6,7 +6,7 @@ architects, and researchers to model energy consumption and water use in buildin
 brings together the user guides, application guidance, developer documentation, and API references.
 
 New to EnergyPlus? Begin with the :doc:`Quick Start Guide <quick_start/quick_start>` or the
-:doc:`Getting Started guide <guides/getting-started/index>`.
+:doc:`EnergyPlus Essentials <essentials/essentials>`.
 
 Downloads and releases
 ----------------------
@@ -30,12 +30,17 @@ or browse `all available releases <https://github.com/NatLabRockies/EnergyPlus/r
    :maxdepth: 1
    :caption: User guides
 
-   guides/getting-started/index
    guides/input-output-reference/index
    guides/engineering-reference/index
    guides/external-interfaces-application-guide/index
    guides/output-details-and-examples/index
    guides/plant-application-guide/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Older documentation
+
+   guides/getting-started/index
    guides/module-developer/index
    guides/interface-developer/index
    guides/using-energyplus-for-compliance/index
