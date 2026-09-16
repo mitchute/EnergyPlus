@@ -2436,10 +2436,8 @@ void InitializeLoops(EnergyPlusData &state, bool const FirstHVACIteration) // tr
                     for (int callingIndex = 1; callingIndex <= state.dataPlnt->TotNumHalfLoops; ++callingIndex) {
                         auto const &callingOrderEntry = state.dataPlnt->PlantCallingOrderInfo(callingIndex);
                         char const loopSideLabel = callingOrderEntry.LoopSide == LoopSideLocation::Demand ? 'D' : 'S';
-                        initialCallingOrder.push_back(std::format("{}{} = {}",
-                                                                  callingOrderEntry.LoopIndex,
-                                                                  loopSideLabel,
-                                                                  state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name));
+                        initialCallingOrder.push_back(std::format(
+                            "{}{} = {}", callingOrderEntry.LoopIndex, loopSideLabel, state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name));
                     }
                     RevisePlantCallingOrder(state);
 
@@ -2447,10 +2445,8 @@ void InitializeLoops(EnergyPlusData &state, bool const FirstHVACIteration) // tr
                     for (int callingIndex = 1; callingIndex <= state.dataPlnt->TotNumHalfLoops; ++callingIndex) {
                         auto const &callingOrderEntry = state.dataPlnt->PlantCallingOrderInfo(callingIndex);
                         char const loopSideLabel = callingOrderEntry.LoopSide == LoopSideLocation::Demand ? 'D' : 'S';
-                        revisedCallingOrder.push_back(std::format("{}{} = {}",
-                                                                  callingOrderEntry.LoopIndex,
-                                                                  loopSideLabel,
-                                                                  state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name));
+                        revisedCallingOrder.push_back(std::format(
+                            "{}{} = {}", callingOrderEntry.LoopIndex, loopSideLabel, state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name));
                     }
                     ShowMessage(state, std::format("Initial plant calling order: {}", initialCallingOrder.front()));
                     for (std::size_t callingIndex = 1; callingIndex < initialCallingOrder.size(); ++callingIndex) {
