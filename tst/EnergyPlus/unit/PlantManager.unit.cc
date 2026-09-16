@@ -345,6 +345,72 @@ namespace PlantManager {
         } while (std::next_permutation(permutation.begin(), permutation.end()));
     }
 
+    TEST_F(EnergyPlusFixture, PlantManager_RevisePlantCallingOrderConvergesLongDependencyChain)
+    {
+        state->init_state(*state);
+        state->dataPlnt->TotNumLoops = 6;
+        state->dataPlnt->TotNumHalfLoops = 12;
+        state->dataPlnt->PlantLoop.allocate(6);
+        state->dataPlnt->PlantCallingOrderInfo.allocate(12);
+
+        auto connectLoopSides =
+            [&](int loopNum, LoopSideLocation loopSide, int connectedLoopNum, LoopSideLocation connectedLoopSide, bool loopDemandsOnRemote) {
+                auto &connected = state->dataPlnt->PlantLoop(loopNum).LoopSide(loopSide);
+                connected.TotalConnected = 1;
+                connected.Connected.allocate(1);
+                connected.Connected(1).LoopNum = connectedLoopNum;
+                connected.Connected(1).LoopSideNum = connectedLoopSide;
+                connected.Connected(1).LoopDemandsOnRemote = loopDemandsOnRemote;
+            };
+        auto addDependency = [&](int beforeLoopNum, LoopSideLocation beforeLoopSide, int afterLoopNum, LoopSideLocation afterLoopSide) {
+            connectLoopSides(beforeLoopNum, beforeLoopSide, afterLoopNum, afterLoopSide, true);
+            connectLoopSides(afterLoopNum, afterLoopSide, beforeLoopNum, beforeLoopSide, false);
+        };
+
+        // 4S -> 3D -> 3S -> 2D -> 2S -> 5D -> 5S -> 6D -> 6S -> 1D
+        addDependency(4, LoopSideLocation::Supply, 3, LoopSideLocation::Demand);
+        addDependency(3, LoopSideLocation::Supply, 2, LoopSideLocation::Demand);
+        addDependency(2, LoopSideLocation::Supply, 5, LoopSideLocation::Demand);
+        addDependency(5, LoopSideLocation::Supply, 6, LoopSideLocation::Demand);
+        addDependency(6, LoopSideLocation::Supply, 1, LoopSideLocation::Demand);
+
+        for (int loopNum = 1; loopNum <= state->dataPlnt->TotNumLoops; ++loopNum) {
+            state->dataPlnt->PlantCallingOrderInfo(loopNum).LoopIndex = loopNum;
+            state->dataPlnt->PlantCallingOrderInfo(loopNum).LoopSide = LoopSideLocation::Demand;
+            state->dataPlnt->PlantCallingOrderInfo(loopNum + state->dataPlnt->TotNumLoops).LoopIndex = loopNum;
+            state->dataPlnt->PlantCallingOrderInfo(loopNum + state->dataPlnt->TotNumLoops).LoopSide = LoopSideLocation::Supply;
+        }
+
+        RevisePlantCallingOrder(*state);
+
+        auto expectBefore = [&](int beforeLoopNum, LoopSideLocation beforeLoopSide, int afterLoopNum, LoopSideLocation afterLoopSide) {
+            EXPECT_LT(FindLoopSideInCallingOrder(*state, beforeLoopNum, beforeLoopSide),
+                      FindLoopSideInCallingOrder(*state, afterLoopNum, afterLoopSide));
+        };
+        for (int loopNum = 1; loopNum <= state->dataPlnt->TotNumLoops; ++loopNum) {
+            expectBefore(loopNum, LoopSideLocation::Demand, loopNum, LoopSideLocation::Supply);
+        }
+        expectBefore(4, LoopSideLocation::Supply, 3, LoopSideLocation::Demand);
+        expectBefore(3, LoopSideLocation::Supply, 2, LoopSideLocation::Demand);
+        expectBefore(2, LoopSideLocation::Supply, 5, LoopSideLocation::Demand);
+        expectBefore(5, LoopSideLocation::Supply, 6, LoopSideLocation::Demand);
+        expectBefore(6, LoopSideLocation::Supply, 1, LoopSideLocation::Demand);
+
+        std::array<std::pair<int, LoopSideLocation>, 12> convergedOrder;
+        for (int callingIndex = 1; callingIndex <= state->dataPlnt->TotNumHalfLoops; ++callingIndex) {
+            auto const &callingOrderEntry = state->dataPlnt->PlantCallingOrderInfo(callingIndex);
+            convergedOrder[callingIndex - 1] = {callingOrderEntry.LoopIndex, callingOrderEntry.LoopSide};
+        }
+
+        RevisePlantCallingOrder(*state);
+
+        for (int callingIndex = 1; callingIndex <= state->dataPlnt->TotNumHalfLoops; ++callingIndex) {
+            auto const &callingOrderEntry = state->dataPlnt->PlantCallingOrderInfo(callingIndex);
+            EXPECT_EQ(convergedOrder[callingIndex - 1].first, callingOrderEntry.LoopIndex);
+            EXPECT_EQ(convergedOrder[callingIndex - 1].second, callingOrderEntry.LoopSide);
+        }
+    }
+
     TEST_F(EnergyPlusFixture, PlantManager_CheckPlantEquipmentCtrlType)
     {
         // Check size and alignment of DataPlant::PlantEquipmentCtrlType

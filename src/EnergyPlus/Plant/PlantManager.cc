@@ -2428,8 +2428,25 @@ void InitializeLoops(EnergyPlusData &state, bool const FirstHVACIteration) // tr
 
             // step 3, revise calling order
             // have now called each plant component model at least once with InitLoopEquip = .TRUE.
-            //  this means the calls to InterConnectTwoPlantLoopSides have now been made, so rework calling order
-            RevisePlantCallingOrder(state);
+            // this means the calls to InterConnectTwoPlantLoopSides have now been made. Revise once because
+            // RevisePlantCallingOrder internally converges all demand-before-supply and inter-loop constraints.
+            if (passNum == 1) {
+                RevisePlantCallingOrder(state);
+
+                if (state.dataGlobal->DisplayExtraWarnings) {
+                    std::string callingOrder;
+                    for (int callingIndex = 1; callingIndex <= state.dataPlnt->TotNumHalfLoops; ++callingIndex) {
+                        auto const &callingOrderEntry = state.dataPlnt->PlantCallingOrderInfo(callingIndex);
+                        char const loopSideLabel = callingOrderEntry.LoopSide == LoopSideLocation::Demand ? 'D' : 'S';
+                        callingOrder += std::format("{}{}{}[{}]",
+                                                    callingIndex == 1 ? "" : " -> ",
+                                                    callingOrderEntry.LoopIndex,
+                                                    loopSideLabel,
+                                                    state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name);
+                    }
+                    ShowMessage(state, std::format("Plant calling order after revision: {}", callingOrder));
+                }
+            }
 
             // Step 4: Simulate plant loop components so their design flows are included
 
@@ -3618,10 +3635,10 @@ void RevisePlantCallingOrder(EnergyPlusData &state)
     // Setup the order that plant loop sides are to be called while preserving demand-before-supply for each loop.
 
     // METHODOLOGY EMPLOYED:
-    // Start with the demand-before-supply order established by SetupInitialPlantCallingOrder, then rearrange
-    // loop sides to account for interconnected components. Existing interconnection rules also avoid moving a
-    // supply side before its own demand side. Because later shifts can otherwise disturb that relationship,
-    // restore demand-before-supply for every loop after processing the interconnections.
+    // Repeatedly rearrange loop sides for interconnected components, then restore demand-before-supply for
+    // every loop. A repair can disturb an interconnection that was already ordered, so continue until a full
+    // revision leaves the calling order unchanged. Limit the number of revisions to the number of half loops
+    // so inconsistent cyclic dependencies cannot iterate indefinitely.
 
     // Using/Aliasing
     using PlantUtilities::ShiftPlantLoopSideCallingOrder;
@@ -3633,58 +3650,78 @@ void RevisePlantCallingOrder(EnergyPlusData &state)
     bool thisLoopPutsDemandOnAnother;
     int ConnctNum;
 
-    for (int HalfLoopNum = 1; HalfLoopNum <= state.dataPlnt->TotNumHalfLoops; ++HalfLoopNum) {
+    for (int revision = 1; revision <= state.dataPlnt->TotNumHalfLoops; ++revision) {
+        Array1D<PlantCallingOrderInfoStruct> previousCallingOrder(state.dataPlnt->PlantCallingOrderInfo);
 
-        int LoopNum = state.dataPlnt->PlantCallingOrderInfo(HalfLoopNum).LoopIndex;
-        LoopSideNum = state.dataPlnt->PlantCallingOrderInfo(HalfLoopNum).LoopSide;
+        for (int HalfLoopNum = 1; HalfLoopNum <= state.dataPlnt->TotNumHalfLoops; ++HalfLoopNum) {
 
-        if (allocated(state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected)) {
-            for (ConnctNum = 1; ConnctNum <= isize(state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected); ++ConnctNum) {
-                int OtherLoopNum = state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected(ConnctNum).LoopNum;
-                OtherLoopSideNum = state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected(ConnctNum).LoopSideNum;
-                state.dataPlantMgr->OtherLoopCallingIndex = FindLoopSideInCallingOrder(state, OtherLoopNum, OtherLoopSideNum);
+            int LoopNum = state.dataPlnt->PlantCallingOrderInfo(HalfLoopNum).LoopIndex;
+            LoopSideNum = state.dataPlnt->PlantCallingOrderInfo(HalfLoopNum).LoopSide;
 
-                thisLoopPutsDemandOnAnother = state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected(ConnctNum).LoopDemandsOnRemote;
-                if (thisLoopPutsDemandOnAnother) {                                 // make sure this loop side is called before the other loop side
-                    if (state.dataPlantMgr->OtherLoopCallingIndex < HalfLoopNum) { // rearrange
-                        state.dataPlantMgr->newCallingIndex = min(HalfLoopNum + 1, state.dataPlnt->TotNumHalfLoops);
-                        ShiftPlantLoopSideCallingOrder(state, state.dataPlantMgr->OtherLoopCallingIndex, state.dataPlantMgr->newCallingIndex);
-                    }
+            if (allocated(state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected)) {
+                for (ConnctNum = 1; ConnctNum <= isize(state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected); ++ConnctNum) {
+                    int OtherLoopNum = state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected(ConnctNum).LoopNum;
+                    OtherLoopSideNum = state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected(ConnctNum).LoopSideNum;
+                    state.dataPlantMgr->OtherLoopCallingIndex = FindLoopSideInCallingOrder(state, OtherLoopNum, OtherLoopSideNum);
 
-                } else {                                                           // make sure the other is called before this one
-                    if (state.dataPlantMgr->OtherLoopCallingIndex > HalfLoopNum) { // rearrange
-                        state.dataPlantMgr->newCallingIndex = max(HalfLoopNum, 1);
+                    thisLoopPutsDemandOnAnother = state.dataPlnt->PlantLoop(LoopNum).LoopSide(LoopSideNum).Connected(ConnctNum).LoopDemandsOnRemote;
+                    if (thisLoopPutsDemandOnAnother) { // make sure this loop side is called before the other loop side
+                        if (state.dataPlantMgr->OtherLoopCallingIndex < HalfLoopNum) { // rearrange
+                            state.dataPlantMgr->newCallingIndex = min(HalfLoopNum + 1, state.dataPlnt->TotNumHalfLoops);
+                            ShiftPlantLoopSideCallingOrder(state, state.dataPlantMgr->OtherLoopCallingIndex, state.dataPlantMgr->newCallingIndex);
+                        }
 
-                        if (OtherLoopSideNum == LoopSideLocation::Supply) { // if this is a supply side, don't push it before its own demand side
-                            state.dataPlantMgr->OtherLoopDemandSideCallingIndex =
-                                FindLoopSideInCallingOrder(state, OtherLoopNum, LoopSideLocation::Demand);
-                            if (state.dataPlantMgr->OtherLoopDemandSideCallingIndex < HalfLoopNum) { // good to go
-                                state.dataPlantMgr->newCallingIndex = min(state.dataPlantMgr->OtherLoopDemandSideCallingIndex + 1,
-                                                                          state.dataPlnt->TotNumHalfLoops); // put it right after its demand side
-                                ShiftPlantLoopSideCallingOrder(state, state.dataPlantMgr->OtherLoopCallingIndex, state.dataPlantMgr->newCallingIndex);
-                            } else { // move both sides of other loop before this, keeping demand side in front
-                                state.dataPlantMgr->NewOtherDemandSideCallingIndex = max(HalfLoopNum, 1);
-                                ShiftPlantLoopSideCallingOrder(
-                                    state, state.dataPlantMgr->OtherLoopDemandSideCallingIndex, state.dataPlantMgr->NewOtherDemandSideCallingIndex);
-                                // get fresh pointer after it has changed in previous call
-                                state.dataPlantMgr->OtherLoopCallingIndex = FindLoopSideInCallingOrder(state, OtherLoopNum, OtherLoopSideNum);
-                                state.dataPlantMgr->newCallingIndex = state.dataPlantMgr->NewOtherDemandSideCallingIndex + 1;
+                    } else {                                                           // make sure the other is called before this one
+                        if (state.dataPlantMgr->OtherLoopCallingIndex > HalfLoopNum) { // rearrange
+                            state.dataPlantMgr->newCallingIndex = max(HalfLoopNum, 1);
+
+                            if (OtherLoopSideNum == LoopSideLocation::Supply) { // if this is a supply side, don't push it before its own demand side
+                                state.dataPlantMgr->OtherLoopDemandSideCallingIndex =
+                                    FindLoopSideInCallingOrder(state, OtherLoopNum, LoopSideLocation::Demand);
+                                if (state.dataPlantMgr->OtherLoopDemandSideCallingIndex < HalfLoopNum) { // good to go
+                                    state.dataPlantMgr->newCallingIndex = min(state.dataPlantMgr->OtherLoopDemandSideCallingIndex + 1,
+                                                                              state.dataPlnt->TotNumHalfLoops); // put it right after its demand side
+                                    ShiftPlantLoopSideCallingOrder(
+                                        state, state.dataPlantMgr->OtherLoopCallingIndex, state.dataPlantMgr->newCallingIndex);
+                                } else { // move both sides of other loop before this, keeping demand side in front
+                                    state.dataPlantMgr->NewOtherDemandSideCallingIndex = max(HalfLoopNum, 1);
+                                    ShiftPlantLoopSideCallingOrder(state,
+                                                                   state.dataPlantMgr->OtherLoopDemandSideCallingIndex,
+                                                                   state.dataPlantMgr->NewOtherDemandSideCallingIndex);
+                                    // get fresh pointer after it has changed in previous call
+                                    state.dataPlantMgr->OtherLoopCallingIndex = FindLoopSideInCallingOrder(state, OtherLoopNum, OtherLoopSideNum);
+                                    state.dataPlantMgr->newCallingIndex = state.dataPlantMgr->NewOtherDemandSideCallingIndex + 1;
+                                    ShiftPlantLoopSideCallingOrder(
+                                        state, state.dataPlantMgr->OtherLoopCallingIndex, state.dataPlantMgr->newCallingIndex);
+                                }
+                            } else {
                                 ShiftPlantLoopSideCallingOrder(state, state.dataPlantMgr->OtherLoopCallingIndex, state.dataPlantMgr->newCallingIndex);
                             }
-                        } else {
-                            ShiftPlantLoopSideCallingOrder(state, state.dataPlantMgr->OtherLoopCallingIndex, state.dataPlantMgr->newCallingIndex);
                         }
                     }
                 }
             }
         }
-    }
 
-    for (int loopNum = 1; loopNum <= state.dataPlnt->TotNumLoops; ++loopNum) {
-        int demandIndex = FindLoopSideInCallingOrder(state, loopNum, LoopSideLocation::Demand);
-        int supplyIndex = FindLoopSideInCallingOrder(state, loopNum, LoopSideLocation::Supply);
-        if (demandIndex > supplyIndex) {
-            ShiftPlantLoopSideCallingOrder(state, demandIndex, supplyIndex);
+        for (int loopNum = 1; loopNum <= state.dataPlnt->TotNumLoops; ++loopNum) {
+            int demandIndex = FindLoopSideInCallingOrder(state, loopNum, LoopSideLocation::Demand);
+            int supplyIndex = FindLoopSideInCallingOrder(state, loopNum, LoopSideLocation::Supply);
+            if (demandIndex > supplyIndex) {
+                ShiftPlantLoopSideCallingOrder(state, demandIndex, supplyIndex);
+            }
+        }
+
+        bool callingOrderChanged = false;
+        for (int callingIndex = 1; callingIndex <= state.dataPlnt->TotNumHalfLoops; ++callingIndex) {
+            auto const &previousEntry = previousCallingOrder(callingIndex);
+            auto const &currentEntry = state.dataPlnt->PlantCallingOrderInfo(callingIndex);
+            if (previousEntry.LoopIndex != currentEntry.LoopIndex || previousEntry.LoopSide != currentEntry.LoopSide) {
+                callingOrderChanged = true;
+                break;
+            }
+        }
+        if (!callingOrderChanged) {
+            break;
         }
     }
 }
