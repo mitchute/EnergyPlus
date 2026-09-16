@@ -2431,20 +2431,37 @@ void InitializeLoops(EnergyPlusData &state, bool const FirstHVACIteration) // tr
             // this means the calls to InterConnectTwoPlantLoopSides have now been made. Revise once because
             // RevisePlantCallingOrder internally converges all demand-before-supply and inter-loop constraints.
             if (passNum == 1) {
-                RevisePlantCallingOrder(state);
-
                 if (state.dataGlobal->DisplayExtraWarnings) {
-                    std::string callingOrder;
+                    std::vector<std::string> initialCallingOrder;
                     for (int callingIndex = 1; callingIndex <= state.dataPlnt->TotNumHalfLoops; ++callingIndex) {
                         auto const &callingOrderEntry = state.dataPlnt->PlantCallingOrderInfo(callingIndex);
                         char const loopSideLabel = callingOrderEntry.LoopSide == LoopSideLocation::Demand ? 'D' : 'S';
-                        callingOrder += std::format("{}{}{}[{}]",
-                                                    callingIndex == 1 ? "" : " -> ",
-                                                    callingOrderEntry.LoopIndex,
-                                                    loopSideLabel,
-                                                    state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name);
+                        initialCallingOrder.push_back(std::format("{}{} = {}",
+                                                                  callingOrderEntry.LoopIndex,
+                                                                  loopSideLabel,
+                                                                  state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name));
                     }
-                    ShowMessage(state, std::format("Plant calling order after revision: {}", callingOrder));
+                    RevisePlantCallingOrder(state);
+
+                    std::vector<std::string> revisedCallingOrder;
+                    for (int callingIndex = 1; callingIndex <= state.dataPlnt->TotNumHalfLoops; ++callingIndex) {
+                        auto const &callingOrderEntry = state.dataPlnt->PlantCallingOrderInfo(callingIndex);
+                        char const loopSideLabel = callingOrderEntry.LoopSide == LoopSideLocation::Demand ? 'D' : 'S';
+                        revisedCallingOrder.push_back(std::format("{}{} = {}",
+                                                                  callingOrderEntry.LoopIndex,
+                                                                  loopSideLabel,
+                                                                  state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name));
+                    }
+                    ShowMessage(state, std::format("Initial plant calling order: {}", initialCallingOrder.front()));
+                    for (std::size_t callingIndex = 1; callingIndex < initialCallingOrder.size(); ++callingIndex) {
+                        ShowContinueError(state, std::format("                             {}", initialCallingOrder[callingIndex]));
+                    }
+                    ShowMessage(state, std::format("Revised plant calling order: {}", revisedCallingOrder.front()));
+                    for (std::size_t callingIndex = 1; callingIndex < revisedCallingOrder.size(); ++callingIndex) {
+                        ShowContinueError(state, std::format("                             {}", revisedCallingOrder[callingIndex]));
+                    }
+                } else {
+                    RevisePlantCallingOrder(state);
                 }
             }
 
