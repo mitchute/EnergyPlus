@@ -2428,21 +2428,24 @@ void InitializeLoops(EnergyPlusData &state, bool const FirstHVACIteration) // tr
 
             // step 3, revise calling order
             // have now called each plant component model at least once with InitLoopEquip = .TRUE.
-            //  this means the calls to InterConnectTwoPlantLoopSides have now been made, so rework calling order
-            RevisePlantCallingOrder(state);
+            // this means the calls to InterConnectTwoPlantLoopSides have now been made. Revise once because
+            // RevisePlantCallingOrder internally converges all demand-before-supply and inter-loop constraints.
+            if (passNum == 1) {
+                RevisePlantCallingOrder(state);
 
-            if (state.dataGlobal->DisplayExtraWarnings) {
-                std::string callingOrder;
-                for (int callingIndex = 1; callingIndex <= state.dataPlnt->TotNumHalfLoops; ++callingIndex) {
-                    auto const &callingOrderEntry = state.dataPlnt->PlantCallingOrderInfo(callingIndex);
-                    char const loopSideLabel = callingOrderEntry.LoopSide == LoopSideLocation::Demand ? 'D' : 'S';
-                    callingOrder += std::format("{}{}{}[{}]",
-                                                callingIndex == 1 ? "" : " -> ",
-                                                callingOrderEntry.LoopIndex,
-                                                loopSideLabel,
-                                                state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name);
+                if (state.dataGlobal->DisplayExtraWarnings) {
+                    std::string callingOrder;
+                    for (int callingIndex = 1; callingIndex <= state.dataPlnt->TotNumHalfLoops; ++callingIndex) {
+                        auto const &callingOrderEntry = state.dataPlnt->PlantCallingOrderInfo(callingIndex);
+                        char const loopSideLabel = callingOrderEntry.LoopSide == LoopSideLocation::Demand ? 'D' : 'S';
+                        callingOrder += std::format("{}{}{}[{}]",
+                                                    callingIndex == 1 ? "" : " -> ",
+                                                    callingOrderEntry.LoopIndex,
+                                                    loopSideLabel,
+                                                    state.dataPlnt->PlantLoop(callingOrderEntry.LoopIndex).Name);
+                    }
+                    ShowMessage(state, std::format("Plant calling order after revision: {}", callingOrder));
                 }
-                ShowMessage(state, std::format("Plant calling order after revision pass {}: {}", passNum, callingOrder));
             }
 
             // Step 4: Simulate plant loop components so their design flows are included
