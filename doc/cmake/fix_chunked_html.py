@@ -108,9 +108,7 @@ def main() -> int:
         identifier = match.group(1)
         return f'id="{identifier_renames.get(identifier, identifier)}"'
 
-    normalized_contents = {
-        path: ID_RE.sub(rename_id, source) for path, source in contents.items()
-    }
+    normalized_contents = {path: ID_RE.sub(rename_id, source) for path, source in contents.items()}
 
     # Keep the first occurrence of an identifier in each chunk.  Explicit
     # LaTeX labels are commonly emitted as empty spans immediately after the
@@ -142,6 +140,7 @@ def main() -> int:
     links_repaired = 0
     ids_normalized = len(identifier_renames)
     for path, source in deduplicated_contents.items():
+
         def repair_href(match: re.Match[str]) -> str:
             nonlocal links_repaired
             href = match.group(1)
