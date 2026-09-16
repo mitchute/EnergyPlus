@@ -50,6 +50,67 @@ local function text_blocks(value)
   return { pandoc.Plain({ pandoc.Str(value) }) }
 end
 
+local function cell_text(cell)
+  return trim(pandoc.utils.stringify(cell.contents or {}))
+end
+
+local function row_is_empty(row)
+  for _, cell in ipairs(row.cells or {}) do
+    if cell_text(cell) ~= "" then
+      return false
+    end
+  end
+  return true
+end
+
+local function rows_match(first, second)
+  local first_cells = first.cells or {}
+  local second_cells = second.cells or {}
+  if #first_cells ~= #second_cells then
+    return false
+  end
+
+  for index, cell in ipairs(first_cells) do
+    if cell_text(cell) ~= cell_text(second_cells[index]) then
+      return false
+    end
+  end
+  return true
+end
+
+local function remove_repeated_header(el)
+  local head_rows = el.head and el.head.rows or {}
+  if #head_rows == 0 then
+    return
+  end
+
+  for _, body in ipairs(el.bodies or {}) do
+    local body_rows = body.body or {}
+    local repeated_header_start = 1
+
+    while body_rows[repeated_header_start]
+        and row_is_empty(body_rows[repeated_header_start]) do
+      repeated_header_start = repeated_header_start + 1
+    end
+
+    local header_matches = true
+    for index, head_row in ipairs(head_rows) do
+      local body_row = body_rows[repeated_header_start + index - 1]
+      if not body_row or not rows_match(head_row, body_row) then
+        header_matches = false
+        break
+      end
+    end
+
+    if header_matches then
+      local rows_to_remove = repeated_header_start + #head_rows - 1
+      for _ = 1, rows_to_remove do
+        table.remove(body_rows, 1)
+      end
+    end
+  end
+end
+
 function Div(el)
   if not el.classes:includes("tabular") then
     return nil
@@ -117,6 +178,7 @@ function Span(el)
 end
 
 function Table(el)
+  remove_repeated_header(el)
   el.attr.classes:insert("table")
   el.attr.classes:insert("table-bordered")
   el.attr.classes:insert("table-striped")
