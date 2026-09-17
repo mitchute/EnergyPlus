@@ -20,7 +20,8 @@ Move into the Python API doc folder: `cd doc/readthedocs/sphinx/`.
 Run the Sphinx built Makefile: `make html`.
 Browse the built docs at: `doc/readthedocs/sphinx/_build/html/index.html`
 
-To build the LaTeX ones via pandoc, **AFTER** running `make html`, run `make -j $(nproc) guides`
+To build the complete local Read the Docs site, including the LaTeX guides converted via Pandoc,
+run `make -j $(nproc) guides`. The target builds Sphinx first so the guide landing pages are copied last.
 
 ## Adding Documentation
 The Python and C API documentation are generated directly from the API sources (.py files and .h files) in the api source directory: `src/EnergyPlus/api`.

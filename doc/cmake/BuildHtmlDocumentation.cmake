@@ -4,6 +4,7 @@
   # OUTNAME, the directory name to use under html/ in the build tree (eg "input-output-reference")
   # HTML_ASSETS_DIR, the doc/html directory holding the shared templates/css/lua filters
   # ORIGINAL_CMAKE_SOURCE_DIR, the root of the source repo (doc/)
+  # HTML_DOCS_HOME_URL, the relative or absolute link back to the containing documentation site
   # ORIGINAL_CMAKE_BINARY_DIR, the root of the build tree (doc/'s binary dir)
   # Python_EXECUTABLE, used to build the search index from pandoc's sitemap.json
 
@@ -36,6 +37,12 @@ else()
   set(PANDOC_MATHML_OPTION "--mathml")
 endif()
 
+set(OBJECT_INDEX_FILTER)
+if(OUTNAME STREQUAL "input-output-reference")
+  set(OBJECT_INDEX_FILTER
+      "--lua-filter=${HTML_ASSETS_DIR}/object-index.lua")
+endif()
+
 execute_process(
   COMMAND "${PANDOC}"
           --to=chunkedhtml
@@ -44,6 +51,7 @@ execute_process(
           --table-of-contents
           --split-level=2
           --metadata=doc-class:${OUTNAME}
+          --variable=home-url:${HTML_DOCS_HOME_URL}
           --output=${HTML_OUT_DIR}
           --template=${HTML_ASSETS_DIR}/template_chunked.html
           --css=style.css
@@ -51,7 +59,7 @@ execute_process(
           --include-after-body=${HTML_ASSETS_DIR}/footer.html
           --lua-filter=${HTML_ASSETS_DIR}/bootstrap-tables.lua
           --lua-filter=${HTML_ASSETS_DIR}/numbered-cross-references.lua
-          --lua-filter=${HTML_ASSETS_DIR}/object-index.lua
+          ${OBJECT_INDEX_FILTER}
           ${INNAME}.tex
   RESULT_VARIABLE ERRCODE
   COMMAND_ECHO ${COMMAND_ECHO_MODE}
@@ -61,8 +69,9 @@ if(NOT ERRCODE EQUAL 0)
   message(FATAL_ERROR "pandoc failed to build the HTML documentation for ${INNAME} (error code ${ERRCODE})")
 endif()
 
-# Resolve cross-references whose destinations are in other chunked pages, and
-# remove invalid or duplicate identifiers introduced by the LaTeX conversion.
+# Add contents links to chapter landing pages, resolve cross-references
+# whose destinations are in other chunks, and remove invalid or duplicate
+# identifiers introduced by the LaTeX conversion.
 execute_process(
   COMMAND "${Python_EXECUTABLE}" "${ORIGINAL_CMAKE_SOURCE_DIR}/cmake/fix_chunked_html.py"
           "${HTML_OUT_DIR}"
@@ -74,7 +83,7 @@ if(NOT ERRCODE EQUAL 0)
   message(FATAL_ERROR "Failed to clean generated HTML for ${INNAME} (error code ${ERRCODE})")
 endif()
 
-# Build search index from sitemap (levels 2, 3 & 5: groups, objects, field names)
+# Build the search index from page, group, object, and field headings in Pandoc's sitemap.
 execute_process(
   COMMAND "${Python_EXECUTABLE}" "${ORIGINAL_CMAKE_SOURCE_DIR}/cmake/build_search_index.py"
           "${HTML_OUT_DIR}/sitemap.json" "${HTML_OUT_DIR}/search-index.js"

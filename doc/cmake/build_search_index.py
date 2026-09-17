@@ -65,7 +65,7 @@ import pathlib
 
 def collect(node, out):
     section = node["section"]
-    if int(section["level"]) in (2, 3, 5):
+    if int(section["level"]) in (1, 2, 3, 5):
         out.append({"t": section["title"], "p": section["path"]})
     for sub in node.get("subsections", []):
         collect(sub, out)

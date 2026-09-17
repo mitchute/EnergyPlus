@@ -62,13 +62,16 @@ can also emit duplicate identifiers (an automatic heading identifier followed
 by an equivalent LaTeX label) and identifiers containing whitespace.
 
 This script operates on the completed manual so it can resolve destinations
-across every generated chunk without guessing Pandoc's output filenames.
+across every generated chunk without guessing Pandoc's output filenames. It
+also adds subsection links to chapter landing pages, including chunks whose
+source would otherwise contain only a heading.
 """
 
 from __future__ import annotations
 
 import argparse
 import html
+import json
 import os
 import re
 from pathlib import Path
@@ -76,6 +79,61 @@ from urllib.parse import unquote, urlsplit
 
 ID_RE = re.compile(r'\bid="([^"]*)"')
 HREF_RE = re.compile(r'\bhref="([^"]*)"')
+CHAPTER_HEADING_RE = re.compile(
+    r'(?P<heading><div class="bd-content[^"]*">\s*<h1\b[^>]*>.*?</h1>)',
+    re.DOTALL,
+)
+
+
+def add_chapter_contents(html_directory: Path, contents: dict[Path, str]) -> int:
+    sitemap_path = html_directory / "sitemap.json"
+    if not sitemap_path.exists():
+        return 0
+
+    sitemap = json.loads(sitemap_path.read_text(encoding="utf-8"))
+    contents_added = 0
+    for chapter in sitemap.get("subsections", []):
+        section = chapter.get("section", {})
+        subsections = chapter.get("subsections", [])
+        chapter_url = section.get("path", "")
+        if not chapter_url or not subsections:
+            continue
+
+        chapter_path = html_directory / urlsplit(chapter_url).path
+        source = contents.get(chapter_path)
+        if source is None or 'id="section-contents"' in source:
+            continue
+
+        items = []
+        for subsection in subsections:
+            subsection_data = subsection.get("section", {})
+            target = subsection_data.get("path", "")
+            title = subsection_data.get("title", "")
+            if not target or not title:
+                continue
+            number = subsection_data.get("number")
+            label = f"{number} {title}" if number else title
+            items.append(f'        <li><a href="{html.escape(target, quote=True)}">' f"{html.escape(label)}</a></li>")
+
+        if not items:
+            continue
+
+        chapter_contents = (
+            '\n      <nav class="section-contents mt-4" aria-labelledby="section-contents">\n'
+            '        <h2 id="section-contents">Contents</h2>\n'
+            "        <ul>\n" + "\n".join(items) + "\n        </ul>\n"
+            "      </nav>"
+        )
+        updated, replacements = CHAPTER_HEADING_RE.subn(
+            lambda match: match.group("heading") + chapter_contents,
+            source,
+            count=1,
+        )
+        if replacements:
+            contents[chapter_path] = updated
+            contents_added += 1
+
+    return contents_added
 
 
 def normalized_identifier(identifier: str) -> str:
@@ -96,6 +154,8 @@ def main() -> int:
 
     files = sorted(args.html_directory.glob("*.html"))
     contents = {path: path.read_text(encoding="utf-8") for path in files}
+
+    chapter_contents_added = add_chapter_contents(args.html_directory, contents)
 
     identifier_renames: dict[str, str] = {}
     for source in contents.values():
@@ -175,6 +235,7 @@ def main() -> int:
 
     print(
         "Chunked HTML cleanup: "
+        f"added contents to {chapter_contents_added} chapter pages, "
         f"normalized {ids_normalized} identifiers, "
         f"removed {duplicates_removed} duplicate identifiers, "
         f"and repaired {links_repaired} cross-chunk links"

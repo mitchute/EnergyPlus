@@ -15,6 +15,7 @@ pandoc --to=chunkedhtml \
   --table-of-contents=true \
   --split-level=2 \
   --output=chunked \
+  --variable=home-url:../index.html \
   --template "$ASSETS/template_chunked.html" \
   --css=style.css \
   --number-sections=false \
@@ -24,7 +25,7 @@ pandoc --to=chunkedhtml \
   --lua-filter="$ASSETS/object-index.lua" \
   input-output-reference.tex
 
-# Build search index from sitemap (levels 2, 3 & 5)
+# Build the search index from page, group, object, and field headings in the sitemap.
 python3 "../cmake/build_search_index.py" chunked/sitemap.json chunked/search-index.js
 
 # Copy assets that pandoc doesn't copy for chunked output

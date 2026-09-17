@@ -18,6 +18,9 @@ find_package(LATEX COMPONENTS XELATEX)
 
 option(BUILD_HTML_DOCS "Also build paginated HTML documentation (requires pandoc)" OFF)
 
+set(HTML_DOCS_HOME_URL "../index.html" CACHE STRING
+    "Home-page URL embedded in generated HTML guide pages")
+
 if(BUILD_HTML_DOCS)
   find_program(PANDOC NAMES pandoc)
   if(NOT PANDOC)
@@ -57,7 +60,7 @@ if(EXISTS "${XELATEX_COMPILER}")
       DESTINATION ${PROJECT_BINARY_DIR}/html)
 
     # Aggregate target: depends on each individual zHTML_<doc> target added via create_html_doc_target
-    if(hasParent AND BUILD_DOCS_ONLY_WITH_PACKAGE)
+    if(hasParent AND DOCUMENTATION_BUILD STREQUAL "BuildOnlyWithPackage")
       # Because we don't want to rebuild doc automatically, we do not add it to the 'ALL' rule
       message(STATUS "The target `html_docs` was added, but not to the default build rule. It will be triggered by `make html_docs` or `make package`")
       add_custom_target(html_docs)

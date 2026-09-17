@@ -78,6 +78,26 @@ local function rows_match(first, second)
   return true
 end
 
+local function rows_match_at(rows, start_index, expected_rows)
+  for offset, expected in ipairs(expected_rows) do
+    local row = rows[start_index + offset - 1]
+    if not row or not rows_match(expected, row) then
+      return false
+    end
+  end
+  return true
+end
+
+local function clear_booktabs_rule_artifacts(row)
+  for _, cell in ipairs(row.cells or {}) do
+    -- Pandoc sometimes renders a \cmidrule(r){2-4} range as a literal
+    -- "2-4" span in the next header row.
+    if cell_text(cell):match("^%d+%s*%-%s*%d+$") then
+      cell.contents = pandoc.Blocks({})
+    end
+  end
+end
+
 local function remove_repeated_header(el)
   local head_rows = el.head and el.head.rows or {}
   if #head_rows == 0 then
@@ -86,26 +106,48 @@ local function remove_repeated_header(el)
 
   for _, body in ipairs(el.bodies or {}) do
     local body_rows = body.body or {}
-    local repeated_header_start = 1
 
-    while body_rows[repeated_header_start]
-        and row_is_empty(body_rows[repeated_header_start]) do
-      repeated_header_start = repeated_header_start + 1
-    end
-
-    local header_matches = true
-    for index, head_row in ipairs(head_rows) do
-      local body_row = body_rows[repeated_header_start + index - 1]
-      if not body_row or not rows_match(head_row, body_row) then
-        header_matches = false
+    -- A longtable's first-page header can have continuation rows that Pandoc
+    -- places at the start of the body.  The repeated \endhead block then
+    -- follows those rows, often separated by an empty row.  Locate that
+    -- repeated copy near the beginning instead of requiring it at row one.
+    local repeated_header_start
+    for index = 1, math.min(#body_rows, 20) do
+      if rows_match_at(body_rows, index, head_rows) then
+        repeated_header_start = index
         break
       end
     end
 
-    if header_matches then
-      local rows_to_remove = repeated_header_start + #head_rows - 1
+    if repeated_header_start then
+      local continuation_rows = {}
+      local last_continuation_index = 0
+      for index = 1, repeated_header_start - 1 do
+        if not row_is_empty(body_rows[index]) then
+          continuation_rows[#continuation_rows + 1] = body_rows[index]
+          last_continuation_index = index
+        end
+      end
+
+      local duplicate_end = repeated_header_start + #head_rows - 1
+      local duplicate_continuation_start = duplicate_end + 1
+      while body_rows[duplicate_continuation_start]
+          and row_is_empty(body_rows[duplicate_continuation_start]) do
+        duplicate_continuation_start = duplicate_continuation_start + 1
+      end
+      if #continuation_rows > 0
+          and rows_match_at(body_rows, duplicate_continuation_start, continuation_rows) then
+        duplicate_end = duplicate_continuation_start + #continuation_rows - 1
+      end
+
+      for _, row in ipairs(continuation_rows) do
+        clear_booktabs_rule_artifacts(row)
+      end
+
+      local first_removal = last_continuation_index + 1
+      local rows_to_remove = duplicate_end - first_removal + 1
       for _ = 1, rows_to_remove do
-        table.remove(body_rows, 1)
+        table.remove(body_rows, first_removal)
       end
     end
   end
