@@ -38,15 +38,6 @@ or browse `all available releases <https://github.com/NatLabRockies/EnergyPlus/r
 
 .. toctree::
    :maxdepth: 1
-   :caption: Older documentation
-
-   guides/getting-started/index
-   guides/module-developer/index
-   guides/interface-developer/index
-   guides/using-energyplus-for-compliance/index
-
-.. toctree::
-   :maxdepth: 1
    :caption: APIs and supporting documentation
 
    schema
@@ -55,6 +46,15 @@ or browse `all available releases <https://github.com/NatLabRockies/EnergyPlus/r
    auxiliary-programs/auxiliary-programs
    ems-application-guide/ems-application-guide
    acknowledgments/acknowledgments
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Older documentation
+
+   guides/getting-started/index
+   guides/module-developer/index
+   guides/interface-developer/index
+   guides/using-energyplus-for-compliance/index
 
 Support and project resources
 -----------------------------

@@ -23,6 +23,19 @@ Browse the built docs at: `doc/readthedocs/sphinx/_build/html/index.html`
 To build the complete local Read the Docs site, including the LaTeX guides converted via Pandoc,
 run `make -j $(nproc) guides`. The target builds Sphinx first so the guide landing pages are copied last.
 
+### Previewing the site locally
+
+From the repository root, build the complete site and start a local HTTP server:
+
+```bash
+make -C doc/readthedocs/sphinx -j 23 guides
+python3 -m http.server 8000 --directory doc/readthedocs/sphinx/_build/html
+```
+
+Open <http://127.0.0.1:8000/> in a browser. Keep the terminal running while viewing the site and
+press `Ctrl+C` to stop the server. After changing the documentation, rerun the `make` command and
+refresh the browser.
+
 ## Adding Documentation
 The Python and C API documentation are generated directly from the API sources (.py files and .h files) in the api source directory: `src/EnergyPlus/api`.
 - To edit the documentation, just edit the code there and rebuild the documentation.
