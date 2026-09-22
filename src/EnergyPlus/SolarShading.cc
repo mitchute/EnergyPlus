@@ -6173,13 +6173,8 @@ void SHDGSS(EnergyPlusData &state,
                 }
             } else if (state.dataSysVars->DisableGroupSelfShading) {
                 std::vector<int> DisabledZones = s_surf->SurfShadowDisabledZoneList(CurSurf);
-                bool isDisabledShadowSurf = false;
-                for (int i : DisabledZones) {
-                    if (surface.Zone == i) {
-                        isDisabledShadowSurf = true;
-                        break;
-                    }
-                }
+                bool isDisabledShadowSurf =
+                    std::any_of(DisabledZones.begin(), DisabledZones.end(), [&surface](int zoneNum) { return surface.Zone == zoneNum; });
                 if (isDisabledShadowSurf) {
                     continue; // Disable all shadowing surfaces in all disabled zones.
                 }

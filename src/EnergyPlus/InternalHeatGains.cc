@@ -3154,24 +3154,18 @@ namespace InternalHeatGains {
 
                         // Build list of fuel types used in each zone and space (excluding Water)
 
-                        bool found = false;
-                        for (Constant::eFuel fuelType : state.dataHeatBal->Zone(zoneNum).otherEquipFuelTypeNums) {
-                            if (thisZoneOthEq.OtherEquipFuelType == fuelType) {
-                                found = true;
-                                break;
-                            }
-                        }
+                        bool found = std::any_of(
+                            state.dataHeatBal->Zone(zoneNum).otherEquipFuelTypeNums.begin(),
+                            state.dataHeatBal->Zone(zoneNum).otherEquipFuelTypeNums.end(),
+                            [fuelType = thisZoneOthEq.OtherEquipFuelType](Constant::eFuel otherFuelType) { return fuelType == otherFuelType; });
                         if (!found) {
                             state.dataHeatBal->Zone(zoneNum).otherEquipFuelTypeNums.emplace_back(thisZoneOthEq.OtherEquipFuelType);
                             // state.dataHeatBal->Zone(zoneNum).otherEquipFuelTypeNames.emplace_back(FuelTypeString);
                         }
-                        found = false;
-                        for (Constant::eFuel fuelType : state.dataHeatBal->space(spaceNum).otherEquipFuelTypeNums) {
-                            if (thisZoneOthEq.OtherEquipFuelType == fuelType) {
-                                found = true;
-                                break;
-                            }
-                        }
+                        found = std::any_of(
+                            state.dataHeatBal->space(spaceNum).otherEquipFuelTypeNums.begin(),
+                            state.dataHeatBal->space(spaceNum).otherEquipFuelTypeNums.end(),
+                            [fuelType = thisZoneOthEq.OtherEquipFuelType](Constant::eFuel otherFuelType) { return fuelType == otherFuelType; });
                         if (!found) {
                             state.dataHeatBal->space(spaceNum).otherEquipFuelTypeNums.emplace_back(thisZoneOthEq.OtherEquipFuelType);
                             // state.dataHeatBal->space(spaceNum).otherEquipFuelTypeNames.emplace_back(FuelTypeString);
@@ -3356,23 +3350,17 @@ namespace InternalHeatGains {
 
                         // Build list of fuel types used in each zone and space (excluding Water)
 
-                        bool found = false;
-                        for (Constant::eFuel fuelType : state.dataHeatBal->Zone(zoneNum).otherEquipFuelTypeNums) {
-                            if (thisZoneOthEq.OtherEquipFuelType == fuelType) {
-                                found = true;
-                                break;
-                            }
-                        }
+                        bool found = std::any_of(
+                            state.dataHeatBal->Zone(zoneNum).otherEquipFuelTypeNums.begin(),
+                            state.dataHeatBal->Zone(zoneNum).otherEquipFuelTypeNums.end(),
+                            [fuelType = thisZoneOthEq.OtherEquipFuelType](Constant::eFuel otherFuelType) { return fuelType == otherFuelType; });
                         if (!found) {
                             state.dataHeatBal->Zone(zoneNum).otherEquipFuelTypeNums.emplace_back(thisZoneOthEq.OtherEquipFuelType);
                         }
-                        found = false;
-                        for (Constant::eFuel fuelType : state.dataHeatBal->space(spaceNum).otherEquipFuelTypeNums) {
-                            if (thisZoneOthEq.OtherEquipFuelType == fuelType) {
-                                found = true;
-                                break;
-                            }
-                        }
+                        found = std::any_of(
+                            state.dataHeatBal->space(spaceNum).otherEquipFuelTypeNums.begin(),
+                            state.dataHeatBal->space(spaceNum).otherEquipFuelTypeNums.end(),
+                            [fuelType = thisZoneOthEq.OtherEquipFuelType](Constant::eFuel otherFuelType) { return fuelType == otherFuelType; });
                         if (!found) {
                             state.dataHeatBal->space(spaceNum).otherEquipFuelTypeNums.emplace_back(thisZoneOthEq.OtherEquipFuelType);
                         }

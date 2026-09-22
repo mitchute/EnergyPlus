@@ -4961,13 +4961,9 @@ void GetInputDayliteRefPt(EnergyPlusData &state, bool &ErrorsFound)
 
 bool doesDayLightingUseDElight(EnergyPlusData const &state)
 {
-    auto const &dl = state.dataDayltg;
-    for (auto const &znDayl : dl->daylightControl) {
-        if (znDayl.DaylightMethod == DaylightingMethod::DElight) {
-            return true;
-        }
-    }
-    return false;
+    return std::any_of(state.dataDayltg->daylightControl.begin(), state.dataDayltg->daylightControl.end(), [](auto const &daylightControl) {
+        return daylightControl.DaylightMethod == DaylightingMethod::DElight;
+    });
 }
 
 void CheckTDDsAndLightShelvesInDaylitZones(EnergyPlusData &state)
@@ -6412,13 +6408,9 @@ void DayltgInteriorIllum(EnergyPlusData &state,
     // Check if glare level is less than maximum allowed at each ref pt.  If maximum
     // is exceeded at either ref pt, attempt to reduce glare to acceptable level by closing
     // shading device on windows that have shades that have not already been closed.
-    GlareFlag = false;
-    for (auto const &refPt : thisDayltgCtrl.refPts) {
-        if (refPt.glareIndex > thisDayltgCtrl.MaxGlareallowed) {
-            GlareFlag = true;
-            break;
-        }
-    }
+    GlareFlag = std::any_of(thisDayltgCtrl.refPts.begin(),
+                            thisDayltgCtrl.refPts.end(),
+                            [maxGlareAllowed = thisDayltgCtrl.MaxGlareallowed](auto const &refPt) { return refPt.glareIndex > maxGlareAllowed; });
 
     if (GlareFlag) {
         bool blnCycle = false;
@@ -9952,13 +9944,10 @@ void CalcMinIntWinSolidAngs(EnergyPlusData &state)
 
             // This is an interior window in enclNum
             int const winAdjEnclNum = s_surf->Surface(surf.ExtBoundCond).SolarEnclIndex;
-            bool IntWinNextToIntWinAdjZone = false; // True if an interior window is next to a zone with one or more exterior windows
-            for (int adjEnclNum : thisEnclDaylight.AdjIntWinEnclNums) {
-                if (winAdjEnclNum == adjEnclNum) {
-                    IntWinNextToIntWinAdjZone = true;
-                    break;
-                }
-            }
+            // True if an interior window is next to a zone with one or more exterior windows
+            bool IntWinNextToIntWinAdjZone = std::any_of(thisEnclDaylight.AdjIntWinEnclNums.begin(),
+                                                         thisEnclDaylight.AdjIntWinEnclNums.end(),
+                                                         [winAdjEnclNum](int adjEnclNum) { return winAdjEnclNum == adjEnclNum; });
 
             if (!IntWinNextToIntWinAdjZone) {
                 continue;

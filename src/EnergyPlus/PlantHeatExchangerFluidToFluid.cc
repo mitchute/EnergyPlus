@@ -46,6 +46,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // C++ Headers
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <format>
@@ -2127,16 +2128,13 @@ void HeatExchangerStruct::updateCompFlowData(EnergyPlusData &state)
 
 bool HeatExchangerStruct::hasSupplySideTES([[maybe_unused]] EnergyPlusData &state)
 {
-    for (auto const &loopSide : this->SupplySideLoop.loop->LoopSide) {
-        for (auto const &branch : loopSide.Branch) {
-            for (auto const &comp : branch.Comp) {
-                if (comp.Type == DataPlant::PlantEquipmentType::TS_IceDetailed || comp.Type == DataPlant::PlantEquipmentType::TS_IceSimple) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
+    return std::any_of(this->SupplySideLoop.loop->LoopSide.begin(), this->SupplySideLoop.loop->LoopSide.end(), [](auto const &loopSide) {
+        return std::any_of(loopSide.Branch.begin(), loopSide.Branch.end(), [](auto const &branch) {
+            return std::any_of(branch.Comp.begin(), branch.Comp.end(), [](auto const &comp) {
+                return comp.Type == DataPlant::PlantEquipmentType::TS_IceDetailed || comp.Type == DataPlant::PlantEquipmentType::TS_IceSimple;
+            });
+        });
+    });
 }
 
 } // namespace EnergyPlus::PlantHeatExchangerFluidToFluid

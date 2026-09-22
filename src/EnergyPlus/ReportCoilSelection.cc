@@ -46,6 +46,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // C++ Headers
+#include <algorithm>
 #include <format>
 #include <memory>
 #include <string>
@@ -602,13 +603,7 @@ namespace ReportCoilSelection {
                     for (int loopZone = 1; loopZone <= zoneCount; ++loopZone) {
                         int zoneIndex = state.dataAirLoop->AirToZoneNodeInfo(c->airloopNum).HeatCtrlZoneNums(loopZone);
                         // see if this zone is new or already in list
-                        bool found = false;
-                        for (auto const &z : c->zoneNum) {
-                            if (z == zoneIndex) {
-                                found = true;
-                                break;
-                            }
-                        }
+                        bool found = std::any_of(c->zoneNum.begin(), c->zoneNum.end(), [zoneIndex](int zoneNum) { return zoneNum == zoneIndex; });
                         if (!found) { // add it
                             c->zoneNum.emplace_back(zoneIndex);
                             c->zoneName.emplace_back(state.dataHeatBal->Zone(zoneIndex).Name);
