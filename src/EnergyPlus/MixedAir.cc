@@ -46,6 +46,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // C++ Headers
+#include <algorithm>
 #include <cmath>
 #include <format>
 #include <string>
@@ -3458,7 +3459,7 @@ void OAControllerProps::CalcOAController(EnergyPlusData &state, int const AirLoo
     Real64 MinOASchedVal = 1.0; // value of the minimum outside air schedule
     if (this->minOASched != nullptr) {
         MinOASchedVal = this->minOASched->getCurrentVal();
-        MinOASchedVal = min(max(MinOASchedVal, 0.0), 1.0);
+        MinOASchedVal = std::clamp(MinOASchedVal, 0.0, 1.0);
         OutAirMinFrac *= MinOASchedVal;
         this->OALimitingFactor = OALimitFactor::Limits;
     }
@@ -3519,7 +3520,7 @@ void OAControllerProps::CalcOAController(EnergyPlusData &state, int const AirLoo
         this->OALimitingFactor = OALimitFactor::DCV;
     }
 
-    OutAirMinFrac = min(max(OutAirMinFrac, 0.0), 1.0);
+    OutAirMinFrac = std::clamp(OutAirMinFrac, 0.0, 1.0);
 
     // At this point, OutAirMinFrac is still based on AirLoopFlow.DesSupply
     if (AirLoopNum > 0) {
@@ -3575,7 +3576,7 @@ void OAControllerProps::CalcOAController(EnergyPlusData &state, int const AirLoo
     // Apply Minimum Fraction of Outdoor Air Schedule
     if (this->minOAflowSched != nullptr) {
         Real64 MinOAflowfracVal = this->minOAflowSched->getCurrentVal();
-        MinOAflowfracVal = min(max(MinOAflowfracVal, 0.0), 1.0);
+        MinOAflowfracVal = std::clamp(MinOAflowfracVal, 0.0, 1.0);
         OutAirMinFrac = max(MinOAflowfracVal, OutAirMinFrac);
         Real64 minOAFracMassFlowRate = this->MixMassFlow * MinOAflowfracVal;
         if (minOAFracMassFlowRate > this->OAMassFlow) {
@@ -3588,7 +3589,7 @@ void OAControllerProps::CalcOAController(EnergyPlusData &state, int const AirLoo
     Real64 currentMaxOAMassFlowRate = this->MaxOAMassFlowRate;
     if (this->maxOAflowSched != nullptr) {
         Real64 MaxOAflowfracVal = this->maxOAflowSched->getCurrentVal();
-        MaxOAflowfracVal = min(max(MaxOAflowfracVal, 0.0), 1.0);
+        MaxOAflowfracVal = std::clamp(MaxOAflowfracVal, 0.0, 1.0);
         currentMaxOAMassFlowRate = min(this->MaxOAMassFlowRate, this->MixMassFlow * MaxOAflowfracVal);
         OutAirMinFrac = min(MaxOAflowfracVal, OutAirMinFrac);
         if (currentMaxOAMassFlowRate < this->OAMassFlow) {
@@ -4323,7 +4324,7 @@ void OAControllerProps::CalcOAEconomizer(EnergyPlusData &state,
             MaximumOAFracBySetPoint = OutAirSignal;
         }
     }
-    OutAirSignal = min(max(OutAirSignal, OutAirMinFrac), 1.0);
+    OutAirSignal = std::clamp(OutAirSignal, OutAirMinFrac, 1.0);
 
     // If no economizer, set to minimum and disable economizer and high humidity control
     if (this->Econo == EconoOp::NoEconomizer) {
@@ -4466,8 +4467,10 @@ void OAControllerProps::CalcOAEconomizer(EnergyPlusData &state,
                 // 1 - check min OA flow result
                 if (this->FixedMin) {
                     state.dataLoopNodes->Node(this->OANode).MassFlowRate =
-                        min(max(this->ExhMassFlow, OutAirMinFrac * state.dataAirLoop->AirLoopFlow(AirLoopNum).DesSupply),
-                            state.dataLoopNodes->Node(this->MixNode).MassFlowRate);
+                        std::clamp(this->ExhMassFlow,
+                                   std::min(OutAirMinFrac * state.dataAirLoop->AirLoopFlow(AirLoopNum).DesSupply,
+                                            state.dataLoopNodes->Node(this->MixNode).MassFlowRate),
+                                   state.dataLoopNodes->Node(this->MixNode).MassFlowRate);
                     state.dataLoopNodes->Node(this->RelNode).MassFlowRate =
                         max(state.dataLoopNodes->Node(this->OANode).MassFlowRate - this->ExhMassFlow, 0.0);
                     // save actual OA flow frac for use as min value for RegulaFalsi call
@@ -4556,7 +4559,7 @@ void OAControllerProps::CalcOAEconomizer(EnergyPlusData &state,
     }
 
     if (this->CoolCoilFreezeCheck) {
-        MaximumOAFracBySetPoint = min(max(MaximumOAFracBySetPoint, 0.0), 1.0);
+        MaximumOAFracBySetPoint = std::clamp(MaximumOAFracBySetPoint, 0.0, 1.0);
         this->MaxOAFracBySetPoint = MaximumOAFracBySetPoint;
 
         // This should not be messing with OutAirMinFrac, freeze protection should only limit economizer operation

@@ -46,6 +46,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // C++ Headers
+#include <algorithm>
 #include <cmath>
 #include <format>
 
@@ -2067,7 +2068,7 @@ void CalcPurchAirLoads(EnergyPlusData &state,
                             SupplyMassFlowRate = QZnCoolSP / CpAir / DeltaT;
                             if (((PurchAir.CoolingLimit == LimitType::FlowRate) || (PurchAir.CoolingLimit == LimitType::FlowRateAndCapacity)) &&
                                 (PurchAir.MaxCoolMassFlowRate > 0.0)) {
-                                SupplyMassFlowRate = min(max(SupplyMassFlowRate, 0.0), PurchAir.MaxCoolMassFlowRate);
+                                SupplyMassFlowRate = std::clamp(SupplyMassFlowRate, 0.0, PurchAir.MaxCoolMassFlowRate);
                             }
                             if (SupplyMassFlowRate > OAMassFlowRate) {
                                 EconoOn = true;

@@ -5223,10 +5223,10 @@ namespace Window {
 
             // now apply normalization factors to zero incidence angle properties
             tfp = tf0 * TransTmp;
-            tfp = max(min(1.0, tfp), 0.0);
+            tfp = std::clamp(tfp, 0.0, 1.0);
 
             rfp = rf0 * (1. - ReflectTmp) + ReflectTmp;
-            rfp = max(min(0.9999 - tfp, rfp), 0.0);
+            rfp = std::clamp(rfp, 0.0, std::max(0.9999 - tfp, 0.0));
 
             rbp = rfp;
 

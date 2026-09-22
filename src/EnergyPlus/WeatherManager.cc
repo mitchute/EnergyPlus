@@ -46,6 +46,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // C++ Headers
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdio>
@@ -2225,9 +2226,9 @@ namespace Weather {
         }
 
         if (state.dataEnvrn->IsSnow) {
-            state.dataEnvrn->GndReflectance = max(min(state.dataEnvrn->GndReflectance * state.dataWeather->SnowGndRefModifier, 1.0), 0.0);
+            state.dataEnvrn->GndReflectance = std::clamp(state.dataEnvrn->GndReflectance * state.dataWeather->SnowGndRefModifier, 0.0, 1.0);
             state.dataEnvrn->GndReflectanceForDayltg =
-                max(min(state.dataEnvrn->GndReflectanceForDayltg * state.dataWeather->SnowGndRefModifierForDayltg, 1.0), 0.0);
+                std::clamp(state.dataEnvrn->GndReflectanceForDayltg * state.dataWeather->SnowGndRefModifierForDayltg, 0.0, 1.0);
         }
 
         state.dataEnvrn->GndSolarRad =
@@ -7026,7 +7027,8 @@ namespace Weather {
               "dimensionless},Oct{dimensionless},Nov{dimensionless},Dec{dimensionless}");
         print(state.files.eio, "{}", " Site:GroundReflectance:Snow");
         for (int i = 1; i <= 12; ++i) {
-            print(state.files.eio, ", {:5.2F}", max(min(state.dataWeather->GroundReflectances(i) * state.dataWeather->SnowGndRefModifier, 1.0), 0.0));
+            print(
+                state.files.eio, ", {:5.2F}", std::clamp(state.dataWeather->GroundReflectances(i) * state.dataWeather->SnowGndRefModifier, 0.0, 1.0));
         }
         print(state.files.eio, "\n");
         print(state.files.eio,
@@ -7039,7 +7041,7 @@ namespace Weather {
         for (nObjs = 1; nObjs <= 12; ++nObjs) {
             print(state.files.eio,
                   ", {:5.2F}",
-                  max(min(state.dataWeather->GroundReflectances(nObjs) * state.dataWeather->SnowGndRefModifierForDayltg, 1.0), 0.0));
+                  std::clamp(state.dataWeather->GroundReflectances(nObjs) * state.dataWeather->SnowGndRefModifierForDayltg, 0.0, 1.0));
         }
         print(state.files.eio, "\n");
     }

@@ -46,6 +46,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // C++ Headers
+#include <algorithm>
 #include <format>
 
 // ObjexxFCL Headers
@@ -8265,7 +8266,7 @@ void WaterThermalTankData::CalcWaterThermalTankStratified(EnergyPlusData &state)
                     dt = min(dt, dT_max / Denominator);
                 }
             }
-            dt = max(min(SubTimestepMin, TimeRemaining), dt);
+            dt = std::clamp(SubTimestepMin, dt, TimeRemaining);
             dt = min(SubTimestepMax, dt);
         }
 
