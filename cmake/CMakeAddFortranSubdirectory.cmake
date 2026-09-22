@@ -149,6 +149,8 @@ function(_setup_mingw_config_and_build source_dir build_dir)
   endif()
 
   # Validate the MinGW gfortran we found.
+  # NOTE: EnergyPlus-specific: we allow using 32 bit gfortran with 64 bit MSVC
+  # because we aren't cross-linking, just building executables
   #if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   #  set(_mingw_target "Target:.*64.*mingw")
   #else()
@@ -241,6 +243,7 @@ function(cmake_add_fortran_subdirectory subdir)
     INSTALL_COMMAND ""
     )
 
+  # NOTE: EnergyPlus-specific
   set_target_properties(${project_name}_build PROPERTIES FOLDER Auxiliary)
 
   # create imported targets for all libraries
