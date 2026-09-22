@@ -50,6 +50,7 @@
 #include <cassert>
 #include <cmath>
 #include <format>
+#include <numeric>
 #include <string>
 
 // ObjexxFCL Headers
@@ -4741,10 +4742,9 @@ void GetDaylightingControls(EnergyPlusData &state, bool &ErrorsFound)
             ErrorsFound = true;
         }
 
-        Real64 sumFracs = 0.0;
-        for (auto const &refPt : daylightControl.refPts) {
-            sumFracs += refPt.fracZoneDaylit;
-        }
+        Real64 const sumFracs = std::accumulate(daylightControl.refPts.begin(), daylightControl.refPts.end(), 0.0, [](Real64 sum, auto const &refPt) {
+            return sum + refPt.fracZoneDaylit;
+        });
 
         daylightControl.sumFracLights = sumFracs;
         if ((1.0 - sumFracs) > FractionTolerance) {

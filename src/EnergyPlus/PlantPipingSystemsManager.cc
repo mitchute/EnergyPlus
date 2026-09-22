@@ -50,6 +50,7 @@
 #include <cmath>
 #include <format>
 #include <memory>
+#include <numeric>
 #include <set>
 
 // ObjexxFCL Headers
@@ -1422,10 +1423,10 @@ namespace PlantPipingSystemsManager {
             thisDomain.groundTempModel = GroundTemp::GetGroundTempModelAndInit(state, gtmType, s_ipsc->cAlphaArgs(3));
 
             // Total surface area
-            Real64 ThisArea = 0.0;
-            for (auto const &z : thisDomain.ZoneCoupledSurfaces) {
-                ThisArea += z.SurfaceArea;
-            }
+            Real64 const ThisArea =
+                std::accumulate(thisDomain.ZoneCoupledSurfaces.begin(), thisDomain.ZoneCoupledSurfaces.end(), 0.0, [](Real64 area, auto const &z) {
+                    return area + z.SurfaceArea;
+                });
 
             // Surface dimensions
             thisDomain.BasementZone.Width = sqrt(ThisArea / thisAspectRatio);

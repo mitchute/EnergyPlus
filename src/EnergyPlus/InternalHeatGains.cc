@@ -50,6 +50,7 @@
 #include <cmath>
 #include <format>
 #include <map>
+#include <numeric>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -4433,49 +4434,25 @@ namespace InternalHeatGains {
         for (int Loop = 1; Loop <= state.dataGlobal->NumOfZones; ++Loop) {
             auto &zone = state.dataHeatBal->Zone(Loop);
 
-            Real64 LightTot = 0.0;
-            Real64 ElecTot = 0.0;
-            Real64 GasTot = 0.0;
-            Real64 OthTot = 0.0;
-            Real64 HWETot = 0.0;
-            Real64 StmTot = 0.0;
-            std::string BBHeatInd = "No"; // Yes if BBHeat in zone, no if not.
+            auto const sumDesignLevel = [Loop](auto const &equipment) {
+                return std::accumulate(equipment.begin(), equipment.end(), 0.0, [Loop](Real64 total, auto const &item) {
+                    return (item.ZonePtr == Loop) ? total + item.DesignLevel : total;
+                });
+            };
 
-            for (auto const &lights : state.dataHeatBal->Lights) {
-                if (lights.ZonePtr == Loop) {
-                    LightTot += lights.DesignLevel;
-                }
-            }
-            for (auto const &elecEq : state.dataHeatBal->ZoneElectric) {
-                if (elecEq.ZonePtr == Loop) {
-                    ElecTot += elecEq.DesignLevel;
-                }
-            }
-            for (auto const &itEq : state.dataHeatBal->ZoneITEq) {
-                if (itEq.ZonePtr == Loop) {
-                    ElecTot += itEq.DesignTotalPower; // Should this not be itTot?
-                }
-            }
-            for (auto const &gasEq : state.dataHeatBal->ZoneGas) {
-                if (gasEq.ZonePtr == Loop) {
-                    GasTot += gasEq.DesignLevel;
-                }
-            }
-            for (auto const &otherEq : state.dataHeatBal->ZoneOtherEq) {
-                if (otherEq.ZonePtr == Loop) {
-                    OthTot += otherEq.DesignLevel;
-                }
-            }
-            for (auto const &steamEq : state.dataHeatBal->ZoneSteamEq) {
-                if (steamEq.ZonePtr == Loop) {
-                    StmTot += steamEq.DesignLevel;
-                }
-            }
-            for (auto const &hotWaterEq : state.dataHeatBal->ZoneHWEq) {
-                if (hotWaterEq.ZonePtr == Loop) {
-                    HWETot += hotWaterEq.DesignLevel;
-                }
-            }
+            Real64 const LightTot = sumDesignLevel(state.dataHeatBal->Lights);
+            Real64 const ElecTot =
+                std::accumulate(state.dataHeatBal->ZoneITEq.begin(),
+                                state.dataHeatBal->ZoneITEq.end(),
+                                sumDesignLevel(state.dataHeatBal->ZoneElectric),
+                                [Loop](Real64 total, auto const &itEq) {
+                                    return (itEq.ZonePtr == Loop) ? total + itEq.DesignTotalPower : total; // Should this not be itTot?
+                                });
+            Real64 const GasTot = sumDesignLevel(state.dataHeatBal->ZoneGas);
+            Real64 const OthTot = sumDesignLevel(state.dataHeatBal->ZoneOtherEq);
+            Real64 const HWETot = sumDesignLevel(state.dataHeatBal->ZoneHWEq);
+            Real64 const StmTot = sumDesignLevel(state.dataHeatBal->ZoneSteamEq);
+            std::string BBHeatInd = "No"; // Yes if BBHeat in zone, no if not.
             for (auto const &bbHeat : state.dataHeatBal->ZoneBBHeat) {
                 if (bbHeat.ZonePtr == Loop) {
                     BBHeatInd = "Yes";

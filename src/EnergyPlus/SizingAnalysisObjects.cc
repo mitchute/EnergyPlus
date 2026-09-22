@@ -47,6 +47,7 @@
 
 // C++ Headers
 #include <map>
+#include <numeric>
 #include <string>
 #include <vector>
 
@@ -222,10 +223,8 @@ void SizingLog::AverageSysTimeSteps()
 
     for (auto &zt : ztStepObj) {
         if (zt.numSubSteps > 0) {
-            RunningSum = 0.0;
-            for (auto const &SysT : zt.subSteps) {
-                RunningSum += SysT.LogDataValue;
-            }
+            RunningSum =
+                std::accumulate(zt.subSteps.begin(), zt.subSteps.end(), 0.0, [](Real64 sum, auto const &sysT) { return sum + sysT.LogDataValue; });
             zt.logDataValue = RunningSum / double(zt.numSubSteps);
         }
     }

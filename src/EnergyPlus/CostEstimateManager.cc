@@ -48,6 +48,7 @@
 // C++ Headers
 #include <algorithm>
 #include <format>
+#include <numeric>
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>
@@ -667,10 +668,10 @@ namespace CostEstimateManager {
 
                 if (state.dataCostEstimateManager->CostLineItem(Item).PerKiloWattCap > 0.0) {
                     if (WildcardObjNames) {
-                        Real64 Qty(0.0);
-                        for (auto const &e : state.dataDXCoils->DXCoil) {
-                            Qty += e.RatedTotCap(1);
-                        }
+                        Real64 const Qty =
+                            std::accumulate(state.dataDXCoils->DXCoil.begin(), state.dataDXCoils->DXCoil.end(), 0.0, [](Real64 qty, auto const &e) {
+                                return qty + e.RatedTotCap(1);
+                            });
                         state.dataCostEstimateManager->CostLineItem(Item).Qty = Qty / 1000.0;
                         state.dataCostEstimateManager->CostLineItem(Item).Units = "kW (tot cool cap.)";
                         state.dataCostEstimateManager->CostLineItem(Item).ValuePer = state.dataCostEstimateManager->CostLineItem(Item).PerKiloWattCap;
@@ -746,10 +747,10 @@ namespace CostEstimateManager {
 
                 if (state.dataCostEstimateManager->CostLineItem(Item).PerKiloWattCap > 0.0) {
                     if (WildcardObjNames) {
-                        Real64 Qty(0.0);
-                        for (auto const &e : state.dataCoilCoolingDX->coilCoolingDXs) {
-                            Qty += e.performance->ratedGrossTotalCap();
-                        }
+                        Real64 const Qty = std::accumulate(state.dataCoilCoolingDX->coilCoolingDXs.begin(),
+                                                           state.dataCoilCoolingDX->coilCoolingDXs.end(),
+                                                           0.0,
+                                                           [](Real64 qty, auto const &e) { return qty + e.performance->ratedGrossTotalCap(); });
                         state.dataCostEstimateManager->CostLineItem(Item).Qty = Qty / 1000.0;
                         state.dataCostEstimateManager->CostLineItem(Item).Units = "kW (tot cool cap.)";
                         state.dataCostEstimateManager->CostLineItem(Item).ValuePer = state.dataCostEstimateManager->CostLineItem(Item).PerKiloWattCap;
@@ -815,12 +816,13 @@ namespace CostEstimateManager {
 
                 if (state.dataCostEstimateManager->CostLineItem(Item).PerKiloWattCap > 0.0) {
                     if (WildcardObjNames) {
-                        Real64 Qty(0.0);
-                        for (auto const &e : state.dataHeatingCoils->HeatingCoil) {
-                            if (e.coilType == HVAC::CoilType::HeatingDXSingleSpeed) {
-                                Qty += e.NominalCapacity;
-                            }
-                        }
+                        Real64 const Qty =
+                            std::accumulate(state.dataHeatingCoils->HeatingCoil.begin(),
+                                            state.dataHeatingCoils->HeatingCoil.end(),
+                                            0.0,
+                                            [](Real64 qty, auto const &e) {
+                                                return (e.coilType == HVAC::CoilType::HeatingDXSingleSpeed) ? qty + e.NominalCapacity : qty;
+                                            });
                         state.dataCostEstimateManager->CostLineItem(Item).Qty = Qty / 1000.0;
                         state.dataCostEstimateManager->CostLineItem(Item).Units = "kW (tot heat cap.)";
                         state.dataCostEstimateManager->CostLineItem(Item).ValuePer = state.dataCostEstimateManager->CostLineItem(Item).PerKiloWattCap;
@@ -852,12 +854,14 @@ namespace CostEstimateManager {
 
                 if (state.dataCostEstimateManager->CostLineItem(Item).PerKWCapPerCOP > 0.0) {
                     if (WildcardObjNames) {
-                        Real64 Qty(0.0);
-                        for (auto const &e : state.dataHeatingCoils->HeatingCoil) {
-                            if (e.coilType == HVAC::CoilType::HeatingDXSingleSpeed) {
-                                Qty += e.Efficiency * e.NominalCapacity;
-                            }
-                        }
+                        Real64 const Qty = std::accumulate(state.dataHeatingCoils->HeatingCoil.begin(),
+                                                           state.dataHeatingCoils->HeatingCoil.end(),
+                                                           0.0,
+                                                           [](Real64 qty, auto const &e) {
+                                                               return (e.coilType == HVAC::CoilType::HeatingDXSingleSpeed)
+                                                                          ? qty + e.Efficiency * e.NominalCapacity
+                                                                          : qty;
+                                                           });
                         state.dataCostEstimateManager->CostLineItem(Item).Qty = Qty / 1000.0;
                         state.dataCostEstimateManager->CostLineItem(Item).Units = "kW*Eff (total, rated) ";
                         state.dataCostEstimateManager->CostLineItem(Item).ValuePer = state.dataCostEstimateManager->CostLineItem(Item).PerKWCapPerCOP;
@@ -952,12 +956,10 @@ namespace CostEstimateManager {
                     if (!state.dataCostEstimateManager->CostLineItem(Item).ParentObjName.empty()) {
                         ThisZoneID = Util::FindItem(state.dataCostEstimateManager->CostLineItem(Item).ParentObjName, Zone);
                         if (ThisZoneID > 0) {
-                            Real64 Qty(0.0);
-                            for (auto const &e : state.dataHeatBal->Lights) {
-                                if (e.ZonePtr == ThisZoneID) {
-                                    Qty += e.DesignLevel;
-                                }
-                            }
+                            Real64 const Qty = std::accumulate(
+                                state.dataHeatBal->Lights.begin(), state.dataHeatBal->Lights.end(), 0.0, [ThisZoneID](Real64 qty, auto const &e) {
+                                    return (e.ZonePtr == ThisZoneID) ? qty + e.DesignLevel : qty;
+                                });
                             state.dataCostEstimateManager->CostLineItem(Item).Qty =
                                 (Zone(ThisZoneID).Multiplier * Zone(ThisZoneID).ListMultiplier / 1000.0) *
                                 Qty; // this handles more than one light object per zone.

@@ -50,6 +50,7 @@
 #include <cassert>
 #include <cmath>
 #include <format>
+#include <numeric>
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>
@@ -1200,9 +1201,10 @@ namespace HeatBalanceIntRadExchange {
                 // Check Zone and ZoneList for backwards compatibility
                 zoneListNum = Util::FindItemInList(thisSpaceOrSpaceListName, state.dataHeatBal->ZoneList);
                 if (zoneListNum > 0) {
-                    for (int const zoneNum : state.dataHeatBal->ZoneList(zoneListNum).Zone) {
-                        listSize += state.dataHeatBal->Zone(zoneNum).spaceIndexes.size();
-                    }
+                    auto const &zoneList = state.dataHeatBal->ZoneList(zoneListNum).Zone;
+                    listSize = std::accumulate(zoneList.begin(), zoneList.end(), std::size_t{0}, [&state](std::size_t size, int zoneNum) {
+                        return size + state.dataHeatBal->Zone(zoneNum).spaceIndexes.size();
+                    });
                 } else {
                     inputZoneNum = Util::FindItemInList(thisSpaceOrSpaceListName, state.dataHeatBal->Zone);
                     if (inputZoneNum > 0) {
