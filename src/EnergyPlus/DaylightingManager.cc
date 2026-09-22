@@ -9698,9 +9698,7 @@ void DayltgSetupAdjZoneListsAndPointers(EnergyPlusData &state)
 
         for (auto &refPt : illumMap.refPts) {
             refPt.winLums.allocate(numExtWin);
-            for (auto &winLums : refPt.winLums) {
-                winLums = {0.0, 0.0};
-            }
+            std::fill(refPt.winLums.begin(), refPt.winLums.end(), std::array<Real64, (int)DataSurfaces::WinCover::Num>{0.0, 0.0});
         }
 
         for (int iHr = 1; iHr <= Constant::iHoursInDay; ++iHr) {

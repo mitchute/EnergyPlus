@@ -1175,9 +1175,7 @@ void processZoneEquipmentInput(EnergyPlusData &state,
 
         thisEquipConfig.ReturnNode.allocate(NumNodes);
         thisEquipConfig.returnNodeSpaceMixerIndex.allocate(NumNodes);
-        for (int &mixIndex : thisEquipConfig.returnNodeSpaceMixerIndex) {
-            mixIndex = -1;
-        }
+        std::fill(thisEquipConfig.returnNodeSpaceMixerIndex.begin(), thisEquipConfig.returnNodeSpaceMixerIndex.end(), -1);
         thisEquipConfig.ReturnNodeAirLoopNum.allocate(NumNodes);
         thisEquipConfig.ReturnNodeRetPathNum.allocate(NumNodes);
         thisEquipConfig.ReturnNodeRetPathCompNum.allocate(NumNodes);

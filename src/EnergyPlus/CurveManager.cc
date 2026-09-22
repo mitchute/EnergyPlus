@@ -138,9 +138,7 @@ namespace Curve {
 
         for (auto *c : state.dataCurveManager->curves) {
             c->output = Node::SensedNodeFlagValue;
-            for (auto &i : c->inputs) { // Not a good pattern
-                i = Node::SensedNodeFlagValue;
-            }
+            std::fill(c->inputs.begin(), c->inputs.end(), Node::SensedNodeFlagValue);
         }
     }
 
