@@ -1560,7 +1560,7 @@ namespace PhotovoltaicThermalCollectors {
                 hconvf2 = k_air * nusselt / (4 * w * depth_channel / (2 * (w + depth_channel))); // Candanedo et al. 2011
                 a = -(w / (mdot_bipvt * cp_in)) * (hconvf1 + hconvf2);
                 b = (w / (mdot_bipvt * cp_in)) * (hconvf1 * t1 + hconvf2 * t2);
-                tfavg = (1.0 / (a * l)) * (tfin + b / a) * (std::exp(a * l) - 1.0) - b / a;
+                tfavg = (1.0 / (a * l)) * (tfin + b / a) * std::expm1(a * l) - b / a;
             } else // if there is no flow rate (stagnation)
             {
                 raleigh = (gravity * (1.0 / (tfavg + 273.15)) * (std::max((Real64)(0.000001), std::abs(t1 - t2))) * std::pow(depth_channel, 3)) /
