@@ -1566,7 +1566,7 @@ namespace Sched {
                 dayScheds[(int)Sched::DayType::CustomDay1] = customDay1Schedule;
                 dayScheds[(int)Sched::DayType::CustomDay2] = customDay2Schedule;
 
-                for (Sched::WeekRuleSchedule *weekRuleSched : sortedWeekRuleSchedules) {
+                for (Sched::WeekRuleSchedule const *weekRuleSched : sortedWeekRuleSchedules) {
                     if (weekRuleSched != nullptr) {
 
                         if (weekRuleSched->applySunday) {

@@ -1037,7 +1037,7 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
                     if (OASys.ComponentType(CompNum) == "COILSYSTEM:COOLING:WATER" && CompNum < OASys.NumComponents) {
                         if (OASys.compPointer[CompNum] != nullptr) {
                             // compPointer[CompNum] already points at the correct UnitarySys object (matched by name in UnitarySys::factory())
-                            if (auto *unitarySysPtr = dynamic_cast<UnitarySystems::UnitarySys *>(OASys.compPointer[CompNum])) {
+                            if (auto const *unitarySysPtr = dynamic_cast<UnitarySystems::UnitarySys *>(OASys.compPointer[CompNum])) {
                                 companionCoilAirInletNodeNum = unitarySysPtr->m_HRcoolCoilAirInNode;
                             }
                         }
