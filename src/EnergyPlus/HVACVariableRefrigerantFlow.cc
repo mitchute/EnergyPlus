@@ -4221,7 +4221,6 @@ void GetVRFInputData(EnergyPlusData &state, bool &ErrorsFound)
 
             if (thisVrfTU.suppHeatCoilType == HVAC::CoilType::HeatingGasOrOtherFuel ||
                 thisVrfTU.suppHeatCoilType == HVAC::CoilType::HeatingElectric) {
-                errFlag = false;
                 if (errFlag) {
                     ShowContinueError(state, "Occurs in " + cCurrentModuleObject + " = " + thisVrfTU.Name);
                     ErrorsFound = true;
@@ -5842,7 +5841,7 @@ void InitVRF(EnergyPlusData &state, int const VRFTUNum, int const ZoneNum, bool 
                                             // //, loc_controlZoneName));
                                             errorsFound = true;
                                         }
-                                    } else if (AirLoopFound) { // control zone name not entered in TU object input
+                                    } else { // control zone name not entered in TU object input
                                         vrfTU.isSetPointControlled = true;
                                     }
                                 }
@@ -6076,7 +6075,7 @@ void InitVRF(EnergyPlusData &state, int const VRFTUNum, int const ZoneNum, bool 
                                 state, std::format("ZoneHVAC:TerminalUnit:VariableRefrigerantFlow: Missing temperature setpoint for {}", vrfTU.Name));
                             ShowContinueError(state, "...use a Setpoint Manager to establish a setpoint at the TU or coil(s) outlet node.");
                             ErrorsFound = true;
-                        } else if (state.dataGlobal->AnyEnergyManagementSystemInModel) {
+                        } else {
                             bool SPNotFound = false;
                             EMSManager::CheckIfNodeSetPointManagedByEMS(state, vrfTU.VRFTUOutletNodeNum, HVAC::CtrlVarType::Temp, SetPointErrorFlag);
                             SPNotFound = SPNotFound || SetPointErrorFlag;
@@ -11376,7 +11375,6 @@ void VRFCondenserEquipment::CalcVRFCondenser_FluidTCtrl(EnergyPlusData &state, c
         h_IU_cond_in_low = this->refrig->getSatEnthalpy(state, this->IUCondensingTemp, 1.0, RoutineName); // Quality=1
         h_IU_cond_in = h_IU_cond_in_low;
 
-        bool converged_23;
         do {
             m_ref_IU_cond = 0;
             h_IU_cond_out_ave = 0;
@@ -11548,7 +11546,7 @@ void VRFCondenserEquipment::CalcVRFCondenser_FluidTCtrl(EnergyPlusData &state, c
                 state, max(RefTSat, this->SH + this->EvaporatingTemp), std::clamp(P_comp_in, RefPLow, RefPHigh), RoutineName);
             h_comp_out_new = Ncomp_new / m_ref_IU_cond + h_comp_in_new;
 
-            converged_23 = !((std::abs(h_comp_out - h_comp_out_new) > Tolerance * h_comp_out) && (h_IU_cond_in < h_IU_cond_in_up));
+            bool const converged_23 = !((std::abs(h_comp_out - h_comp_out_new) > Tolerance * h_comp_out) && (h_IU_cond_in < h_IU_cond_in_up));
             if (!converged_23) {
                 h_IU_cond_in = h_IU_cond_in + 0.1 * (h_IU_cond_in_up - h_IU_cond_in_low);
             } else {
@@ -11559,7 +11557,7 @@ void VRFCondenserEquipment::CalcVRFCondenser_FluidTCtrl(EnergyPlusData &state, c
                 break;
             }
 
-        } while (!converged_23);
+        } while (true);
 
         // Key outputs of this subroutine
         Q_c_OU *= CyclingRatio;

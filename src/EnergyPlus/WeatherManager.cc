@@ -3983,6 +3983,8 @@ namespace Weather {
             switch (state.dataWeather->WPSkyTemperature(envCurr.WP_Type1).skyTempModel) {
             case SkyTempModel::ScheduleValue: {
                 std::vector<Real64> const &dayVals = state.dataWeather->WPSkyTemperature(envCurr.WP_Type1).sched->getDayVals(state);
+                // The array elements are assigned below; cppcheck does not recognize mutation through this ObjexxFCL alias.
+                // cppcheck-suppress constVariableReference
                 auto &desDayModsEnv = state.dataWeather->desDayMods(EnvrnNum);
                 for (int hr = 0; hr < Constant::iHoursInDay; ++hr) {
                     for (int ts = 0; ts < state.dataGlobal->TimeStepsInHour; ++ts) {

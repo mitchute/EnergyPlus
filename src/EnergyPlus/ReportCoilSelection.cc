@@ -1190,7 +1190,7 @@ namespace ReportCoilSelection {
                                 Real64 const DXFlowPerCapMaxRatio  // non dimensional ratio, capacity adjustment ratio max
     )
     {
-        auto &ZoneEqSizing(state.dataSize->ZoneEqSizing);
+        auto const &ZoneEqSizing(state.dataSize->ZoneEqSizing);
         auto &SysSizPeakDDNum(state.dataSize->SysSizPeakDDNum);
 
         assert(coilNum >= 0 && coilNum < (int)state.dataRptCoilSelection->coils.size());

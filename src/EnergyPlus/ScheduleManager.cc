@@ -740,7 +740,7 @@ namespace Sched {
             if (rowCnt != rowLimitCount) {
                 if (rowCnt < rowLimitCount) {
                     ShowSevereError(state, std::format("{}: {}=\"{}\" {} data values read.", routineName, CurrentModuleObject, Alphas(1), rowCnt));
-                } else if (rowCnt > rowLimitCount) {
+                } else {
                     ShowSevereError(state, std::format("{}: {}=\"{}\" too many data values read.", routineName, CurrentModuleObject, Alphas(1)));
                 }
                 ShowContinueError(

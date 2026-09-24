@@ -1200,6 +1200,8 @@ void CalcDayltgCoeffsMapPoints(EnergyPlusData &state, int const mapNum)
     int iHrEnd = state.dataSysVars->DetailedSolarTimestepIntegration ? state.dataGlobal->HourOfDay : Constant::iHoursInDay;
 
     for (int iHr = iHrBeg; iHr <= iHrEnd; ++iHr) {
+        // The array elements are reset below; cppcheck does not recognize mutation through this ObjexxFCL alias.
+        // cppcheck-suppress constVariableReference
         auto &daylFacHr = illumMap.daylFac[iHr];
         for (int iWin = 1; iWin <= numExtWins; ++iWin) {
             for (int iRefPt = 1; iRefPt <= numRefPts; ++iRefPt) {
@@ -5153,6 +5155,16 @@ inline WinCover findWinShadingStatus(EnergyPlusData &state, int const IWin)
                : WinCover::Bare;
 }
 
+Real64 glareIndex(Real64 const glareConstant)
+{
+    if (glareConstant <= 0.0) {
+        return 0.0;
+    }
+
+    // The offset retains the legacy result while protecting log10 from a zero argument.
+    return max(0.0, 10.0 * std::log10(glareConstant + 0.000001));
+}
+
 Real64 DayltgGlare(EnergyPlusData &state,
                    int IL,                   // Reference point index: 1=first ref pt, 2=second ref pt
                    Real64 BLUM,              // Window background (surround) luminance (cd/m2)
@@ -5198,8 +5210,8 @@ Real64 DayltgGlare(EnergyPlusData &state,
         GTOT += GTOT1 / (GTOT2 + 0.000001);
     }
 
-    // Glare index (adding 0.000001 prevents LOG10 (0))
-    return max(0.0, 10.0 * std::log10(GTOT + 0.000001));
+    // Glare index
+    return glareIndex(GTOT);
 }
 
 void DayltgGlareWithIntWins(EnergyPlusData &state,
@@ -5249,7 +5261,7 @@ void DayltgGlareWithIntWins(EnergyPlusData &state,
         }
 
         // Glare index
-        refPt.glareIndex = max(0.0, 10.0 * std::log10(GTOT + 0.000001));
+        refPt.glareIndex = glareIndex(GTOT);
     } // for (IL)
 } // DaylGlareWithIntWins()
 
