@@ -82,6 +82,17 @@ TEST_F(EnergyPlusFixture, PV_Sandia_AirMassAtHighZenith)
     EXPECT_NEAR(airMass, 26.24135, 0.1);
 }
 
+TEST_F(EnergyPlusFixture, PV_OneDiodeEquationPrecisionNearZero)
+{
+    state->dataPhotovoltaic->ShuntResistance = 1.0e30;
+
+    // exp(x) rounds to one at this scale, but the one-diode equation still has a nonzero exponential contribution.
+    constexpr Real64 voltage = 1.0e-16;
+    Real64 const residual = Photovoltaics::FUN(*state, 0.0, voltage, 0.0, 1.0, 0.0, 1.0);
+
+    EXPECT_NEAR(voltage, residual, 1.0e-30);
+}
+
 TEST_F(EnergyPlusFixture, PV_ReportPV_ZoneIndexNonZero)
 {
     // unit test for issue #6222, test to make sure zone index in surface on which PV is placed is not zero so zone multiplier is applied properly
