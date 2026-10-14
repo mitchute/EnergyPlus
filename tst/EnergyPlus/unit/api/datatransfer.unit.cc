@@ -62,6 +62,7 @@
 #include <EnergyPlus/OutAirNodeManager.hh>
 #include <EnergyPlus/OutputProcessor.hh>
 #include <EnergyPlus/PluginManager.hh>
+#include <EnergyPlus/RuntimeLanguageProcessor.hh>
 #include <EnergyPlus/api/datatransfer.h>
 
 #include "EnergyPlus/DataEnvironment.hh"
@@ -623,10 +624,10 @@ TEST_F(DataExchangeAPIUnitTestFixture, DataTransfer_TestResetActuators)
     EXPECT_EQ(1, apiErrorFlag((void *)this->state));
 }
 
-TEST_F(DataExchangeAPIUnitTestFixture, DataTransfer_CallbackCountsAsRunOnlyWhenItActuates)
+TEST_F(DataExchangeAPIUnitTestFixture, DataTransfer_ReadOnlyCallbackDoesNotForceHVACIteration)
 {
-    // a registered callback must not report that it ran unless it wrote an actuator: at InsideHVACSystemIterationLoop,
-    // reporting that it ran forces additional air loop iterations and changes the results of a read-only callback (#8164)
+    // A registered callback must report that it ran so ManageEMS completes reporting and actuator post-processing. At
+    // InsideHVACSystemIterationLoop, only a callback that writes an actuator should force additional air-loop iterations (#8164).
     this->preRequestActuator("a", "b", "c", ActuatorType::REAL);
     this->setupActuatorsOnceAllAreRequested();
     int hActuator = getActuatorHandle((void *)this->state, "a", "b", "c");
@@ -651,20 +652,60 @@ TEST_F(DataExchangeAPIUnitTestFixture, DataTransfer_CallbackCountsAsRunOnlyWhenI
     });
 
     bool anyRan = false;
-    PluginManagement::runAnyRegisteredCallbacks(*this->state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan);
+    bool shouldForceHVACIteration = false;
+    PluginManagement::runAnyRegisteredCallbacks(*this->state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan, shouldForceHVACIteration);
     EXPECT_EQ(1, numCalls);
-    EXPECT_FALSE(anyRan);
-
-    action = Action::Set;
-    PluginManagement::runAnyRegisteredCallbacks(*this->state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan);
-    EXPECT_EQ(2, numCalls);
     EXPECT_TRUE(anyRan);
+    EXPECT_FALSE(shouldForceHVACIteration);
 
     anyRan = false;
+    shouldForceHVACIteration = false;
+    action = Action::Set;
+    PluginManagement::runAnyRegisteredCallbacks(*this->state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan, shouldForceHVACIteration);
+    EXPECT_EQ(2, numCalls);
+    EXPECT_TRUE(anyRan);
+    EXPECT_TRUE(shouldForceHVACIteration);
+
+    anyRan = false;
+    shouldForceHVACIteration = false;
     action = Action::Reset;
-    PluginManagement::runAnyRegisteredCallbacks(*this->state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan);
+    PluginManagement::runAnyRegisteredCallbacks(*this->state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan, shouldForceHVACIteration);
     EXPECT_EQ(3, numCalls);
     EXPECT_TRUE(anyRan);
+    EXPECT_TRUE(shouldForceHVACIteration);
+}
+
+TEST_F(DataExchangeAPIUnitTestFixture, DataTransfer_NonActuatingCallbackStillUpdatesEMSOutputVariable)
+{
+    std::string const idf_objects = delimited_string({
+        "EnergyManagementSystem:GlobalVariable,",
+        "CallbackValue;",
+
+        "EnergyManagementSystem:OutputVariable,",
+        "Callback Output,",
+        "CallbackValue,",
+        "Averaged,",
+        "SystemTimeStep;",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    EMSManager::CheckIfAnyEMS(*state);
+    state->dataEMSMgr->FinishProcessingUserInput = true;
+
+    bool anyRan = false;
+    EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::SetupSimulation, anyRan);
+
+    int const globalHandle = getEMSGlobalVariableHandle(state, "CallbackValue");
+    ASSERT_GT(globalHandle, 0);
+    ASSERT_EQ(1, state->dataRuntimeLang->NumEMSOutputVariables);
+
+    PluginManagement::registerNewCallback(
+        *state, EMSManager::EMSCallFrom::HVACIterationLoop, [globalHandle](void *s) { setEMSGlobalVariableValue(s, globalHandle, 42.0); });
+
+    EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan);
+
+    EXPECT_FALSE(anyRan);
+    EXPECT_DOUBLE_EQ(42.0, state->dataRuntimeLangProcessor->RuntimeReportVar(1).Value);
 }
 
 TEST_F(DataExchangeAPIUnitTestFixture, DataTransfer_TestAccessingInternalVariables)

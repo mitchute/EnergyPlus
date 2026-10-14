@@ -122,7 +122,7 @@ int PluginManager::numActiveCallbacks(const EnergyPlusData &state)
     return static_cast<int>(state.dataPluginManager->callbacks.size() + state.dataPluginManager->userDefinedCallbacks.size());
 }
 
-void runAnyRegisteredCallbacks(EnergyPlusData &state, EMSManager::EMSCallFrom const iCalledFrom, bool &anyRan)
+void runAnyRegisteredCallbacks(EnergyPlusData &state, EMSManager::EMSCallFrom const iCalledFrom, bool &anyRan, bool &shouldForceHVACIteration)
 {
     if (state.dataGlobal->KickOffSimulation) {
         return;
@@ -133,17 +133,19 @@ void runAnyRegisteredCallbacks(EnergyPlusData &state, EMSManager::EMSCallFrom co
             continue; // these are called -intentionally- using the runSingleUserDefinedCallback method
         }
         cb(&state);
-    }
-    // only a callback that wrote an actuator counts as having run: at InsideHVACSystemIterationLoop, anyRan forces
-    // additional air loop iterations, which would otherwise change the results of a callback that only reads values
-    if (state.dataPluginManager->actuatorWriteCount != actuatorWritesBefore) {
         anyRan = true;
+    }
+    // Only API callbacks that wrote an actuator need another HVAC iteration. Read-only callbacks and callbacks that update
+    // reporting data still count as having run so that ManageEMS completes its normal post-processing.
+    if (state.dataPluginManager->actuatorWriteCount != actuatorWritesBefore) {
+        shouldForceHVACIteration = true;
     }
 #if LINK_WITH_PYTHON
     for (auto &plugin : state.dataPluginManager->plugins) {
         if (plugin.runDuringWarmup || !state.dataGlobal->WarmupFlag) {
             if (plugin.run(state, iCalledFrom)) {
                 anyRan = true;
+                shouldForceHVACIteration = true;
             }
         }
     }

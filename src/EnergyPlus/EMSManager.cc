@@ -273,9 +273,10 @@ namespace EMSManager {
         InitEMS(state, iCalledFrom);
 
         // also call plugins and callbacks here for convenience
+        bool shouldForceHVACIteration = false;
         if (iCalledFrom != EMSCallFrom::UserDefinedComponentModel) { // don't run user-defined component plugins this way
             bool anyPluginsOrCallbacksRan = false;
-            PluginManagement::runAnyRegisteredCallbacks(state, iCalledFrom, anyPluginsOrCallbacksRan);
+            PluginManagement::runAnyRegisteredCallbacks(state, iCalledFrom, anyPluginsOrCallbacksRan, shouldForceHVACIteration);
             if (anyPluginsOrCallbacksRan) {
                 anyProgramRan = true;
             }
@@ -297,6 +298,7 @@ namespace EMSManager {
                         RuntimeLanguageProcessor::EvaluateStack(
                             state, state.dataRuntimeLang->EMSProgramCallManager(ProgramManagerNum).ErlProgramARR(ErlProgramNum));
                         anyProgramRan = true;
+                        shouldForceHVACIteration = true;
                     }
                 }
             }
@@ -371,6 +373,12 @@ namespace EMSManager {
         }
 
         ReportEMS(state);
+
+        if (iCalledFrom == EMSCallFrom::HVACIterationLoop) {
+            // The HVAC manager uses this output to request extra air-loop iterations. A read-only API callback must still
+            // count as having run for EMS post-processing above, but it must not alter HVAC convergence.
+            anyProgramRan = shouldForceHVACIteration;
+        }
     }
 
     void InitEMS(EnergyPlusData &state, EMSCallFrom const iCalledFrom) // indicates where subroutine was called from, parameters in DataGlobals.
