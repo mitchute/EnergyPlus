@@ -799,10 +799,9 @@ TEST_F(EnergyPlusFixture, Debug_EMSLogic)
     EXPECT_NEAR(state->dataLoopNodes->Node(1).TempSetPoint, 1.0, 0.0000001);
 }
 
-TEST_F(EnergyPlusFixture, TestAnyRanArgument)
+TEST_F(EnergyPlusFixture, NonActuatingErlVariableWriteDoesNotRequestHVACIteration)
 {
-    // small test to demonstrate new boolean argument.
-    // shows a simple way to setup sensor on a node, need to call SetupNodeVarsForReporting()
+    // A local Erl variable write still counts as program activity at other calling points, but it must not force an HVAC iteration.
 
     std::string const idf_objects = delimited_string({
 
@@ -812,6 +811,11 @@ TEST_F(EnergyPlusFixture, TestAnyRanArgument)
         "Node_mdot,",
         "Test node,",
         "System Node Mass Flow Rate;",
+
+        "EnergyManagementSystem:ProgramCallingManager,",
+        "Test before predictor,",
+        "BeginTimestepBeforePredictor,",
+        "Test_InsideHVACSystemIterationLoop;",
 
         "EnergyManagementSystem:ProgramCallingManager,",
         "Test inside HVAC system iteration Loop,",
@@ -840,8 +844,116 @@ TEST_F(EnergyPlusFixture, TestAnyRanArgument)
     EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::BeginNewEnvironment, anyRan, ObjexxFCL::Optional_int_const());
     EXPECT_FALSE(anyRan);
 
+    EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::BeginTimestepBeforePredictor, anyRan, ObjexxFCL::Optional_int_const());
+    EXPECT_TRUE(anyRan);
+
+    EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan, ObjexxFCL::Optional_int_const());
+    EXPECT_FALSE(anyRan);
+}
+
+TEST_F(EnergyPlusFixture, NoOpErlProgramDoesNotRequestHVACIteration)
+{
+    std::string const idf_objects = delimited_string({
+        "EnergyManagementSystem:ProgramCallingManager,",
+        "No Op Program Manager,",
+        "InsideHVACSystemIterationLoop,",
+        "NoOpProgram;",
+
+        "EnergyManagementSystem:Program,",
+        "NoOpProgram,",
+        "RETURN;",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    state->init_state(*state);
+
+    EMSManager::CheckIfAnyEMS(*state);
+    state->dataEMSMgr->FinishProcessingUserInput = true;
+
+    bool anyRan;
+    EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::SetupSimulation, anyRan, ObjexxFCL::Optional_int_const());
+    EXPECT_FALSE(anyRan);
+
+    EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan, ObjexxFCL::Optional_int_const());
+    EXPECT_FALSE(anyRan);
+}
+
+TEST_F(EnergyPlusFixture, ErlSubroutineActuatorWriteRequestsHVACIteration)
+{
+    std::string const idf_objects = delimited_string({
+        "OutdoorAir:Node, Test node;",
+
+        "EnergyManagementSystem:Actuator,",
+        "NodeTempSetpoint,",
+        "Test node,",
+        "System Node Setpoint,",
+        "Temperature Setpoint;",
+
+        "EnergyManagementSystem:ProgramCallingManager,",
+        "Actuating Program Manager,",
+        "InsideHVACSystemIterationLoop,",
+        "ActuatingProgram;",
+
+        "EnergyManagementSystem:Program,",
+        "ActuatingProgram,",
+        "RUN WriteActuator;",
+
+        "EnergyManagementSystem:Subroutine,",
+        "WriteActuator,",
+        "SET NodeTempSetpoint = 12.0;",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    state->init_state(*state);
+
+    OutAirNodeManager::SetOutAirNodes(*state);
+    EMSManager::CheckIfAnyEMS(*state);
+    state->dataEMSMgr->FinishProcessingUserInput = true;
+
+    bool anyRan;
+    EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::SetupSimulation, anyRan, ObjexxFCL::Optional_int_const());
+    EXPECT_FALSE(anyRan);
+
     EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan, ObjexxFCL::Optional_int_const());
     EXPECT_TRUE(anyRan);
+}
+
+TEST_F(EnergyPlusFixture, SkippedErlActuatorWriteDoesNotRequestHVACIteration)
+{
+    std::string const idf_objects = delimited_string({
+        "OutdoorAir:Node, Test node;",
+
+        "EnergyManagementSystem:Actuator,",
+        "NodeTempSetpoint,",
+        "Test node,",
+        "System Node Setpoint,",
+        "Temperature Setpoint;",
+
+        "EnergyManagementSystem:ProgramCallingManager,",
+        "Conditional Program Manager,",
+        "InsideHVACSystemIterationLoop,",
+        "ConditionalProgram;",
+
+        "EnergyManagementSystem:Program,",
+        "ConditionalProgram,",
+        "IF 0 > 1,",
+        "SET NodeTempSetpoint = 12.0,",
+        "ENDIF;",
+    });
+
+    ASSERT_TRUE(process_idf(idf_objects));
+    state->init_state(*state);
+
+    OutAirNodeManager::SetOutAirNodes(*state);
+    EMSManager::CheckIfAnyEMS(*state);
+    state->dataEMSMgr->FinishProcessingUserInput = true;
+
+    bool anyRan;
+    EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::SetupSimulation, anyRan, ObjexxFCL::Optional_int_const());
+    EXPECT_FALSE(anyRan);
+
+    EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan, ObjexxFCL::Optional_int_const());
+    EXPECT_FALSE(anyRan);
 }
 
 TEST_F(EnergyPlusFixture, TestUnInitializedEMSVariable1)
@@ -1294,7 +1406,7 @@ TEST_F(EnergyPlusFixture, EMSManager_TestFuntionCall)
 
     bool anyRan;
     EMSManager::ManageEMS(*state, EMSManager::EMSCallFrom::HVACIterationLoop, anyRan, ObjexxFCL::Optional_int_const());
-    EXPECT_TRUE(anyRan);
+    EXPECT_FALSE(anyRan);
 
     for (int i = 1; i <= 6; ++i) {
         state->dataRuntimeLang->TrendVariable(i).TrendValARR(1) = 1.1; // initialize history for trend variables
@@ -1307,7 +1419,7 @@ TEST_F(EnergyPlusFixture, EMSManager_TestFuntionCall)
                           EMSManager::EMSCallFrom::HVACIterationLoop,
                           anyRan,
                           ObjexxFCL::Optional_int_const()); // process trend functions again using above data
-    EXPECT_TRUE(anyRan);
+    EXPECT_FALSE(anyRan);
 
     int offset = 28; // first 27 values in ErlExpression() are constant and built-in variables
     EXPECT_ENUM_EQ(state->dataRuntimeLang->ErlExpression(1).Operator, ErlFunc::Round);

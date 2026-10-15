@@ -134,7 +134,7 @@ namespace RuntimeLanguageProcessor {
                   std::string const &Error // error message to be added to ErlStack
     );
 
-    ErlValueType EvaluateStack(EnergyPlusData &state, int StackNum);
+    ErlValueType EvaluateStack(EnergyPlusData &state, int StackNum, bool &actuatorWasWritten);
 
     void WriteTrace(EnergyPlusData &state, int StackNum, int InstructionNum, ErlValueType const &ReturnValue, bool seriousErrorFound);
 

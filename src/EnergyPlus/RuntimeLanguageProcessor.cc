@@ -801,7 +801,7 @@ void AddError(EnergyPlusData &state,
     }
 }
 
-ErlValueType EvaluateStack(EnergyPlusData &state, int const StackNum)
+ErlValueType EvaluateStack(EnergyPlusData &state, int const StackNum, bool &actuatorWasWritten)
 {
 
     // SUBROUTINE INFORMATION:
@@ -863,6 +863,9 @@ ErlValueType EvaluateStack(EnergyPlusData &state, int const StackNum)
                     // thisErlVar.Value.String = ReturnValue.String;
                     thisErlVar.Value.Error = ReturnValue.Error;
                     thisErlVar.Value.initialized = ReturnValue.initialized;
+                    if (thisErlVar.IsActuator) {
+                        actuatorWasWritten = true;
+                    }
                 } else if (thisErlVar.Value.TrendVariable) {
                     thisErlVar.Value.Number = ReturnValue.Number;
                     thisErlVar.Value.Error = ReturnValue.Error;
@@ -874,7 +877,7 @@ ErlValueType EvaluateStack(EnergyPlusData &state, int const StackNum)
                 ReturnValue.Type = Value::String;
                 ReturnValue.String = "";
                 WriteTrace(state, StackNum, InstructionNum, ReturnValue, seriousErrorFound);
-                ReturnValue = EvaluateStack(state, thisInstruction.Argument1);
+                ReturnValue = EvaluateStack(state, thisInstruction.Argument1, actuatorWasWritten);
             } else if ((SELECT_CASE_var == DataRuntimeLanguage::ErlKeywordParam::If) ||
                        (SELECT_CASE_var == DataRuntimeLanguage::ErlKeywordParam::Else)) { // same???
                 ExpressionNum = thisInstruction.Argument1;

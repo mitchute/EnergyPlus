@@ -289,6 +289,8 @@ namespace EMSManager {
 
         // Run the Erl programs depending on calling point.
 
+        bool erlActuatorWasWritten = false;
+
         if (iCalledFrom != EMSCallFrom::UserDefinedComponentModel) {
             for (int ProgramManagerNum = 1; ProgramManagerNum <= state.dataRuntimeLang->NumProgramCallManagers; ++ProgramManagerNum) {
 
@@ -296,9 +298,10 @@ namespace EMSManager {
                     for (int ErlProgramNum = 1; ErlProgramNum <= state.dataRuntimeLang->EMSProgramCallManager(ProgramManagerNum).NumErlPrograms;
                          ++ErlProgramNum) {
                         RuntimeLanguageProcessor::EvaluateStack(
-                            state, state.dataRuntimeLang->EMSProgramCallManager(ProgramManagerNum).ErlProgramARR(ErlProgramNum));
+                            state,
+                            state.dataRuntimeLang->EMSProgramCallManager(ProgramManagerNum).ErlProgramARR(ErlProgramNum),
+                            erlActuatorWasWritten);
                         anyProgramRan = true;
-                        shouldForceHVACIteration = true;
                     }
                 }
             }
@@ -307,7 +310,7 @@ namespace EMSManager {
                 for (int ErlProgramNum = 1; ErlProgramNum <= state.dataRuntimeLang->EMSProgramCallManager(ProgramManagerToRun).NumErlPrograms;
                      ++ErlProgramNum) {
                     RuntimeLanguageProcessor::EvaluateStack(
-                        state, state.dataRuntimeLang->EMSProgramCallManager(ProgramManagerToRun).ErlProgramARR(ErlProgramNum));
+                        state, state.dataRuntimeLang->EMSProgramCallManager(ProgramManagerToRun).ErlProgramARR(ErlProgramNum), erlActuatorWasWritten);
                     anyProgramRan = true;
                 }
             }
@@ -316,6 +319,8 @@ namespace EMSManager {
         if (iCalledFrom == EMSCallFrom::ExternalInterface) {
             anyProgramRan = true;
         }
+
+        shouldForceHVACIteration = shouldForceHVACIteration || erlActuatorWasWritten;
 
         if (!anyProgramRan) {
             return;
@@ -756,6 +761,7 @@ namespace EMSManager {
                     } else {
                         VariableNum = RuntimeLanguageProcessor::NewEMSVariable(state, cAlphaArgs(1), 0);
                         thisEMSactuator.ErlVariableNum = VariableNum;
+                        state.dataRuntimeLang->ErlVariable(VariableNum).IsActuator = true;
                         // initialize Erl variable for actuator to null
                         state.dataRuntimeLang->ErlVariable(VariableNum).Value = state.dataRuntimeLang->Null;
                         if (ActuatorNum > state.dataRuntimeLang->numActuatorsUsed) {
