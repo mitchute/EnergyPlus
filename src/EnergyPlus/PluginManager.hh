@@ -49,7 +49,6 @@
 #define EPLUS_PLUGIN_MANAGER_HH
 
 // C++ Headers
-#include <cstdint>
 #include <queue>
 #include <vector>
 
