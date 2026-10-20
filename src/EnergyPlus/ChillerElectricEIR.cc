@@ -2620,9 +2620,14 @@ bool ElectricEIRChillerSpecs::thermosiphonDisabled(EnergyPlusData &state)
 std::tuple<Real64, bool> ElectricEIRChillerSpecs::getDynamicMaxCapacity(EnergyPlusData &state)
 {
     Real64 sourceInletTemp = state.dataLoopNodes->Node(this->CondInletNodeNum).Temp;
+    if (this->CondenserType == DataPlant::CondenserType::AirCooled) {
+        sourceInletTemp = state.dataLoopNodes->Node(this->CondInletNodeNum).OutAirDryBulb;
+    } else if (this->CondenserType == DataPlant::CondenserType::EvapCooled) {
+        sourceInletTemp = state.dataLoopNodes->Node(this->CondInletNodeNum).OutAirWetBulb;
+    }
     if (this->HeatRecActive && (this->QHeatRecovered + this->QCondenser) > 0.0) {
         sourceInletTemp =
-            (this->QHeatRecovered * this->HeatRecInletTemp + this->QCondenser * this->CondInletTemp) / (this->QHeatRecovered + this->QCondenser);
+            (this->QHeatRecovered * this->HeatRecInletTemp + this->QCondenser * sourceInletTemp) / (this->QHeatRecovered + this->QCondenser);
     }
     Real64 loadSideOutletSetpointTemp = state.dataLoopNodes->Node(this->EvapOutletNodeNum).Temp;
     switch (state.dataPlnt->PlantLoop(this->CWPlantLoc.loopNum).LoopDemandCalcScheme) {
@@ -2653,6 +2658,16 @@ std::tuple<Real64, bool> ElectricEIRChillerSpecs::getDynamicMaxCapacity(EnergyPl
     } break;
     }
 
+    // When the outlet setpoint is borrowed from the loop, select it before applying the sensor fault correction so the
+    // correction is retained. Dual-setpoint loops use the cooling/high setpoint.
+    if ((this->FlowMode == DataPlant::FlowMode::LeavingSetpointModulated) && this->ModulatedFlowSetToLoop) {
+        auto const &loopSetpointNode = state.dataLoopNodes->Node(state.dataPlnt->PlantLoop(this->CWPlantLoc.loopNum).TempSetPointNodeNum);
+        loadSideOutletSetpointTemp =
+            state.dataPlnt->PlantLoop(this->CWPlantLoc.loopNum).LoopDemandCalcScheme == DataPlant::LoopDemandCalcScheme::DualSetPointDeadBand
+                ? loopSetpointNode.TempSetPointHi
+                : loopSetpointNode.TempSetPoint;
+    }
+
     // If there is a fault of Chiller SWT Sensor
     if (this->FaultyChillerSWTFlag && (!state.dataGlobal->WarmupFlag) && (!state.dataGlobal->DoingSizing) && (!state.dataGlobal->KickOffSimulation)) {
         int FaultIndex = this->FaultyChillerSWTIndex;
@@ -2666,13 +2681,18 @@ std::tuple<Real64, bool> ElectricEIRChillerSpecs::getDynamicMaxCapacity(EnergyPl
                 min(state.dataLoopNodes->Node(this->EvapInletNodeNum).Temp, EvapOutletTempSetPoint_ff - this->FaultyChillerSWTOffset));
         this->FaultyChillerSWTOffset = EvapOutletTempSetPoint_ff - loadSideOutletSetpointTemp;
     }
-    if ((this->FlowMode == DataPlant::FlowMode::LeavingSetpointModulated) && this->ModulatedFlowSetToLoop) {
-        loadSideOutletSetpointTemp = state.dataLoopNodes->Node(state.dataPlnt->PlantLoop(this->CWPlantLoc.loopNum).TempSetPointNodeNum).TempSetPoint;
+
+    Real64 availableReferenceCapacity = this->RefCap;
+    if (this->FaultyChillerFoulingFlag && !state.dataGlobal->WarmupFlag && !state.dataGlobal->DoingSizing && !state.dataGlobal->KickOffSimulation) {
+        Real64 const foulingFactor = state.dataFaultsMgr->FaultsChillerFouling(this->FaultyChillerFoulingIndex).CalFoulingFactor(state);
+        availableReferenceCapacity *= foulingFactor;
     }
+
     // evaluate capacity modifier curve and determine load side heat transfer
     Real64 capacityModifierFuncTemp =
         (this->ChillerCapFTIndex > 0) ? Curve::CurveValue(state, this->ChillerCapFTIndex, loadSideOutletSetpointTemp, sourceInletTemp) : 1.0;
-    return {this->RefCap * capacityModifierFuncTemp, true};
+    capacityModifierFuncTemp = max(0.0, capacityModifierFuncTemp);
+    return {availableReferenceCapacity * capacityModifierFuncTemp * this->MaxPartLoadRat, true};
 }
 
 } // namespace EnergyPlus::ChillerElectricEIR

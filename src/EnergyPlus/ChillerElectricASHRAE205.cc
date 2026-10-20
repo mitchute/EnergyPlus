@@ -1624,4 +1624,11 @@ void ASHRAE205ChillerSpecs::getDesignCapacities(
     }
 }
 
+std::tuple<Real64, bool> ASHRAE205ChillerSpecs::getDynamicMaxCapacity([[maybe_unused]] EnergyPlusData &state)
+{
+    // This model inherits from ElectricEIRChillerSpecs for common plant integration, but it does not use the EIR capacity curve or
+    // maximum PLR fields. Leave the dynamic capacity unknown so plant dispatch retains the design capacity supplied by getDesignCapacities.
+    return {0.0, false};
+}
+
 } // namespace EnergyPlus::ChillerElectricASHRAE205

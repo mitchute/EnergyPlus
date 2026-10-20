@@ -3317,10 +3317,11 @@ void DistributePlantLoad(EnergyPlusData &state,
                 auto const [currentMaxLoad, maxLoadIsKnown] = this_component.getDynamicMaxCapacity(state);
                 PlantCapacity += currentMaxLoad;
 
-                if (currentMaxLoad < SmallLoad) {
+                if (currentMaxLoad < SmallLoad || this_component.MaxLoad < SmallLoad) {
                     MinCompPLR = 0.0;
                 } else {
-                    MinCompPLR = this_component.MinLoad / currentMaxLoad;
+                    // Dynamic capacity scales the operating range; preserve the component's design minimum-to-maximum ratio.
+                    MinCompPLR = this_component.MinLoad / this_component.MaxLoad;
                 }
 
                 // Set LargestMinCompPLR to largest MinCompPLR
@@ -3436,10 +3437,11 @@ void DistributePlantLoad(EnergyPlusData &state,
                 auto const [currentMaxLoad, maxLoadIsKnown] = this_component.getDynamicMaxCapacity(state);
                 PlantCapacity += currentMaxLoad;
 
-                if (currentMaxLoad < SmallLoad) {
+                if (currentMaxLoad < SmallLoad || this_component.MaxLoad < SmallLoad) {
                     MinCompPLR = 0.0;
                 } else {
-                    MinCompPLR = this_component.MinLoad / currentMaxLoad;
+                    // Dynamic capacity scales the operating range; preserve the component's design minimum-to-maximum ratio.
+                    MinCompPLR = this_component.MinLoad / this_component.MaxLoad;
                 }
 
                 // Set LargestMinCompPLR to largest MinCompPLR

@@ -722,6 +722,23 @@ TEST_F(DistributePlantLoadTest, DistributePlantLoad_UniformPLR)
     EXPECT_EQ(thisBranch.Comp(1).MyLoad, 40.0);
     EXPECT_EQ(thisBranch.Comp(2).MyLoad, 100.0);
     EXPECT_EQ(remainingLoopDemand, 10.0);
+
+    // Dynamic capacity scales the whole operating range. Preserve each component's design minimum PLR when deciding
+    // whether both components can run, rather than dividing the static minimum load by the reduced current capacity.
+    VariableCapacityPlantComponent firstVariableCapacityComponent;
+    VariableCapacityPlantComponent secondVariableCapacityComponent;
+    firstVariableCapacityComponent.dynamicMaxCapacity = 20.0;
+    secondVariableCapacityComponent.dynamicMaxCapacity = 50.0;
+    thisBranch.Comp(1).compPtr = &firstVariableCapacityComponent;
+    thisBranch.Comp(2).compPtr = &secondVariableCapacityComponent;
+
+    DistributePlantLoadTest::ResetLoads();
+    remainingLoopDemand = 0.0;
+    loopDemand = 20.0;
+    PlantCondLoopOperation::DistributePlantLoad(*state, 1, DataPlant::LoopSideLocation::Demand, 1, 1, loopDemand, remainingLoopDemand);
+    EXPECT_NEAR(5.7143, thisBranch.Comp(1).MyLoad, 0.0001);
+    EXPECT_NEAR(14.2857, thisBranch.Comp(2).MyLoad, 0.0001);
+    EXPECT_EQ(0.0, remainingLoopDemand);
 }
 
 TEST_F(DistributePlantLoadTest, DistributePlantLoad_SequentialUniformPLR)

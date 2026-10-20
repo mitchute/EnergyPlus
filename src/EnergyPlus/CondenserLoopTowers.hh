@@ -122,6 +122,15 @@ namespace CondenserLoopTowers {
         Num
     };
 
+    struct TowerInletConditions
+    {
+        Real64 waterTemp;
+        Real64 airTemp;
+        Real64 airWetBulb;
+        Real64 airHumRat;
+        Real64 airPress;
+    };
+
     struct CoolingTower : PlantComponent
     {
         // Members
@@ -382,12 +391,20 @@ namespace CondenserLoopTowers {
 
         Real64 calculateSimpleTowerOutletTemp(EnergyPlusData &state, Real64 waterMassFlowRate, Real64 AirFlowRate, Real64 UAdesign);
 
-        Real64 calculateVariableTowerOutletTemp(EnergyPlusData &state,
-                                                Real64 WaterFlowRateRatio,    // current water flow rate ratio (capped if applicable)
-                                                Real64 airFlowRateRatioLocal, // current air flow rate ratio
-                                                Real64 Twb,                   // current inlet air wet-bulb temperature (C, capped if applicable)
-                                                Real64 inletWaterTemp         // current inlet water temperature (C)
+        Real64 calculateSimpleTowerOutletTemp(
+            EnergyPlusData &state, Real64 waterMassFlowRate, Real64 AirFlowRate, Real64 UAdesign, TowerInletConditions const &inletConditions);
+
+        Real64 calculateMerkelFullSpeedTowerOutletTemp(
+            EnergyPlusData &state, Real64 waterMassFlowRate, int numCellsOn, Real64 highSpeedTowerUA, TowerInletConditions const &inletConditions);
+
+        std::tuple<Real64, int> calculateVariableTowerOutletTemp(EnergyPlusData &state,
+                                                                 Real64 WaterFlowRateRatio,    // current water flow rate ratio (capped if applicable)
+                                                                 Real64 airFlowRateRatioLocal, // current air flow rate ratio
+                                                                 Real64 Twb, // current inlet air wet-bulb temperature (C, capped if applicable)
+                                                                 Real64 inletWaterTemp // current inlet water temperature (C)
         );
+
+        void reportVariableTowerOutletTempDiagnostics(EnergyPlusData &state, int solveStatus);
 
         void calculateWaterUsage(EnergyPlusData &state);
 
@@ -399,14 +416,15 @@ namespace CondenserLoopTowers {
         );
 
         void checkModelBounds(EnergyPlusData &state,
-                              Real64 Twb,                      // current inlet air wet-bulb temperature (C)
-                              Real64 Tr,                       // requested range temperature for current time step (C)
-                              Real64 Ta,                       // requested approach temperature for current time step (C)
-                              Real64 WaterFlowRateRatio,       // current water flow rate ratio at water inlet node
-                              Real64 &TwbCapped,               // bounded value of inlet air wet-bulb temperature (C)
-                              Real64 &TrCapped,                // bounded value of range temperature (C)
-                              Real64 &TaCapped,                // bounded value of approach temperature (C)
-                              Real64 &WaterFlowRateRatioCapped // bounded value of water flow rate ratio
+                              Real64 Twb,                       // current inlet air wet-bulb temperature (C)
+                              Real64 Tr,                        // requested range temperature for current time step (C)
+                              Real64 Ta,                        // requested approach temperature for current time step (C)
+                              Real64 WaterFlowRateRatio,        // current water flow rate ratio at water inlet node
+                              Real64 &TwbCapped,                // bounded value of inlet air wet-bulb temperature (C)
+                              Real64 &TrCapped,                 // bounded value of range temperature (C)
+                              Real64 &TaCapped,                 // bounded value of approach temperature (C)
+                              Real64 &WaterFlowRateRatioCapped, // bounded value of water flow rate ratio
+                              bool emitDiagnostics              // issue warnings when model bounds are exceeded
         );
 
         void update(EnergyPlusData &state);

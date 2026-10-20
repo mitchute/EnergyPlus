@@ -58,6 +58,7 @@
 #include <EnergyPlus/DataHVACGlobals.hh>
 #include <EnergyPlus/DataSizing.hh>
 #include <EnergyPlus/ElectricPowerServiceManager.hh>
+#include <EnergyPlus/FaultsManager.hh>
 #include <EnergyPlus/IOFiles.hh>
 #include <EnergyPlus/OutputProcessor.hh>
 #include <EnergyPlus/OutputReportPredefined.hh>
@@ -65,6 +66,7 @@
 #include <EnergyPlus/Plant/PlantManager.hh>
 #include <EnergyPlus/PlantUtilities.hh>
 #include <EnergyPlus/Psychrometrics.hh>
+#include <EnergyPlus/ScheduleManager.hh>
 #include <EnergyPlus/SimulationManager.hh>
 #include <EnergyPlus/SizingManager.hh>
 #include <EnergyPlus/WeatherManager.hh>
@@ -519,22 +521,123 @@ TEST_F(EnergyPlusFixture, CondenserLoopTowers_MerkelNoCooling)
     state->dataEnvrn->OutHumRat =
         Psychrometrics::PsyWFnTdbTwbPb(*state, state->dataEnvrn->OutDryBulbTemp, state->dataEnvrn->OutWetBulbTemp, state->dataEnvrn->OutBaroPress);
 
+    // Preserve plausible conditions from a prior timestep to verify that a capacity probe does not overwrite runtime state.
+    Real64 constexpr priorWaterTemp = 32.0;
+    Real64 constexpr priorAirDryBulb = 30.0;
+    Real64 constexpr priorAirWetBulb = 23.0;
+    Real64 constexpr priorAirPressure = 100000.0;
+    Real64 const priorAirHumRat = Psychrometrics::PsyWFnTdbTwbPb(*state, priorAirDryBulb, priorAirWetBulb, priorAirPressure);
+    tower.InletWaterTemp = priorWaterTemp;
+    tower.WaterTemp = priorWaterTemp;
+    tower.AirTemp = priorAirDryBulb;
+    tower.AirWetBulb = priorAirWetBulb;
+    tower.AirHumRat = priorAirHumRat;
+    tower.AirPress = priorAirPressure;
+
+    tower.plantLoc.side->FlowLock = DataPlant::FlowLock::Unlocked;
     waterInletNode.MassFlowRate = 0.0;
     auto const [capacityAtStartup, capacityAtStartupIsKnown] = tower.getDynamicMaxCapacity(*state);
     EXPECT_TRUE(capacityAtStartupIsKnown);
     EXPECT_GT(capacityAtStartup, 0.0);
 
+    tower.plantLoc.side->FlowLock = DataPlant::FlowLock::Locked;
     waterInletNode.MassFlowRate = 0.5 * tower.DesWaterMassFlowRate;
     auto const [capacityAtEstablishedFlow, capacityAtEstablishedFlowIsKnown] = tower.getDynamicMaxCapacity(*state);
     EXPECT_TRUE(capacityAtEstablishedFlowIsKnown);
     EXPECT_GT(capacityAtEstablishedFlow, 0.0);
     EXPECT_LT(capacityAtEstablishedFlow, capacityAtStartup);
 
-    // Zero branch flow uses design flow as a startup fallback, allowing an inactive tower to become dispatchable.
+    // Once branch flow is locked, zero flow means the tower cannot accept load.
     waterInletNode.MassFlowRate = 0.0;
-    auto const [capacityWithFallback, capacityWithFallbackIsKnown] = tower.getDynamicMaxCapacity(*state);
-    EXPECT_TRUE(capacityWithFallbackIsKnown);
-    EXPECT_DOUBLE_EQ(capacityAtStartup, capacityWithFallback);
+    auto const [capacityAtLockedZeroFlow, capacityAtLockedZeroFlowIsKnown] = tower.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(capacityAtLockedZeroFlowIsKnown);
+    EXPECT_EQ(0.0, capacityAtLockedZeroFlow);
+
+    // Zero flow on the unlocked startup pass uses design flow so an inactive tower can become dispatchable.
+    tower.plantLoc.side->FlowLock = DataPlant::FlowLock::Unlocked;
+    auto const [capacityWithStartupFallback, capacityWithStartupFallbackIsKnown] = tower.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(capacityWithStartupFallbackIsKnown);
+    EXPECT_DOUBLE_EQ(capacityAtStartup, capacityWithStartupFallback);
+
+    state->dataFaultsMgr->FaultsTowerFouling.allocate(1);
+    auto &foulingFault = state->dataFaultsMgr->FaultsTowerFouling(1);
+    foulingFault.availSched = Sched::GetScheduleAlwaysOn(*state);
+    foulingFault.UAReductionFactor = 0.0;
+    state->dataGlobal->WarmupFlag = false;
+    state->dataGlobal->DoingSizing = false;
+    state->dataGlobal->KickOffSimulation = false;
+    tower.FaultyTowerFoulingFlag = true;
+    tower.FaultyTowerFoulingIndex = 1;
+    auto const [fouledCapacity, fouledCapacityIsKnown] = tower.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(fouledCapacityIsKnown);
+    EXPECT_EQ(0.0, fouledCapacity);
+    tower.FaultyTowerFoulingFlag = false;
+
+    EXPECT_DOUBLE_EQ(priorWaterTemp, tower.InletWaterTemp);
+    EXPECT_DOUBLE_EQ(priorWaterTemp, tower.WaterTemp);
+    EXPECT_DOUBLE_EQ(priorAirDryBulb, tower.AirTemp);
+    EXPECT_DOUBLE_EQ(priorAirWetBulb, tower.AirWetBulb);
+    EXPECT_DOUBLE_EQ(priorAirHumRat, tower.AirHumRat);
+    EXPECT_DOUBLE_EQ(priorAirPressure, tower.AirPress);
+}
+
+TEST_F(EnergyPlusFixture, CondenserLoopTowers_SingleAndTwoSpeedDynamicCapacityStopsAtSetpoint)
+{
+    state->init_state(*state);
+    state->dataPlnt->PlantLoop.allocate(1);
+    auto &loop = state->dataPlnt->PlantLoop(1);
+    loop.glycol = Fluid::GetWater(*state);
+    loop.LoopDemandCalcScheme = DataPlant::LoopDemandCalcScheme::SingleSetPoint;
+    auto &loopSide = loop.LoopSide(DataPlant::LoopSideLocation::Supply);
+    loopSide.Branch.allocate(1);
+    loopSide.Branch(1).Comp.allocate(1);
+    loopSide.FlowLock = DataPlant::FlowLock::Locked;
+    loopSide.TempSetPoint = 30.0;
+
+    state->dataLoopNodes->Node.allocate(2);
+    auto &waterInletNode = state->dataLoopNodes->Node(1);
+    waterInletNode.Temp = 35.0;
+    waterInletNode.MassFlowRate = 1.0;
+
+    state->dataEnvrn->OutDryBulbTemp = 25.0;
+    state->dataEnvrn->OutWetBulbTemp = 20.0;
+    state->dataEnvrn->OutBaroPress = 101325.0;
+    state->dataEnvrn->OutHumRat =
+        Psychrometrics::PsyWFnTdbTwbPb(*state, state->dataEnvrn->OutDryBulbTemp, state->dataEnvrn->OutWetBulbTemp, state->dataEnvrn->OutBaroPress);
+
+    CondenserLoopTowers::CoolingTower tower;
+    tower.WaterInletNodeNum = 1;
+    tower.WaterOutletNodeNum = 2;
+    tower.NumCell = 1;
+    tower.DesWaterMassFlowRate = 1.0;
+    tower.HighSpeedAirFlowRate = 10.0;
+    tower.HighSpeedTowerUA = 100000.0;
+    tower.plantLoc = {1, DataPlant::LoopSideLocation::Supply, 1, 1};
+    PlantUtilities::SetPlantLocationLinks(*state, tower.plantLoc);
+
+    Real64 const CpWater = loop.glycol->getSpecificHeat(*state, waterInletNode.Temp, "DynamicTowerCapacityTest");
+    Real64 const expectedDispatchableCapacity = waterInletNode.MassFlowRate * CpWater * (waterInletNode.Temp - loopSide.TempSetPoint);
+
+    tower.TowerType = DataPlant::PlantEquipmentType::CoolingTower_SingleSpd;
+    auto const [singleSpeedCapacity, singleSpeedCapacityIsKnown] = tower.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(singleSpeedCapacityIsKnown);
+    EXPECT_NEAR(expectedDispatchableCapacity, singleSpeedCapacity, 0.1);
+
+    tower.TowerType = DataPlant::PlantEquipmentType::CoolingTower_TwoSpd;
+    auto const [twoSpeedCapacity, twoSpeedCapacityIsKnown] = tower.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(twoSpeedCapacityIsKnown);
+    EXPECT_NEAR(expectedDispatchableCapacity, twoSpeedCapacity, 0.1);
+
+    state->dataFaultsMgr->FaultsCondenserSWTSensor.allocate(1);
+    auto &sensorFault = state->dataFaultsMgr->FaultsCondenserSWTSensor(1);
+    sensorFault.availSched = Sched::GetScheduleAlwaysOn(*state);
+    sensorFault.Offset = 2.0;
+    tower.FaultyCondenserSWTFlag = true;
+    tower.FaultyCondenserSWTIndex = 1;
+    Real64 const expectedFaultedCapacity = waterInletNode.MassFlowRate * CpWater * (waterInletNode.Temp - (loopSide.TempSetPoint - 2.0));
+    auto const [faultedCapacity, faultedCapacityIsKnown] = tower.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(faultedCapacityIsKnown);
+    EXPECT_NEAR(expectedFaultedCapacity, faultedCapacity, 0.1);
 }
 
 TEST_F(EnergyPlusFixture, CondenserLoopTowers_SingleSpeedSizing)
@@ -3952,9 +4055,10 @@ TEST_F(EnergyPlusFixture, VSCoolingTowers_WaterOutletTempTest)
     VSTower.calculateVariableSpeedTower(*state, myLoad, RunFlag);
     EXPECT_DOUBLE_EQ(30.0, VSTower.OutletWaterTemp);
     EXPECT_DOUBLE_EQ(1.0, VSTower.FanCyclingRatio);
-    Real64 TowerOutletWaterTemp =
+    auto [TowerOutletWaterTemp, solveStatus] =
         VSTower.calculateVariableTowerOutletTemp(*state, WaterFlowRateRatio, VSTower.airFlowRateRatio, AirWetBulbTemp, VSTower.WaterTemp);
     EXPECT_NEAR(30.0, TowerOutletWaterTemp, 0.0001);
+    EXPECT_GT(solveStatus, 0);
 
     // test case 2:
     state->dataEnvrn->OutDryBulbTemp = 15.0;
@@ -3972,8 +4076,8 @@ TEST_F(EnergyPlusFixture, VSCoolingTowers_WaterOutletTempTest)
     EXPECT_DOUBLE_EQ(30.0, VSTower.OutletWaterTemp);
     EXPECT_NEAR(0.5424, VSTower.FanCyclingRatio, 0.0001);
     // outside air condition is favorable that fan only needs to cycle at min flow to meet the setpoint
-    TowerOutletWaterTemp =
-        VSTower.calculateVariableTowerOutletTemp(*state, WaterFlowRateRatio, VSTower.MinimumVSAirFlowFrac, AirWetBulbTemp, VSTower.WaterTemp);
+    TowerOutletWaterTemp = std::get<0>(
+        VSTower.calculateVariableTowerOutletTemp(*state, WaterFlowRateRatio, VSTower.MinimumVSAirFlowFrac, AirWetBulbTemp, VSTower.WaterTemp));
     // this is tower outlet temperature at continuous minimum fan flow
     EXPECT_NEAR(26.9537, TowerOutletWaterTemp, 0.0001);
 }
@@ -4292,8 +4396,10 @@ TEST_F(EnergyPlusFixture, CondenserLoopTowers_CalculateVariableTowerOutletTemp)
     tower.WaterTemp = 30.0;
 
     // calculate outlet temperature
-    Real64 tOutlet = tower.calculateVariableTowerOutletTemp(*state, 0.25, 1.0, 14.1, inletWaterTemp);
+    auto const [tOutlet, solveStatus] = tower.calculateVariableTowerOutletTemp(*state, 0.25, 1.0, 14.1, inletWaterTemp);
     EXPECT_NEAR(inletWaterTemp - 22.2222, tOutlet, 0.01);
+    EXPECT_EQ(-2, solveStatus);
+    EXPECT_EQ(0, tower.VSErrorCountTRCalc);
 }
 
 TEST_F(EnergyPlusFixture, CondenserLoopTowers_checkMassFlowAndLoadTest)

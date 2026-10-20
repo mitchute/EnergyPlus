@@ -51,12 +51,14 @@
 #include <gtest/gtest.h>
 
 // EnergyPlus Headers
+#include <EnergyPlus/ChillerElectricASHRAE205.hh>
 #include <EnergyPlus/ChillerElectricEIR.hh>
 #include <EnergyPlus/CurveManager.hh>
 #include <EnergyPlus/Data/EnergyPlusData.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataLoopNode.hh>
 #include <EnergyPlus/DataSizing.hh>
+#include <EnergyPlus/FaultsManager.hh>
 #include <EnergyPlus/FluidProperties.hh>
 #include <EnergyPlus/General.hh>
 #include <EnergyPlus/OutputReportPredefined.hh>
@@ -64,11 +66,27 @@
 #include <EnergyPlus/Plant/Enums.hh>
 #include <EnergyPlus/PlantUtilities.hh>
 #include <EnergyPlus/Psychrometrics.hh>
+#include <EnergyPlus/ScheduleManager.hh>
 
 #include "Fixtures/EnergyPlusFixture.hh"
 
 using namespace EnergyPlus;
 using namespace EnergyPlus::ChillerElectricEIR;
+
+TEST_F(EnergyPlusFixture, ChillerElectricASHRAE205_DynamicCapacityFallsBackToDesignCapacity)
+{
+    Real64 constexpr designCapacity = 207000.0;
+    ChillerElectricASHRAE205::ASHRAE205ChillerSpecs chiller;
+    chiller.RefCap = designCapacity;
+    DataPlant::CompData plantComponent;
+    plantComponent.compPtr = &chiller;
+    plantComponent.MaxLoad = designCapacity;
+
+    auto const [dynamicCapacity, dynamicCapacityIsKnown] = plantComponent.getDynamicMaxCapacity(*state);
+
+    EXPECT_TRUE(dynamicCapacityIsKnown);
+    EXPECT_EQ(designCapacity, dynamicCapacity);
+}
 
 TEST_F(EnergyPlusFixture, ChillerElectricEIR_TestNegativeCurveRoundingError)
 {
@@ -425,6 +443,63 @@ TEST_F(EnergyPlusFixture, ChillerElectricEIR_AirCooledChiller)
     EXPECT_NEAR(14354.6, dynCapAt5C, 1.0);     // capacity used by plant manager, calculated at 5 C OAT and 6 C leaving CHW temperature
     EXPECT_NEAR(20987.5, thisEIR.RefCap, 1.0); // chiller reference capacity used by plant manager (prior to getDynamicMaxCapacity call)
 
+    // The maximum PLR is part of the chiller's currently dispatchable capacity.
+    thisEIR.MaxPartLoadRat = 1.2;
+    auto const [dynCapAtMaxPLR, dynCapAtMaxPLRIsKnown] = thisChiller->getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(dynCapAtMaxPLRIsKnown);
+    EXPECT_NEAR(1.2 * dynCapAt5C, dynCapAtMaxPLR, 0.01);
+    thisEIR.MaxPartLoadRat = 1.0;
+
+    // Match the simulation path by treating a negative capacity-curve result as zero.
+    auto &capacityCurve = *state->dataCurveManager->curves(thisEIR.ChillerCapFTIndex);
+    auto const originalCapacityCurveCoefficients = capacityCurve.coeff;
+    capacityCurve.coeff.fill(0.0);
+    capacityCurve.coeff[0] = -1.0;
+    auto const [negativeCurveCapacity, negativeCurveCapacityIsKnown] = thisChiller->getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(negativeCurveCapacityIsKnown);
+    EXPECT_EQ(0.0, negativeCurveCapacity);
+    capacityCurve.coeff = originalCapacityCurveCoefficients;
+
+    // Fouling reduces the reference capacity used by both simulation and dispatch.
+    state->dataFaultsMgr->FaultsChillerFouling.allocate(1);
+    auto &foulingFault = state->dataFaultsMgr->FaultsChillerFouling(1);
+    foulingFault.availSched = Sched::GetScheduleAlwaysOn(*state);
+    foulingFault.FoulingFactor = 0.8;
+    thisEIR.FaultyChillerFoulingFlag = true;
+    thisEIR.FaultyChillerFoulingIndex = 1;
+    auto const [fouledCapacity, fouledCapacityIsKnown] = thisChiller->getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(fouledCapacityIsKnown);
+    EXPECT_NEAR(0.8 * dynCapAt5C, fouledCapacity, 0.01);
+    thisEIR.FaultyChillerFoulingFlag = false;
+
+    // A loop-setpoint fallback on a dual-setpoint loop must use the high setpoint, then retain the sensor-fault correction.
+    state->dataFaultsMgr->FaultsChillerSWTSensor.allocate(1);
+    auto &supplyWaterTemperatureFault = state->dataFaultsMgr->FaultsChillerSWTSensor(1);
+    supplyWaterTemperatureFault.availSched = Sched::GetScheduleAlwaysOn(*state);
+    supplyWaterTemperatureFault.Offset = 1.0;
+    auto &chilledWaterLoop = state->dataPlnt->PlantLoop(thisEIR.CWPlantLoc.loopNum);
+    chilledWaterLoop.LoopDemandCalcScheme = DataPlant::LoopDemandCalcScheme::DualSetPointDeadBand;
+    auto &loopSetpointNode = state->dataLoopNodes->Node(chilledWaterLoop.TempSetPointNodeNum);
+    loopSetpointNode.TempSetPoint = 9.0;
+    loopSetpointNode.TempSetPointHi = 7.0;
+    thisEIR.FlowMode = DataPlant::FlowMode::LeavingSetpointModulated;
+    thisEIR.ModulatedFlowSetToLoop = true;
+    thisEIR.FaultyChillerSWTFlag = true;
+    thisEIR.FaultyChillerSWTIndex = 1;
+    Real64 constexpr faultAdjustedHighSetpoint = 6.0;
+    Real64 const expectedFaultedCapacity = thisEIR.RefCap * Curve::CurveValue(*state,
+                                                                              thisEIR.ChillerCapFTIndex,
+                                                                              faultAdjustedHighSetpoint,
+                                                                              state->dataLoopNodes->Node(thisEIR.CondInletNodeNum).OutAirDryBulb);
+    auto const [faultedCapacity, faultedCapacityIsKnown] = thisChiller->getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(faultedCapacityIsKnown);
+    EXPECT_NEAR(expectedFaultedCapacity, faultedCapacity, 0.01);
+    thisEIR.FaultyChillerSWTFlag = false;
+    thisEIR.FlowMode = DataPlant::FlowMode::NotModulated;
+    thisEIR.ModulatedFlowSetToLoop = false;
+    chilledWaterLoop.LoopDemandCalcScheme = DataPlant::LoopDemandCalcScheme::SingleSetPoint;
+    loopSetpointNode.TempSetPoint = 6.0;
+
     // A zero dynamic capacity is valid and must not fall back to the static maximum load
     auto &plantComponent = DataPlant::CompData::getPlantComponent(*state, thisEIR.CWPlantLoc);
     PlantComponent *originalCompPtr = plantComponent.compPtr;
@@ -567,6 +642,20 @@ TEST_F(EnergyPlusFixture, ChillerElectricEIR_EvaporativelyCooled_Calculate)
     EXPECT_EQ(resultCondVolFlowRate, thisEIRChiller.CondVolFlowRate);
     EXPECT_NEAR(thisEIRChiller.CondVolFlowRate, 2.3925760323498, 0.0000001);
     EXPECT_NEAR(thisEIRChiller.CondMassFlowRateMax, 2.7918772761695, 0.0000001);
+
+    // Dispatch happens before calculate() refreshes the condenser node temperature, so use the current outdoor wet bulb.
+    auto &condenserInletNode = state->dataLoopNodes->Node(thisEIRChiller.CondInletNodeNum);
+    condenserInletNode.Temp = 34.0;
+    condenserInletNode.OutAirWetBulb = 25.0;
+    Real64 const expectedDynamicCapacity =
+        thisEIRChiller.RefCap *
+        Curve::CurveValue(*state, thisEIRChiller.ChillerCapFTIndex, state->dataLoopNodes->Node(thisEIRChiller.EvapOutletNodeNum).TempSetPoint, 25.0) *
+        thisEIRChiller.MaxPartLoadRat;
+    auto const [dynamicCapacity, dynamicCapacityIsKnown] = thisEIRChiller.getDynamicMaxCapacity(*state);
+    EXPECT_TRUE(dynamicCapacityIsKnown);
+    EXPECT_NEAR(expectedDynamicCapacity, dynamicCapacity, 0.01);
+    condenserInletNode.OutAirWetBulb = state->dataEnvrn->OutWetBulbTemp;
+
     // run chiller
     thisEIRChiller.calculate(*state, MyLoad, RunFlag);
     // calc evap-cooler water consumption rate
