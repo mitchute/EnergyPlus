@@ -52,6 +52,7 @@
 
 // EnergyPlus Headers
 #include <EnergyPlus/Data/EnergyPlusData.hh>
+#include <EnergyPlus/Plant/Component.hh>
 #include <EnergyPlus/Plant/DataPlant.hh>
 #include <EnergyPlus/PlantUtilities.hh>
 #include <EnergyPlus/Pumps.hh>
@@ -60,6 +61,74 @@
 
 using namespace EnergyPlus;
 using namespace EnergyPlus::DataPlant;
+
+namespace {
+
+class StaticCapacityPlantComponent : public PlantComponent
+{
+public:
+    void simulate(EnergyPlusData &, const PlantLocation &, bool, Real64 &, bool) override
+    {
+    }
+
+    void oneTimeInit(EnergyPlusData &) override
+    {
+    }
+};
+
+class DynamicCapacityPlantComponent : public StaticCapacityPlantComponent
+{
+public:
+    Real64 capacity = 0.0;
+    bool capacityIsKnown = false;
+
+    std::tuple<Real64, bool> getDynamicMaxCapacity(EnergyPlusData &) override
+    {
+        return {this->capacity, this->capacityIsKnown};
+    }
+};
+
+} // namespace
+
+TEST_F(EnergyPlusFixture, DataPlant_DynamicMaxCapacityDistinguishesUnknownFromZero)
+{
+    CompData component;
+    component.MaxLoad = 100.0;
+
+    auto [capacity, capacityIsKnown] = component.getDynamicMaxCapacity(*state);
+    EXPECT_DOUBLE_EQ(100.0, capacity);
+    EXPECT_TRUE(capacityIsKnown);
+
+    StaticCapacityPlantComponent staticComponent;
+    component.compPtr = &staticComponent;
+    std::tie(capacity, capacityIsKnown) = component.getDynamicMaxCapacity(*state);
+    EXPECT_DOUBLE_EQ(100.0, capacity);
+    EXPECT_TRUE(capacityIsKnown);
+
+    DynamicCapacityPlantComponent dynamicComponent;
+    component.compPtr = &dynamicComponent;
+
+    std::tie(capacity, capacityIsKnown) = component.getDynamicMaxCapacity(*state);
+    EXPECT_DOUBLE_EQ(100.0, capacity);
+    EXPECT_TRUE(capacityIsKnown);
+
+    dynamicComponent.capacity = 50.0;
+    dynamicComponent.capacityIsKnown = true;
+    std::tie(capacity, capacityIsKnown) = component.getDynamicMaxCapacity(*state);
+    EXPECT_DOUBLE_EQ(50.0, capacity);
+    EXPECT_TRUE(capacityIsKnown);
+
+    dynamicComponent.capacity = 0.0;
+    std::tie(capacity, capacityIsKnown) = component.getDynamicMaxCapacity(*state);
+    EXPECT_DOUBLE_EQ(0.0, capacity);
+    EXPECT_TRUE(capacityIsKnown);
+
+    dynamicComponent.capacityIsKnown = false;
+    component.MaxLoad = 0.0;
+    std::tie(capacity, capacityIsKnown) = component.getDynamicMaxCapacity(*state);
+    EXPECT_DOUBLE_EQ(0.0, capacity);
+    EXPECT_FALSE(capacityIsKnown);
+}
 
 TEST_F(EnergyPlusFixture, DataPlant_AnyPlantLoopSidesNeedSim)
 {

@@ -50,6 +50,8 @@
 
 #include <EnergyPlus/DataGlobals.hh>
 
+#include <tuple>
+
 namespace EnergyPlus {
 
 // Forward declarations
@@ -90,9 +92,10 @@ public:
     {
     }
 
-    virtual Real64 getDynamicMaxCapacity([[maybe_unused]] EnergyPlusData &state)
+    // Returns {capacity, isKnown}; a known zero is distinct from an unavailable dynamic-capacity estimate.
+    virtual std::tuple<Real64, bool> getDynamicMaxCapacity([[maybe_unused]] EnergyPlusData &state)
     {
-        return 0.0;
+        return {0.0, false};
     }
 
     virtual void getCurrentPower([[maybe_unused]] EnergyPlusData &state, [[maybe_unused]] Real64 &power)

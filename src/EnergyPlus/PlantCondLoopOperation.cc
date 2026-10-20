@@ -3784,7 +3784,8 @@ void FindCompSPLoad(EnergyPlusData &state,
 
     // load local variables from the data structures
     CompMinLoad = this_component.MinLoad;
-    CompMaxLoad = this_component.getDynamicMaxCapacity(state);
+    bool CompMaxLoadIsKnown;
+    std::tie(CompMaxLoad, CompMaxLoadIsKnown) = this_component.getDynamicMaxCapacity(state);
     CompOptLoad = this_component.OptLoad;
     DemandNode = plantLoc.loop->OpScheme(OpSchemePtr).EquipList(ListPtr).Comp(CompPtr).DemandNodeNum;
     SetPtNode = plantLoc.loop->OpScheme(OpSchemePtr).EquipList(ListPtr).Comp(CompPtr).SetPointNodeNum;
@@ -3870,7 +3871,7 @@ void FindCompSPLoad(EnergyPlusData &state,
         }
 
         // Check bounds on MyLoad
-        if (std::abs(this_component.MyLoad) > CompMaxLoad) {
+        if (CompMaxLoadIsKnown && std::abs(this_component.MyLoad) > CompMaxLoad) {
             this_component.MyLoad = sign(CompMaxLoad, this_component.MyLoad);
         }
         //   PlantLoop(LoopNum)%LoopSide(LoopSideNum)%Branch(BranchNum)%Comp(CompNum)%MyLoad = &
