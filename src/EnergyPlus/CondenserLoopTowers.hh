@@ -416,7 +416,7 @@ namespace CondenserLoopTowers {
 
         static CoolingTower *factory(EnergyPlusData &state, std::string_view objectName);
 
-        Real64 getDynamicMaxCapacity(EnergyPlusData &state) override;
+        Real64 getMaxCapacity(EnergyPlusData &state, Real64 designMaxCapacity) override;
     };
 
     void GetTowerInput(EnergyPlusData &state);

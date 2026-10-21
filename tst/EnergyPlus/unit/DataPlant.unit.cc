@@ -52,6 +52,7 @@
 
 // EnergyPlus Headers
 #include <EnergyPlus/Data/EnergyPlusData.hh>
+#include <EnergyPlus/Plant/Component.hh>
 #include <EnergyPlus/Plant/DataPlant.hh>
 #include <EnergyPlus/PlantUtilities.hh>
 #include <EnergyPlus/Pumps.hh>
@@ -60,6 +61,80 @@
 
 using namespace EnergyPlus;
 using namespace EnergyPlus::DataPlant;
+
+namespace {
+
+class StaticCapacityPlantComponent : public PlantComponent
+{
+public:
+    void simulate(EnergyPlusData &, const PlantLocation &, bool, Real64 &, bool) override
+    {
+    }
+
+    void oneTimeInit(EnergyPlusData &) override
+    {
+    }
+};
+
+class DynamicCapacityPlantComponent : public StaticCapacityPlantComponent
+{
+public:
+    Real64 maxCapacity = 0.0;
+    Real64 minCapacity = 0.0;
+    Real64 optCapacity = 0.0;
+
+    Real64 getMaxCapacity(EnergyPlusData &, Real64) override
+    {
+        return this->maxCapacity;
+    }
+
+    Real64 getMinCapacity(EnergyPlusData &, Real64) override
+    {
+        return this->minCapacity;
+    }
+
+    Real64 getOptCapacity(EnergyPlusData &, Real64) override
+    {
+        return this->optCapacity;
+    }
+};
+
+} // namespace
+
+TEST_F(EnergyPlusFixture, DataPlant_CapacityAccessorsUseDynamicOverridesOrDesignCapacities)
+{
+    CompData component;
+    component.MaxLoad = 100.0;
+    component.MinLoad = 10.0;
+    component.OptLoad = 80.0;
+
+    EXPECT_DOUBLE_EQ(100.0, component.getMaxCapacity(*state));
+    EXPECT_DOUBLE_EQ(10.0, component.getMinCapacity(*state));
+    EXPECT_DOUBLE_EQ(80.0, component.getOptCapacity(*state));
+
+    StaticCapacityPlantComponent staticComponent;
+    component.compPtr = &staticComponent;
+    EXPECT_DOUBLE_EQ(100.0, component.getMaxCapacity(*state));
+    EXPECT_DOUBLE_EQ(10.0, component.getMinCapacity(*state));
+    EXPECT_DOUBLE_EQ(80.0, component.getOptCapacity(*state));
+
+    DynamicCapacityPlantComponent dynamicComponent;
+    component.compPtr = &dynamicComponent;
+    EXPECT_DOUBLE_EQ(0.0, component.getMaxCapacity(*state));
+    EXPECT_DOUBLE_EQ(0.0, component.getMinCapacity(*state));
+    EXPECT_DOUBLE_EQ(0.0, component.getOptCapacity(*state));
+
+    dynamicComponent.maxCapacity = 50.0;
+    dynamicComponent.minCapacity = 5.0;
+    dynamicComponent.optCapacity = 40.0;
+    EXPECT_DOUBLE_EQ(50.0, component.getMaxCapacity(*state));
+    EXPECT_DOUBLE_EQ(5.0, component.getMinCapacity(*state));
+    EXPECT_DOUBLE_EQ(40.0, component.getOptCapacity(*state));
+
+    EXPECT_DOUBLE_EQ(100.0, component.MaxLoad);
+    EXPECT_DOUBLE_EQ(10.0, component.MinLoad);
+    EXPECT_DOUBLE_EQ(80.0, component.OptLoad);
+}
 
 TEST_F(EnergyPlusFixture, DataPlant_AnyPlantLoopSidesNeedSim)
 {

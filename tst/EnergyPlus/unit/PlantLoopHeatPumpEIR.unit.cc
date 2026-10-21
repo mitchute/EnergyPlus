@@ -592,6 +592,11 @@ TEST_F(EnergyPlusFixture, HeatingSimulate_AirSource_AWHP)
     HeatPumpAirToWater *thisAWHPHeating = &state->dataHeatPumpAirToWater->heatPumps[1];
     HeatPumpAirToWater *thisAWHPCooling = &state->dataHeatPumpAirToWater->heatPumps[0];
 
+    // Air-to-water heat pumps do not yet calculate a dynamic maximum capacity.
+    PLHPPlantLoadSideCompHeating.compPtr = thisAWHPHeating;
+    PLHPPlantLoadSideCompHeating.MaxLoad = thisAWHPHeating->referenceCapacity;
+    EXPECT_EQ(thisAWHPHeating->referenceCapacity, PLHPPlantLoadSideCompHeating.getMaxCapacity(*state));
+
     // do a bit of extra wiring up to the plant
     PLHPPlantLoadSideCompHeating.Name = thisAWHPHeating->name;
     PLHPPlantLoadSideCompHeating.NodeNumIn = thisAWHPHeating->loadSideNodes.inlet;

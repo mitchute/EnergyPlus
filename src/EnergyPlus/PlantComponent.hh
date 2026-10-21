@@ -90,9 +90,19 @@ public:
     {
     }
 
-    virtual Real64 getDynamicMaxCapacity([[maybe_unused]] EnergyPlusData &state)
+    virtual Real64 getMaxCapacity([[maybe_unused]] EnergyPlusData &state, Real64 designMaxCapacity)
     {
-        return 0.0;
+        return designMaxCapacity;
+    }
+
+    virtual Real64 getMinCapacity([[maybe_unused]] EnergyPlusData &state, Real64 designMinCapacity)
+    {
+        return designMinCapacity;
+    }
+
+    virtual Real64 getOptCapacity([[maybe_unused]] EnergyPlusData &state, Real64 designOptCapacity)
+    {
+        return designOptCapacity;
     }
 
     virtual void getCurrentPower([[maybe_unused]] EnergyPlusData &state, [[maybe_unused]] Real64 &power)

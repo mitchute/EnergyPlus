@@ -6275,10 +6275,10 @@ namespace CondenserLoopTowers {
         }
     }
 
-    Real64 CoolingTower::getDynamicMaxCapacity(EnergyPlusData &state)
+    Real64 CoolingTower::getMaxCapacity(EnergyPlusData &state, [[maybe_unused]] Real64 designMaxCapacity)
     {
         // TODO: does not include faults object impact
-        static constexpr std::string_view routineName("getDynamicMaxCapacity");
+        static constexpr std::string_view routineName("getMaxCapacity");
         Real64 outletWaterTemp = 0.0;
         Real64 constexpr designWetBulb = 25.56;
         Real64 constexpr ratedAirFlowRateRatio = 1.0;

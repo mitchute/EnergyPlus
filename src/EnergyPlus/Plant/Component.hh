@@ -346,7 +346,9 @@ namespace DataPlant {
 
         static CompData &getPlantComponent(EnergyPlusData &state, PlantLocation const &plantLoc);
 
-        Real64 getDynamicMaxCapacity(EnergyPlusData &state) const;
+        Real64 getMaxCapacity(EnergyPlusData &state) const;
+        Real64 getMinCapacity(EnergyPlusData &state) const;
+        Real64 getOptCapacity(EnergyPlusData &state) const;
     };
 } // namespace DataPlant
 } // namespace EnergyPlus

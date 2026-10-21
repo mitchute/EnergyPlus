@@ -3783,9 +3783,9 @@ void FindCompSPLoad(EnergyPlusData &state,
     CompPtr = this_component.OpScheme(OpNum).EquipList(1).CompPtr;
 
     // load local variables from the data structures
-    CompMinLoad = this_component.MinLoad;
-    CompMaxLoad = this_component.getDynamicMaxCapacity(state);
-    CompOptLoad = this_component.OptLoad;
+    CompMinLoad = this_component.getMinCapacity(state);
+    CompMaxLoad = this_component.getMaxCapacity(state);
+    CompOptLoad = this_component.getOptCapacity(state);
     DemandNode = plantLoc.loop->OpScheme(OpSchemePtr).EquipList(ListPtr).Comp(CompPtr).DemandNodeNum;
     SetPtNode = plantLoc.loop->OpScheme(OpSchemePtr).EquipList(ListPtr).Comp(CompPtr).SetPointNodeNum;
     TempIn = state.dataLoopNodes->Node(DemandNode).Temp;

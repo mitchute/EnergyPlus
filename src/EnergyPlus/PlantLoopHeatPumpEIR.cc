@@ -2865,13 +2865,18 @@ bool EIRPlantLoopHeatPump::thermosiphonDisabled(EnergyPlusData &state)
     return true;
 }
 
-Real64 EIRPlantLoopHeatPump::getDynamicMaxCapacity(EnergyPlusData &state)
+Real64 EIRPlantLoopHeatPump::getMaxCapacity(EnergyPlusData &state, [[maybe_unused]] Real64 designMaxCapacity)
 {
     Real64 sourceInletTemp = state.dataLoopNodes->Node(this->sourceSideNodes.inlet).Temp;
     Real64 loadSideOutletSetpointTemp = this->getLoadSideOutletSetPointTemp(state);
     // evaluate capacity modifier curve and determine load side heat transfer
     Real64 capacityModifierFuncTemp = Curve::CurveValue(state, this->capFuncTempCurveIndex, loadSideOutletSetpointTemp, sourceInletTemp);
     return this->referenceCapacity * capacityModifierFuncTemp * heatingCapacityModifierASHP(state);
+}
+
+Real64 HeatPumpAirToWater::getMaxCapacity(EnergyPlusData &state, Real64 designMaxCapacity)
+{
+    return PlantComponent::getMaxCapacity(state, designMaxCapacity);
 }
 
 void EIRPlantLoopHeatPump::report(EnergyPlusData &state)
@@ -4512,7 +4517,7 @@ void EIRFuelFiredHeatPump::report(EnergyPlusData &state)
     state.dataLoopNodes->Node(this->sourceSideNodes.outlet).Temp = this->sourceSideOutletTemp;
 }
 
-Real64 EIRFuelFiredHeatPump::getDynamicMaxCapacity(EnergyPlusData &state)
+Real64 EIRFuelFiredHeatPump::getMaxCapacity(EnergyPlusData &state, [[maybe_unused]] Real64 designMaxCapacity)
 {
     // Source (air) side temperature variable
     auto &thisSourceSideInletNode = state.dataLoopNodes->Node(this->sourceSideNodes.inlet);
