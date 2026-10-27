@@ -68,6 +68,7 @@
 #include <EnergyPlus/DataZoneEnergyDemands.hh>
 #include <EnergyPlus/FileSystem.hh>
 #include <EnergyPlus/General.hh>
+#include <EnergyPlus/HVACSystemRootFindingAlgorithm.hh>
 #include <EnergyPlus/InputProcessing/InputProcessor.hh>
 #include <EnergyPlus/OutputProcessor.hh>
 #include <EnergyPlus/OutputReportPredefined.hh>
@@ -1285,6 +1286,13 @@ namespace ThermalComfort {
                                            state.dataThermalComforts->WorkEff);
 
         Real64 StillAirVel = 0.1;
+        // CalcStandardEffectiveTemp clamps the air velocity to at least still air, so there is no cooling effect to solve for
+        if (RelAirVel <= StillAirVel) {
+            CoolingEffect = 0.0;
+            CoolingEffectAdjustedPMV = ASHRAE55PMV;
+            return;
+        }
+
         auto ce_root_function = [&state, &StillAirVel, &SET](Real64 x) {
             return CalcStandardEffectiveTemp(state,
                                              state.dataThermalComforts->AirTemp - x,
@@ -1303,10 +1311,14 @@ namespace ThermalComfort {
         Real64 constexpr upperBound = 50.0;
         int SolFla = 0;
 
+        // Do not let the user's HVACSystemRootFindingAlgorithm choice change the comfort results
+        RootAlgo const rootAlgoBackup = state.dataRootFinder->rootAlgo;
+        state.dataRootFinder->rootAlgo = RootAlgo::ShortBisectionThenRegulaFalsi;
         General::SolveRoot(state, tempAccuracy, MaxIte, SolFla, CoolingEffect, ce_root_function, lowerBound, upperBound);
+        state.dataRootFinder->rootAlgo = rootAlgoBackup;
         if (SolFla < 0) {
             ShowRecurringWarningErrorAtEnd(state,
-                                           "The cooling effect could not be solved for People=\"" + people.Name + "\"" +
+                                           "The cooling effect could not be solved for People=\"" + people.Name + "\". " +
                                                "As a result, no cooling effect will be applied to adjust the PMV and PPD results.",
                                            state.dataThermalComforts->CoolingEffectWarningInd);
             CoolingEffect = 0;

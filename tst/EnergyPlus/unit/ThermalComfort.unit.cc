@@ -70,6 +70,7 @@
 #include <EnergyPlus/DataSurfaces.hh>
 #include <EnergyPlus/DataViewFactorInformation.hh>
 #include <EnergyPlus/DataZoneEnergyDemands.hh>
+#include <EnergyPlus/HVACSystemRootFindingAlgorithm.hh>
 #include <EnergyPlus/IOFiles.hh>
 #include <EnergyPlus/Psychrometrics.hh>
 #include <EnergyPlus/ScheduleManager.hh>
@@ -1082,8 +1083,7 @@ TEST_F(EnergyPlusFixture, ThermalComfort_CalcThermalComfortASH55)
     Real64 InitialSET = CalcStandardEffectiveTemp(*state, AirTemp, RadTemp, RelHum, RelAirVel, ActMet, CloUnit, WorkEff);
     Real64 CoolingEffectSET =
         CalcStandardEffectiveTemp(*state, AirTemp - CoolingEffect, RadTemp - CoolingEffect, RelHum, StillAirVel, ActMet, CloUnit, WorkEff);
-    // TODO: This is being calculated about 0.2 degrees different on x86* and ARM, so I loosened up the tolerance, but why??
-    EXPECT_NEAR(CoolingEffectSET, InitialSET, 0.25);
+    EXPECT_NEAR(CoolingEffectSET, InitialSET, 0.01);
 
     // Test 2 - Air velocity = 1 m/s.
     AirVel = 1;
@@ -1095,8 +1095,22 @@ TEST_F(EnergyPlusFixture, ThermalComfort_CalcThermalComfortASH55)
 
     RelAirVel = CalcRelativeAirVelocity(AirVel, ActMet);
     InitialSET = CalcStandardEffectiveTemp(*state, AirTemp, RadTemp, RelHum, RelAirVel, ActMet, CloUnit, WorkEff);
-    // TODO: This is being calculated about 0.2 degrees different on x86* and ARM, so I loosened up the tolerance, but why??
-    EXPECT_NEAR(CoolingEffectSET, InitialSET, 0.25);
+    EXPECT_NEAR(CoolingEffectSET, InitialSET, 0.01);
+
+    // The cooling effect must not depend on the user's HVACSystemRootFindingAlgorithm
+    state->dataRootFinder->rootAlgo = RootAlgo::Bisection;
+    CalcThermalComfortCoolingEffectASH(*state);
+    EXPECT_NEAR(state->dataThermalComforts->ThermalComfortData(1).CoolingEffectASH55, CoolingEffect, 1.0e-10);
+    EXPECT_EQ(state->dataRootFinder->rootAlgo, RootAlgo::Bisection);
+    state->dataRootFinder->rootAlgo = RootAlgo::RegulaFalsi;
+
+    // Test 3 - Still air (relative air velocity <= 0.1 m/s): no cooling effect, adjusted PMV is the plain PMV
+    AirVel = 0.05;
+    airVeloSched->currentVal = AirVel;
+    ASSERT_LE(CalcRelativeAirVelocity(AirVel, ActMet), StillAirVel);
+    CalcThermalComfortCoolingEffectASH(*state);
+    EXPECT_EQ(state->dataThermalComforts->ThermalComfortData(1).CoolingEffectASH55, 0.0);
+    EXPECT_EQ(state->dataThermalComforts->CoolingEffectWarningInd, 0);
 
     // Part 3: Test ankle draft PPD.
     state->dataHeatBal->People(1).AnkleDraftASH55 = true;
