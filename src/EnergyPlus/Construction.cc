@@ -1622,7 +1622,6 @@ void ConstructionProps::calculateFinalCoefficients()
     constexpr Real64 ConvrgLim(1.0e-13); // Convergence limit (ratio) for cutting off the calculation of further
     // CTFs.  This value was found to give suitable accuracy in IBLAST.
 
-    Real64 avg;            // Intermediate calculation variable (average)
     bool CTFConvrg;        // Set after CTFs are calculated, based on whether there are too many CTFs terms
     Array2D<Real64> PhiR0; // Product of Phi( = AExp) and R0 matrices from the state space method
     Real64 rat;            // Intermediate calculation variable (ratio of flux history terms)
@@ -1642,6 +1641,12 @@ void ConstructionProps::calculateFinalCoefficients()
     this->s = 0.0;
     this->e = 0.0;
     Rnew = this->IdenMatrix; // Rnew initialized to the identity matrix
+
+    auto enforceCrossTermReciprocity = [](Real64 &s12, Real64 &s21) {
+        Real64 const avg = (s12 - s21) * 0.5;
+        s12 = avg;
+        s21 = -avg;
+    };
 
     // Calculate Gamma1-Gamma2.  Gamma1 is not used by itself in the
     // equations, only Gamma1-Gamma2.  Thus, reset Gamma1 to:
@@ -1693,12 +1698,8 @@ void ConstructionProps::calculateFinalCoefficients()
         this->s0(3, 4) = this->Gamma2(3, this->NodeUserTemp);
     }
 
-    // Check for and enforce symmetry in the cross term (Y)
-    if (std::abs(this->s0(2, 1)) != std::abs(this->s0(1, 2))) {
-        avg = (std::abs(this->s0(2, 1)) + std::abs(this->s0(1, 2))) * 0.5;
-        this->s0(2, 1) *= avg / std::abs(this->s0(2, 1));
-        this->s0(1, 2) *= avg / std::abs(this->s0(1, 2));
-    }
+    // Enforce reciprocity in the cross term (Y)
+    enforceCrossTermReciprocity(this->s0(1, 2), this->s0(2, 1));
 
     // Compute S's and e's from 1 to n-1.  See equations (2.1.25) and
     // (2.1.26) and Appendix C.
@@ -1801,12 +1802,8 @@ void ConstructionProps::calculateFinalCoefficients()
             this->s(2, 2, inum) += this->e(inum) * this->DMat(2) * double(this->NumOfPerpendNodes - 1);
         }
 
-        // Check for and enforce symmetry in the cross term (Y)
-        if (std::abs(s(2, 1, inum)) != std::abs(s(1, 2, inum))) {
-            avg = (std::abs(s(2, 1, inum)) + std::abs(s(1, 2, inum))) * 0.5;
-            this->s(2, 1, inum) *= avg / std::abs(s(2, 1, inum));
-            this->s(1, 2, inum) *= avg / std::abs(s(1, 2, inum));
-        }
+        // Enforce reciprocity in the cross term (Y)
+        enforceCrossTermReciprocity(this->s(1, 2, inum), this->s(2, 1, inum));
 
         // Check for convergence of the CTFs.
         if (e(1) == 0.0) {
@@ -1890,13 +1887,8 @@ void ConstructionProps::calculateFinalCoefficients()
             this->s(2, 2, this->rcmax) += this->e(this->rcmax) * this->DMat(2) * double(this->NumOfPerpendNodes - 1);
         }
 
-        // Check for and enforce symmetry in the cross term (Y)
-
-        if (std::abs(s(2, 1, this->rcmax)) != std::abs(s(1, 2, this->rcmax))) {
-            avg = (std::abs(s(2, 1, this->rcmax)) + std::abs(s(1, 2, this->rcmax))) * 0.5;
-            this->s(2, 1, this->rcmax) *= avg / std::abs(s(2, 1, this->rcmax));
-            this->s(1, 2, this->rcmax) *= avg / std::abs(s(1, 2, this->rcmax));
-        }
+        // Enforce reciprocity in the cross term (Y)
+        enforceCrossTermReciprocity(this->s(1, 2, this->rcmax), this->s(2, 1, this->rcmax));
 
     } // ... end of IF block for calculation of last e and S.
 

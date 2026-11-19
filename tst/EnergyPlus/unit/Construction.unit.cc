@@ -60,6 +60,43 @@
 using namespace EnergyPlus;
 using namespace EnergyPlus::Construction;
 
+TEST_F(EnergyPlusFixture, Construction_calculateFinalCoefficients_enforcesCrossTermReciprocity)
+{
+    ConstructionProps construction;
+    construction.rcmax = 2;
+    construction.SolutionDimensions = 1;
+
+    construction.AExp.allocate(construction.rcmax, construction.rcmax);
+    construction.AExp = 0.0;
+    construction.IdenMatrix.allocate(construction.rcmax, construction.rcmax);
+    construction.IdenMatrix = 0.0;
+    for (int i = 1; i <= construction.rcmax; ++i) {
+        construction.IdenMatrix(i, i) = 1.0;
+    }
+    construction.e.dimension(construction.rcmax, 0.0);
+    construction.Gamma1.allocate(3, construction.rcmax);
+    construction.Gamma1 = 0.0;
+    construction.Gamma2.allocate(3, construction.rcmax);
+    construction.Gamma2 = 0.0;
+    construction.s.allocate(3, 4, construction.rcmax);
+    construction.s = 0.0;
+    construction.CMat = 1.0;
+    construction.DMat = 0.0;
+
+    // Set up same-sign reciprocal terms before the reciprocity projection.
+    construction.Gamma2(2, 1) = 2.0;
+    construction.Gamma2(1, 2) = 4.0;
+    construction.Gamma1(2, 1) = 4.0;
+    construction.Gamma1(1, 2) = 8.0;
+
+    construction.calculateFinalCoefficients();
+
+    EXPECT_DOUBLE_EQ(1.0, construction.s0(1, 2));
+    EXPECT_DOUBLE_EQ(-1.0, construction.s0(2, 1));
+    EXPECT_DOUBLE_EQ(1.0, construction.s(1, 2, 1));
+    EXPECT_DOUBLE_EQ(-1.0, construction.s(2, 1, 1));
+}
+
 TEST_F(EnergyPlusFixture, Construction_reportLayers)
 {
     using namespace EnergyPlus::OutputReportPredefined;
